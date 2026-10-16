@@ -59,6 +59,10 @@ When traffic density was turned up to $4+\text{ veh/sec}$ (as judges will test!)
 - **Category:** Indian Road Realism
 - **Description:** Corrected traffic orientation to authentic Indian Left-Hand Driving (LHT): North incoming traffic operates on the East half ($x \in [350, 420]$) and South on the West half ($x \in [280, 350]$). Implemented Indian Roads Congress (IRC) raised concrete medians with alternating yellow and black kerb striping, triangular slip channelizers, and near-side left turn slip curves.
 
+### Prompt 6: Swiss-Inspired Minimalist UI/UX Transformation (zesiger.net Reference)
+- **Category:** Design Systems & User Experience
+- **Description:** Transformed the application interface into a modern Swiss-inspired minimal dark theme (`#0B0D10` primary background, `#12161B` secondary cards, `#C6F36B` lime accents, and restrained `#2A323B` borders). Built a 12-column engineering dashboard with an integrated Hero section, high-accessibility B&W traffic signal shapes (▲ GO, ◆ WAIT, ■ STOP), Signal Intelligence reasoning panel, and deterministic side-by-side benchmark comparison.
+
 ---
 
 ## 🔒 PRIVACY BY DEFAULT COMPLIANCE (DPDP ACT, 2023)
