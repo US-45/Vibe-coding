@@ -67,6 +67,10 @@ When traffic density was turned up to $4+\text{ veh/sec}$ (as judges will test!)
 - **Category:** UI Components & Theming
 - **Description:** Replaced all stark white UI elements and text (`bg-white`, `text-white`) with dynamic theme-reactive tokens. Implemented a client-side reactive Theme Engine supporting 6 curated palettes (Swiss Lime, Cyber Cyan, Signal Emerald, Solar Amber, Hyper Violet, Minimal Mono) with an interactive top-bar Theme Selector, smooth transitions, and glowing button active states.
 
+### Prompt 8: Interactive 3D WebGL Junction Model (Three.js)
+- **Category:** 3D Graphics & Simulation Visualization
+- **Description:** Built a fully synchronized 3D WebGL perspective view of the 4-way Indian intersection using Three.js. Features procedural 3D vehicle models (CNG auto-rickshaws, city transit buses, two-wheelers with riders, sedans, 108 emergency ambulances with dual flashing red/blue strobes), overhead cantilever signal gantries with real-time emissive lighting, raised IRC yellow/black medians, interactive mouse/touch OrbitControls, Day/Dusk/Night ambient lighting modes, and camera view presets (Orbit 45°, Street Eye, Top 90°, Signal Gantry).
+
 ---
 
 ## 🔒 PRIVACY BY DEFAULT COMPLIANCE (DPDP ACT, 2023)
