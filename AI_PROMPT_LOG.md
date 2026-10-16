@@ -75,6 +75,10 @@ When traffic density was turned up to $4+\text{ veh/sec}$ (as judges will test!)
 - **Category:** 3D Environment & Procedural Modeling
 - **Description:** Elevated the 3D WebGL simulation into a rich, authentic Indian metropolis intersection. Procedurally constructed four distinct corner architectural complexes (Commercial Banking Tower with HDFC Bank storefront & rooftop Sintex water tanks; Smart Tech Park Tower with rooftop HVAC chillers; Metro Residency Apartments with balconies; Commercial Bazaar with Apollo 24|7 Pharmacy & Chai Point). Installed Indian Roads Congress (IRC) overhead green cantilever highway direction signboards ("MUMBAI / TECH HUB", "FREE LEFT ↱"), an authentic transit bus stop shelter with stainless steel benches, sidewalk shade trees (Neem/Banyan style) and median planters. Engineered dynamic vehicle physics animations including velocity-governed wheel rotations, active rear brake lights that intensify when stopping, downward signal head road illumination, and an additional "Cinematic Corner" camera preset.
 
+### Prompt 10: De-Artilize 3D Model (Focused Clean CAD Mode)
+- **Category:** Simulation Focus & Architectural Minimalism
+- **Description:** De-cluttered the 3D WebGL visualization to eliminate visual distractions and focus strictly on core traffic engineering evaluation. Grouped all background decorative elements (corner buildings, retail shop signs, rooftop water tanks, bus stop shelters, sidewalk trees, and highway billboards) into a dedicated visibility-controlled layer defaulted to `hidden`. Re-centered the perspective on the pristine road junction: asphalt crossroad, IRC raised yellow/black medians, crisp zebra crossings, stop lines, yellow-box hatching, active traffic signals with road spot glow, and detailed vehicles with dynamic wheel rotations. Added a one-click `Clean CAD` / `City Decor` mode switcher in the 3D header, along with refined unobstructed camera presets (`Orbit 45°`, `Street Eye`, `Top 90°`, `Gantry`, `Focus`).
+
 ---
 
 ## 🔒 PRIVACY BY DEFAULT COMPLIANCE (DPDP ACT, 2023)
