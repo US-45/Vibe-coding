@@ -1,14 +1,11 @@
 import React from 'react';
 import { 
-  Play, 
-  Pause, 
-  RotateCcw, 
   Clock, 
-  Cpu, 
+  GitCompare, 
+  Sparkles, 
   ShieldCheck, 
-  FileText, 
-  Sparkles,
-  GitCompare
+  Activity,
+  Layers
 } from 'lucide-react';
 import { SignalMode } from '../types/simulation';
 
@@ -21,6 +18,7 @@ interface NavbarProps {
   onOpenPrivacy: () => void;
   viewMode: 'single' | 'arena';
   onToggleViewMode: () => void;
+  onNavigate: (section: 'simulation' | 'analytics' | 'about') => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -32,6 +30,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenPrivacy,
   viewMode,
   onToggleViewMode,
+  onNavigate,
 }) => {
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -40,13 +39,14 @@ export const Navbar: React.FC<NavbarProps> = ({
   };
 
   return (
-    <header className="bg-[#1C1919] border-b border-[#413939] px-4 lg:px-8 py-3 sticky top-0 z-40">
-      <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
+    <header className="bg-[#0B0D10]/90 backdrop-blur-md border-b border-[#2A323B] px-4 sm:px-6 lg:px-8 py-3 sticky top-0 z-40">
+      <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
         {/* Brand & Wordmark */}
-        <div className="flex items-center space-x-3">
-          <div className="w-9 h-9 rounded-lg bg-[#242020] border border-[#532121] flex items-center justify-center shadow-inner">
+        <div className="flex items-center space-x-3.5">
+          {/* Custom Geometric 4-way intersection symbol */}
+          <div className="w-8 h-8 rounded-lg bg-[#191F26] border border-[#2A323B] flex items-center justify-center p-1.5 shadow-sm group">
             <svg 
-              className="w-5 h-5 text-[#A41717]" 
+              className="w-full h-full text-[#C6F36B] transition-transform group-hover:rotate-90 duration-500" 
               viewBox="0 0 24 24" 
               fill="none" 
               stroke="currentColor" 
@@ -54,89 +54,113 @@ export const Navbar: React.FC<NavbarProps> = ({
               strokeLinecap="round" 
               strokeLinejoin="round"
             >
-              <rect x="3" y="3" width="18" height="18" rx="2" />
-              <path d="M12 3v18" />
-              <path d="M3 12h18" />
+              <rect x="3" y="3" width="18" height="18" rx="3" stroke="#2A323B" fill="#12161B" />
+              <path d="M12 3v18" stroke="#C6F36B" strokeWidth="2.5" />
+              <path d="M3 12h18" stroke="#C6F36B" strokeWidth="2.5" />
+              <circle cx="12" cy="12" r="2.5" fill="#C6F36B" />
             </svg>
           </div>
+
           <div>
             <div className="flex items-center space-x-2">
-              <span className="font-extrabold text-base tracking-wider text-[#F2EEEE] font-sans">SMARTJUNCTION</span>
-              <span className="text-[10px] uppercase font-bold tracking-widest px-1.5 py-0.5 rounded bg-[#A41717]/20 text-[#FFA4A4] border border-[#A41717]/40">
-                PRO 2.0
+              <span className="font-extrabold text-sm tracking-tight text-[#F3F5F7] font-sans">
+                SmartJunction
+              </span>
+              <span className="text-[9px] font-mono uppercase tracking-widest px-1.5 py-0.5 rounded bg-[#191F26] text-[#C6F36B] border border-[#2A323B]">
+                v2.4
               </span>
             </div>
-            <p className="text-[11px] text-[#A4A4A4] hidden sm:block">Intelligent 4-Way Traffic Operations</p>
+            <div className="text-[10px] font-mono tracking-wider text-[#929DA9] uppercase hidden sm:block">
+              Traffic Intelligence Simulator
+            </div>
           </div>
         </div>
 
-        {/* Live Simulation Status Badges */}
-        <div className="flex items-center space-x-2 sm:space-x-3">
+        {/* Center Nav Links */}
+        <nav className="hidden md:flex items-center space-x-1 bg-[#12161B] p-1 rounded-lg border border-[#2A323B] text-xs font-medium">
+          <button
+            onClick={() => onNavigate('simulation')}
+            className="px-3 py-1 rounded text-[#F3F5F7] hover:text-white hover:bg-[#191F26] transition-colors"
+          >
+            Simulation
+          </button>
+          <button
+            onClick={() => onNavigate('analytics')}
+            className="px-3 py-1 rounded text-[#929DA9] hover:text-[#F3F5F7] hover:bg-[#191F26] transition-colors"
+          >
+            Analytics
+          </button>
+          <button
+            onClick={() => onNavigate('about')}
+            className="px-3 py-1 rounded text-[#929DA9] hover:text-[#F3F5F7] hover:bg-[#191F26] transition-colors"
+          >
+            About
+          </button>
+        </nav>
+
+        {/* Right Status & Controls */}
+        <div className="flex items-center space-x-2.5">
           {/* Status Indicator */}
-          <div className="flex items-center space-x-2 px-2.5 py-1 rounded-md bg-[#242020] border border-[#413939] text-xs">
+          <div className="flex items-center space-x-2 px-2.5 py-1 rounded-md bg-[#12161B] border border-[#2A323B] text-xs">
             <span className={`w-2 h-2 rounded-full ${
               isRunning && !isPaused 
-                ? 'bg-[#39B86B] animate-pulse' 
+                ? 'bg-[#36D98A] shadow-[0_0_8px_#36D98A]' 
                 : isPaused 
-                  ? 'bg-[#F2B544]' 
-                  : 'bg-[#777171]'
+                  ? 'bg-[#FFBD59]' 
+                  : 'bg-[#929DA9]'
             }`} />
-            <span className="text-[#F2EEEE] font-medium hidden md:inline">Status:</span>
-            <span className="font-bold text-[11px] uppercase tracking-wide text-[#F2EEEE]">
-              {isRunning && !isPaused ? 'SIMULATING' : isPaused ? 'PAUSED' : 'STANDBY'}
+            <span className="font-mono text-[11px] font-semibold text-[#F3F5F7] uppercase tracking-wide">
+              {isRunning && !isPaused ? 'RUNNING' : isPaused ? 'PAUSED' : 'IDLE'}
             </span>
           </div>
 
-          {/* Mode Badge */}
-          <div className={`flex items-center space-x-1.5 px-2.5 py-1 rounded-md border text-xs font-semibold ${
+          {/* Mode Pill */}
+          <div className={`hidden sm:flex items-center space-x-1 px-2.5 py-1 rounded-md border text-xs font-mono ${
             signalMode === 'adaptive'
-              ? 'bg-[#B59447]/15 border-[#B59447] text-[#E2C785]'
-              : 'bg-[#242020] border-[#413939] text-[#A4A4A4]'
+              ? 'bg-[#C6F36B]/10 border-[#C6F36B]/40 text-[#C6F36B]'
+              : 'bg-[#12161B] border-[#2A323B] text-[#929DA9]'
           }`}>
-            <Cpu className="w-3.5 h-3.5 text-[#B59447]" />
-            <span>{signalMode === 'adaptive' ? 'ADAPTIVE AI' : 'FIXED CYCLE'}</span>
+            <span>MODE:</span>
+            <span className="font-bold">{signalMode === 'adaptive' ? 'ADAPTIVE' : 'FIXED'}</span>
           </div>
 
           {/* Elapsed Timer */}
-          <div className="flex items-center space-x-1.5 px-2.5 py-1 rounded-md bg-[#242020] border border-[#413939] text-xs font-mono text-[#F2EEEE]">
-            <Clock className="w-3.5 h-3.5 text-[#A4A4A4]" />
+          <div className="flex items-center space-x-1.5 px-2.5 py-1 rounded-md bg-[#12161B] border border-[#2A323B] text-xs font-mono text-[#F3F5F7]">
+            <Clock className="w-3.5 h-3.5 text-[#929DA9]" />
             <span className="tabular-nums font-bold">{formatTime(elapsedTime)}</span>
           </div>
-        </div>
 
-        {/* Quick Modal Triggers */}
-        <div className="flex items-center space-x-2">
-          {/* Side-by-Side Dual Arena Toggle */}
+          {/* Dual Arena View Toggle */}
           <button
             onClick={onToggleViewMode}
-            className={`flex items-center space-x-1.5 px-2.5 py-1.5 rounded text-xs font-medium border transition-colors ${
+            className={`flex items-center space-x-1.5 px-2.5 py-1 rounded-md text-xs font-medium border transition-all ${
               viewMode === 'arena'
-                ? 'bg-[#B59447] text-black font-bold border-[#B59447]'
-                : 'bg-[#242020] text-[#E2C785] border-[#B59447]/40 hover:bg-[#302A2A]'
+                ? 'bg-[#C6F36B] text-[#0B0D10] font-bold border-[#C6F36B]'
+                : 'bg-[#191F26] text-[#F3F5F7] border-[#2A323B] hover:border-[#37424E]'
             }`}
-            title="Side-by-side comparison arena"
+            title="Side-by-side comparative arena"
           >
             <GitCompare className="w-3.5 h-3.5" />
             <span className="hidden lg:inline">{viewMode === 'arena' ? 'Single View' : 'Live Arena'}</span>
           </button>
 
-          {/* 3-Min Demo Script */}
+          {/* 3-Min Walkthrough Script */}
           <button
             onClick={onOpenDemoTour}
-            className="flex items-center space-x-1 px-2.5 py-1.5 rounded text-xs font-medium bg-[#A41717] hover:bg-[#c21e1e] text-white transition-colors shadow-sm"
-            title="3-minute judge demo script and walkthrough"
+            className="flex items-center space-x-1.5 px-2.5 py-1 rounded-md text-xs font-semibold bg-[#191F26] hover:bg-[#202730] text-[#C6F36B] border border-[#C6F36B]/30 hover:border-[#C6F36B] transition-all"
+            title="Interactive 3-minute demo tour"
           >
             <Sparkles className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">3-Min Demo</span>
+            <span className="hidden sm:inline">Demo Script</span>
           </button>
 
-          {/* Privacy & DPDP Notice */}
+          {/* Privacy Notice */}
           <button
             onClick={onOpenPrivacy}
-            className="flex items-center space-x-1 px-2 py-1.5 rounded text-xs font-medium bg-[#242020] hover:bg-[#302A2A] text-[#A4A4A4] hover:text-[#F2EEEE] border border-[#413939] transition-colors"
-            title="DPDP Act 2023 Compliance & Zero Telemetry"
+            className="p-1.5 rounded-md bg-[#12161B] hover:bg-[#191F26] text-[#929DA9] hover:text-[#36D98A] border border-[#2A323B] transition-colors"
+            title="DPDP Act, 2023 Compliance & Zero Telemetry"
           >
-            <ShieldCheck className="w-3.5 h-3.5 text-[#39B86B]" />
+            <ShieldCheck className="w-4 h-4 text-[#36D98A]" />
           </button>
         </div>
       </div>

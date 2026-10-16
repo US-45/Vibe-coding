@@ -3,11 +3,12 @@ import {
   GitCompare, 
   TrendingUp, 
   TrendingDown, 
-  Zap, 
   CheckCircle2, 
   Play, 
   RefreshCw,
-  Award
+  Award,
+  BarChart2,
+  Inbox
 } from 'lucide-react';
 import { 
   ResponsiveContainer, 
@@ -15,8 +16,7 @@ import {
   Area, 
   XAxis, 
   YAxis, 
-  Tooltip, 
-  Legend 
+  Tooltip
 } from 'recharts';
 import { SimulationEngine } from '../simulation/engine';
 import { SimulationStats } from '../types/simulation';
@@ -48,7 +48,7 @@ interface BenchmarkResult {
   spawnRate: number;
 }
 
-export const ComparisonPanel: React.FC<ComparisonPanelProps> = ({ currentStats, currentMode }) => {
+export const ComparisonPanel: React.FC<ComparisonPanelProps> = ({ currentStats }) => {
   const [isBenchmarking, setIsBenchmarking] = useState(false);
   const [benchmarkResult, setBenchmarkResult] = useState<BenchmarkResult | null>(null);
 
@@ -61,7 +61,7 @@ export const ComparisonPanel: React.FC<ComparisonPanelProps> = ({ currentStats, 
 
     setTimeout(() => {
       const benchmarkSeed = 987654321;
-      const testDuration = 60; // 60 seconds of traffic
+      const testDuration = 60; // 60 seconds
       const spawnRate = 3.5; // High demand test
       const timeStep = 0.05; // 50ms discrete step
 
@@ -85,7 +85,7 @@ export const ComparisonPanel: React.FC<ComparisonPanelProps> = ({ currentStats, 
       }
       const adaptiveStats = adaptiveEngine.getStats();
 
-      // 3. Compute accurate honest percentage improvements
+      // 3. Compute accurate honest percentage differences
       const throughputDelta = fixedStats.carsPassed > 0
         ? ((adaptiveStats.carsPassed - fixedStats.carsPassed) / fixedStats.carsPassed) * 100
         : 0;
@@ -121,178 +121,189 @@ export const ComparisonPanel: React.FC<ComparisonPanelProps> = ({ currentStats, 
       });
 
       setIsBenchmarking(false);
-    }, 100);
+    }, 80);
   };
 
-  // Format history for Recharts
   const chartData = currentStats.history.map((h) => ({
     time: `${h.time}s`,
-    passed: h.passed,
     wait: h.avgWaitTime,
     queue: h.queueLength,
   }));
 
   return (
-    <div className="bg-[#242020] border border-[#413939] rounded-xl p-4 shadow-xl space-y-4">
-      {/* Header & Benchmark Runner */}
-      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#302A2A] pb-3">
-        <div className="flex items-center space-x-2">
-          <GitCompare className="w-4 h-4 text-[#B59447]" />
-          <div>
-            <h2 className="text-xs font-bold uppercase tracking-wider text-[#F2EEEE]">
-              Fixed vs. Adaptive Performance Benchmark
-            </h2>
-            <p className="text-[10px] text-[#A4A4A4]">
-              High Priority Stretch Goal: Rigorous queue-actuated comparison
-            </p>
-          </div>
+    <section id="analytics-section" className="space-y-4">
+      {/* Editorial Section Heading */}
+      <div className="flex flex-wrap items-end justify-between gap-4 border-b border-[#2A323B] pb-3">
+        <div>
+          <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-[#F3F5F7] font-sans">
+            Measure the difference.
+          </h2>
+          <p className="text-xs sm:text-sm text-[#929DA9] mt-0.5">
+            Run equivalent traffic conditions and compare actual simulation results.
+          </p>
         </div>
 
         <button
           onClick={runControlledBenchmark}
           disabled={isBenchmarking}
-          className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-[#B59447] hover:bg-[#c9a656] text-black font-bold text-xs uppercase tracking-wider transition-all disabled:opacity-50 shadow-md"
+          className="flex items-center space-x-2 px-3.5 py-2 rounded-lg bg-[#C6F36B] hover:bg-[#d6f78b] text-[#0B0D10] font-bold text-xs uppercase tracking-wider transition-all disabled:opacity-50 shadow-sm"
         >
           {isBenchmarking ? (
             <>
               <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-              <span>Simulating...</span>
+              <span>Running Simulation...</span>
             </>
           ) : (
             <>
               <Award className="w-3.5 h-3.5" />
-              <span>Run Identical-Seed Test</span>
+              <span>Run 60s Scientific Benchmark</span>
             </>
           )}
         </button>
       </div>
 
-      {/* Benchmark Results Display */}
-      {benchmarkResult ? (
-        <div className="bg-[#1C1919] border border-[#B59447]/60 rounded-xl p-3.5 space-y-3">
-          <div className="flex items-center justify-between text-xs">
-            <span className="font-bold text-[#E2C785] flex items-center space-x-1.5">
-              <CheckCircle2 className="w-4 h-4 text-[#39B86B]" />
-              <span>Controlled 60-Second Test Completed (Seeded Arrivals @ 3.5 veh/s)</span>
+      {/* Main Analytics Card */}
+      <div className="bg-[#12161B] border border-[#2A323B] rounded-xl p-4 sm:p-5 shadow-sm space-y-4">
+        {/* Results or Empty State */}
+        {benchmarkResult ? (
+          <div className="space-y-4">
+            <div className="flex items-center justify-between text-xs">
+              <span className="font-bold text-[#F3F5F7] flex items-center space-x-1.5">
+                <CheckCircle2 className="w-4 h-4 text-[#36D98A]" />
+                <span>Measured Benchmark Results: Identical Seed (#987654321 @ 3.5 veh/s)</span>
+              </span>
+              <span className="text-[11px] font-mono text-[#929DA9]">60s Controlled Test</span>
+            </div>
+
+            {/* Metrics Comparison Table / Cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              {/* Metric 1: Average Waiting Time */}
+              <div className="bg-[#191F26] border border-[#2A323B] rounded-lg p-3.5 text-center">
+                <div className="text-[11px] font-mono text-[#929DA9] uppercase">Average Wait Time</div>
+                <div className="flex items-center justify-center space-x-2.5 my-1.5 font-mono">
+                  <span className="text-sm line-through text-[#929DA9]">{benchmarkResult.fixed.avgWaitTime}s</span>
+                  <span className="text-2xl font-bold text-[#36D98A]">
+                    {benchmarkResult.adaptive.avgWaitTime}s
+                  </span>
+                </div>
+                <div className="text-xs font-semibold text-[#36D98A] flex items-center justify-center space-x-1">
+                  <TrendingDown className="w-3.5 h-3.5" />
+                  <span>{benchmarkResult.improvementPct.waitTime}% Less Delay</span>
+                </div>
+              </div>
+
+              {/* Metric 2: Vehicles Cleared */}
+              <div className="bg-[#191F26] border border-[#2A323B] rounded-lg p-3.5 text-center">
+                <div className="text-[11px] font-mono text-[#929DA9] uppercase">Total Cars Passed</div>
+                <div className="flex items-center justify-center space-x-2.5 my-1.5 font-mono">
+                  <span className="text-sm line-through text-[#929DA9]">{benchmarkResult.fixed.carsPassed}</span>
+                  <span className="text-2xl font-bold text-[#C6F36B]">
+                    {benchmarkResult.adaptive.carsPassed}
+                  </span>
+                </div>
+                <div className="text-xs font-semibold text-[#36D98A] flex items-center justify-center space-x-1">
+                  <TrendingUp className="w-3.5 h-3.5" />
+                  <span>+{benchmarkResult.improvementPct.throughput}% Higher Throughput</span>
+                </div>
+              </div>
+
+              {/* Metric 3: Peak Queue */}
+              <div className="bg-[#191F26] border border-[#2A323B] rounded-lg p-3.5 text-center">
+                <div className="text-[11px] font-mono text-[#929DA9] uppercase">Peak Queue Length</div>
+                <div className="flex items-center justify-center space-x-2.5 my-1.5 font-mono">
+                  <span className="text-sm line-through text-[#929DA9]">{benchmarkResult.fixed.maxQueue}</span>
+                  <span className="text-2xl font-bold text-[#F3F5F7]">
+                    {benchmarkResult.adaptive.maxQueue}
+                  </span>
+                </div>
+                <div className="text-xs font-semibold text-[#36D98A] flex items-center justify-center space-x-1">
+                  <TrendingDown className="w-3.5 h-3.5" />
+                  <span>{benchmarkResult.improvementPct.queue}% Shorter Backlog</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Explanatory Data-Driven Summary */}
+            <div className="bg-[#0B0D10] border border-[#2A323B] p-3 rounded-lg text-xs text-[#929DA9] leading-relaxed">
+              <strong className="text-[#F3F5F7]">Empirical Evaluation Summary: </strong>
+              Under identical arrival conditions ({benchmarkResult.spawnRate} veh/s over {benchmarkResult.duration} seconds), 
+              the Adaptive Controller produced <strong className="text-[#36D98A]">{benchmarkResult.improvementPct.waitTime}% lower average vehicle delay</strong> and 
+              cleared <strong className="text-[#C6F36B]">{benchmarkResult.improvementPct.throughput}% more vehicles</strong> by dynamically reallocating green seconds away from empty directions to clearing queues.
+            </div>
+          </div>
+        ) : (
+          /* Informative Empty State as required by Section 4.G */
+          <div className="bg-[#0B0D10] border border-[#2A323B] rounded-lg p-6 text-center space-y-2">
+            <Inbox className="w-8 h-8 text-[#929DA9] mx-auto opacity-60" />
+            <div className="text-sm font-semibold text-[#F3F5F7]">No Comparison Run Yet</div>
+            <p className="text-xs text-[#929DA9] max-w-md mx-auto">
+              Click <strong>"Run 60s Scientific Benchmark"</strong> to execute two independent simulations with identical seeded traffic arrivals and measure the performance difference.
+            </p>
+          </div>
+        )}
+
+        {/* Live Timeline Telemetry (Recharts) */}
+        <div className="pt-2">
+          <div className="flex items-center justify-between text-xs mb-2">
+            <span className="font-mono font-semibold text-[#F3F5F7] uppercase tracking-wider text-[11px]">
+              Live Simulation Telemetry: Delay (s) vs Total Queue Length
             </span>
-            <span className="text-[10px] text-[#A4A4A4]">Identical Traffic Pattern</span>
+            <span className="text-[10px] font-mono text-[#929DA9]">Rolling 120s Buffer</span>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            {/* Metric 1: Wait Time Reduction */}
-            <div className="bg-[#242020] border border-[#413939] rounded-lg p-3 text-center">
-              <div className="text-[11px] text-[#A4A4A4] uppercase font-semibold">Average Waiting Time</div>
-              <div className="flex items-center justify-center space-x-2 my-1">
-                <span className="text-sm line-through text-[#777171]">{benchmarkResult.fixed.avgWaitTime}s</span>
-                <span className="text-xl font-bold font-mono text-[#39B86B]">
-                  {benchmarkResult.adaptive.avgWaitTime}s
-                </span>
+          <div className="h-44 w-full bg-[#0B0D10] rounded-lg border border-[#2A323B] p-2">
+            {chartData.length > 1 ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={chartData} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
+                  <defs>
+                    <linearGradient id="waitGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#C6F36B" stopOpacity={0.35} />
+                      <stop offset="95%" stopColor="#C6F36B" stopOpacity={0} />
+                    </linearGradient>
+                    <linearGradient id="queueGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#75B8FF" stopOpacity={0.25} />
+                      <stop offset="95%" stopColor="#75B8FF" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <XAxis dataKey="time" stroke="#929DA9" fontSize={9} tickLine={false} />
+                  <YAxis stroke="#929DA9" fontSize={9} tickLine={false} />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: '#191F26',
+                      borderColor: '#2A323B',
+                      fontSize: '11px',
+                      borderRadius: '6px',
+                      color: '#F3F5F7',
+                    }}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="wait"
+                    name="Avg Wait (s)"
+                    stroke="#C6F36B"
+                    strokeWidth={2}
+                    fillOpacity={1}
+                    fill="url(#waitGrad)"
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="queue"
+                    name="Total Queue"
+                    stroke="#75B8FF"
+                    strokeWidth={2}
+                    fillOpacity={1}
+                    fill="url(#queueGrad)"
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="h-full flex items-center justify-center text-xs text-[#929DA9] font-mono">
+                Start the simulation to plot live telemetry stream
               </div>
-              <div className="text-xs font-bold text-[#39B86B] flex items-center justify-center space-x-1">
-                <TrendingDown className="w-3.5 h-3.5" />
-                <span>{benchmarkResult.improvementPct.waitTime}% Less Delay</span>
-              </div>
-            </div>
-
-            {/* Metric 2: Vehicles Cleared */}
-            <div className="bg-[#242020] border border-[#413939] rounded-lg p-3 text-center">
-              <div className="text-[11px] text-[#A4A4A4] uppercase font-semibold">Total Cars Passed</div>
-              <div className="flex items-center justify-center space-x-2 my-1">
-                <span className="text-sm line-through text-[#777171]">{benchmarkResult.fixed.carsPassed}</span>
-                <span className="text-xl font-bold font-mono text-[#E2C785]">
-                  {benchmarkResult.adaptive.carsPassed}
-                </span>
-              </div>
-              <div className="text-xs font-bold text-[#39B86B] flex items-center justify-center space-x-1">
-                <TrendingUp className="w-3.5 h-3.5" />
-                <span>+{benchmarkResult.improvementPct.throughput}% Higher Throughput</span>
-              </div>
-            </div>
-
-            {/* Metric 3: Peak Queue Length */}
-            <div className="bg-[#242020] border border-[#413939] rounded-lg p-3 text-center">
-              <div className="text-[11px] text-[#A4A4A4] uppercase font-semibold">Peak Queue Length</div>
-              <div className="flex items-center justify-center space-x-2 my-1">
-                <span className="text-sm line-through text-[#777171]">{benchmarkResult.fixed.maxQueue}</span>
-                <span className="text-xl font-bold font-mono text-[#F2EEEE]">
-                  {benchmarkResult.adaptive.maxQueue}
-                </span>
-              </div>
-              <div className="text-xs font-bold text-[#39B86B] flex items-center justify-center space-x-1">
-                <TrendingDown className="w-3.5 h-3.5" />
-                <span>{benchmarkResult.improvementPct.queue}% Shorter Queues</span>
-              </div>
-            </div>
+            )}
           </div>
-        </div>
-      ) : (
-        <div className="bg-[#1C1919] border border-[#302A2A] rounded-lg p-3 text-xs text-[#A4A4A4] flex items-center justify-between">
-          <span>Click "Run Identical-Seed Test" to evaluate Fixed vs. Adaptive on identical traffic streams.</span>
-          <span className="text-[#B59447] font-semibold">Scientific Accuracy</span>
-        </div>
-      )}
-
-      {/* Live History Progression Chart (Recharts) */}
-      <div className="pt-2">
-        <div className="flex items-center justify-between text-xs mb-2">
-          <span className="font-bold text-[#F2EEEE] uppercase tracking-wider text-[11px]">
-            Live Timeline: Waiting Time (s) & Queue Length
-          </span>
-          <span className="text-[10px] text-[#A4A4A4]">Rolling 120s buffer</span>
-        </div>
-
-        <div className="h-44 w-full bg-[#1C1919] rounded-lg border border-[#302A2A] p-2">
-          {chartData.length > 1 ? (
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={chartData} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
-                <defs>
-                  <linearGradient id="waitGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#B59447" stopOpacity={0.4} />
-                    <stop offset="95%" stopColor="#B59447" stopOpacity={0} />
-                  </linearGradient>
-                  <linearGradient id="queueGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#E54848" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="#E54848" stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <XAxis dataKey="time" stroke="#777171" fontSize={9} tickLine={false} />
-                <YAxis stroke="#777171" fontSize={9} tickLine={false} />
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: '#242020',
-                    borderColor: '#413939',
-                    fontSize: '11px',
-                    borderRadius: '6px',
-                    color: '#F2EEEE',
-                  }}
-                />
-                <Area
-                  type="monotone"
-                  dataKey="wait"
-                  name="Avg Wait (s)"
-                  stroke="#B59447"
-                  strokeWidth={2}
-                  fillOpacity={1}
-                  fill="url(#waitGrad)"
-                />
-                <Area
-                  type="monotone"
-                  dataKey="queue"
-                  name="Total Queue"
-                  stroke="#E54848"
-                  strokeWidth={2}
-                  fillOpacity={1}
-                  fill="url(#queueGrad)"
-                />
-              </AreaChart>
-            </ResponsiveContainer>
-          ) : (
-            <div className="h-full flex items-center justify-center text-xs text-[#777171]">
-              Start the simulation to plot live traffic dynamics
-            </div>
-          )}
         </div>
       </div>
-    </div>
+    </section>
   );
 };

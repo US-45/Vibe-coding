@@ -112,23 +112,23 @@ export const DemoTourModal: React.FC<DemoTourModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fadeIn">
-      <div className="bg-[#1C1919] border border-[#532121] rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden flex flex-col">
+      <div className="bg-[#12161B] border border-[#2A323B] rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[#302A2A] bg-[#242020]">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[#1E252D] bg-[#191F26]">
           <div className="flex items-center space-x-2.5">
-            <div className="w-8 h-8 rounded-lg bg-[#A41717] flex items-center justify-center shadow-md">
-              <Sparkles className="w-4 h-4 text-white" />
+            <div className="w-8 h-8 rounded-lg bg-[#C6F36B]/15 border border-[#C6F36B]/40 flex items-center justify-center">
+              <Sparkles className="w-4 h-4 text-[#C6F36B]" />
             </div>
             <div>
-              <h2 className="text-sm font-bold text-[#F2EEEE] uppercase tracking-wider">
+              <h2 className="text-sm font-bold text-[#F3F5F7] uppercase tracking-wider">
                 3-Minute Hackathon Demo Script
               </h2>
-              <p className="text-[11px] text-[#A4A4A4]">Step {currentStep + 1} of {steps.length} • {current.time}</p>
+              <p className="text-[11px] text-[#929DA9] font-mono">Step {currentStep + 1} of {steps.length} • {current.time}</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="w-7 h-7 rounded-lg bg-[#302A2A] hover:bg-[#413939] text-[#A4A4A4] hover:text-white flex items-center justify-center transition-colors"
+            className="w-7 h-7 rounded-lg bg-[#12161B] hover:bg-[#2A323B] text-[#929DA9] hover:text-white flex items-center justify-center transition-colors"
           >
             <X className="w-4 h-4" />
           </button>
@@ -137,19 +137,19 @@ export const DemoTourModal: React.FC<DemoTourModalProps> = ({
         {/* Body */}
         <div className="p-6 space-y-4 text-xs">
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-extrabold text-[#E2C785]">{current.title}</h3>
-            <span className="font-mono text-xs px-2 py-0.5 rounded bg-[#302A2A] text-[#FFA4A4] border border-[#532121]">
+            <h3 className="text-sm font-bold text-[#F3F5F7]">{current.title}</h3>
+            <span className="font-mono text-xs px-2.5 py-0.5 rounded bg-[#191F26] text-[#C6F36B] border border-[#2A323B]">
               {current.time}
             </span>
           </div>
 
-          <p className="text-[#A4A4A4] font-medium italic">{current.summary}</p>
+          <p className="text-[#929DA9] font-medium">{current.summary}</p>
 
-          <div className="space-y-2.5 bg-[#242020] p-4 rounded-xl border border-[#413939]">
+          <div className="space-y-2.5 bg-[#0B0D10] p-4 rounded-xl border border-[#2A323B]">
             {current.points.map((pt, idx) => (
               <div key={idx} className="flex items-start space-x-2.5">
-                <CheckCircle className="w-4 h-4 text-[#39B86B] shrink-0 mt-0.5" />
-                <span className="text-[#F2EEEE] leading-relaxed">{pt}</span>
+                <CheckCircle className="w-4 h-4 text-[#36D98A] shrink-0 mt-0.5" />
+                <span className="text-[#F3F5F7] leading-relaxed">{pt}</span>
               </div>
             ))}
           </div>
@@ -159,9 +159,9 @@ export const DemoTourModal: React.FC<DemoTourModalProps> = ({
             <div className="pt-1">
               <button
                 onClick={current.action.onClick}
-                className="w-full py-2.5 px-4 rounded-lg bg-[#A41717] hover:bg-[#c41f1f] text-white font-bold text-xs uppercase tracking-wider transition-all shadow-md flex items-center justify-center space-x-2"
+                className="w-full py-2.5 px-4 rounded-lg bg-[#C6F36B] hover:bg-[#d6f78b] text-[#0B0D10] font-bold text-xs uppercase tracking-wider transition-all shadow-sm flex items-center justify-center space-x-2"
               >
-                <Zap className="w-3.5 h-3.5 fill-white" />
+                <Zap className="w-3.5 h-3.5 fill-[#0B0D10]" />
                 <span>{current.action.label}</span>
               </button>
             </div>
@@ -169,11 +169,11 @@ export const DemoTourModal: React.FC<DemoTourModalProps> = ({
         </div>
 
         {/* Footer Navigation */}
-        <div className="px-6 py-3 border-t border-[#302A2A] bg-[#242020] flex items-center justify-between">
+        <div className="px-6 py-3 border-t border-[#1E252D] bg-[#191F26] flex items-center justify-between">
           <button
             onClick={() => setCurrentStep((prev) => Math.max(0, prev - 1))}
             disabled={currentStep === 0}
-            className="px-3 py-1.5 rounded bg-[#302A2A] disabled:opacity-40 text-xs font-semibold text-[#F2EEEE] flex items-center space-x-1"
+            className="px-3 py-1.5 rounded-lg bg-[#12161B] border border-[#2A323B] disabled:opacity-40 text-xs font-semibold text-[#F3F5F7] hover:bg-[#202730] flex items-center space-x-1 transition-colors"
           >
             <ChevronLeft className="w-3.5 h-3.5" />
             <span>Previous</span>
@@ -184,8 +184,8 @@ export const DemoTourModal: React.FC<DemoTourModalProps> = ({
               <button
                 key={i}
                 onClick={() => setCurrentStep(i)}
-                className={`w-2.5 h-2.5 rounded-full transition-all ${
-                  i === currentStep ? 'bg-[#A41717] w-6' : 'bg-[#413939]'
+                className={`w-2 h-2 rounded-full transition-all ${
+                  i === currentStep ? 'bg-[#C6F36B] w-5' : 'bg-[#2A323B]'
                 }`}
               />
             ))}
@@ -194,7 +194,7 @@ export const DemoTourModal: React.FC<DemoTourModalProps> = ({
           {currentStep < steps.length - 1 ? (
             <button
               onClick={() => setCurrentStep((prev) => Math.min(steps.length - 1, prev + 1))}
-              className="px-3 py-1.5 rounded bg-[#A41717] text-xs font-semibold text-white flex items-center space-x-1"
+              className="px-3 py-1.5 rounded-lg bg-[#C6F36B] hover:bg-[#d6f78b] text-xs font-bold text-[#0B0D10] flex items-center space-x-1 transition-colors"
             >
               <span>Next</span>
               <ChevronRight className="w-3.5 h-3.5" />
@@ -202,7 +202,7 @@ export const DemoTourModal: React.FC<DemoTourModalProps> = ({
           ) : (
             <button
               onClick={onClose}
-              className="px-3 py-1.5 rounded bg-[#39B86B] text-xs font-bold text-black flex items-center space-x-1"
+              className="px-3 py-1.5 rounded-lg bg-[#36D98A] hover:bg-[#2fc47b] text-xs font-bold text-[#0B0D10] flex items-center space-x-1 transition-colors"
             >
               <span>Ready to Demo</span>
             </button>

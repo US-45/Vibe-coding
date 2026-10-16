@@ -3,51 +3,46 @@
 @tailwind utilities;
 
 :root {
-  --bg-primary: #141010;
-  --bg-secondary: #1C1919;
-  --surface-primary: #242020;
-  --surface-elevated: #302A2A;
-  --border-subtle: #413939;
-  --accent-red: #A41717;
-  --deep-burgundy: #532121;
-  --muted-rose: #CEA4A4;
-  --metallic-gold: #B59447;
-  --text-primary: #F2EEEE;
-  --text-secondary: #A4A4A4;
-  --text-muted: #777171;
-  --road-surface: #292727;
-  --road-markings: #E0D8D0;
-  --canvas-bg: #191616;
-  --signal-green: #39B86B;
-  --signal-amber: #F2B544;
-  --signal-red: #E54848;
+  --bg-primary: #0B0D10;
+  --bg-secondary: #12161B;
+  --surface-primary: #12161B;
+  --surface-elevated: #191F26;
+  --border-subtle: #2A323B;
+  --accent-lime: #C6F36B;
+  --accent-blue: #75B8FF;
+  --text-primary: #F3F5F7;
+  --text-secondary: #929DA9;
+  --signal-green: #36D98A;
+  --signal-amber: #FFBD59;
+  --signal-red: #FF6268;
 }
 
 body {
   background-color: var(--bg-primary);
   color: var(--text-primary);
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: 'Inter', 'Geist', 'Manrope', system-ui, -apple-system, sans-serif;
   overflow-x: hidden;
+  letter-spacing: -0.01em;
 }
 
-/* Custom scrollbars matching Asphalt Noir */
+/* Custom scrollbars matching minimal engineered aesthetic */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #141010;
+  background: #0B0D10;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #302A2A;
+  background: #191F26;
   border-radius: 3px;
-  border: 1px solid #413939;
+  border: 1px solid #2A323B;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #532121;
+  background: #2A323B;
 }
 
 /* Tabular numerals for timers and metrics */
@@ -55,39 +50,43 @@ body {
   font-variant-numeric: tabular-nums;
 }
 
-/* Smooth glass/card effect */
-.noir-card {
-  background-color: #242020;
-  border: 1px solid #413939;
-  border-radius: 0.5rem;
+/* Engineered Card Styles */
+.panel-card {
+  background-color: #12161B;
+  border: 1px solid #2A323B;
+  border-radius: 10px;
   transition: border-color 0.2s ease, background-color 0.2s ease;
 }
 
-.noir-card:hover {
-  border-color: #532121;
+.panel-card:hover {
+  border-color: #37424E;
 }
 
-.noir-card-elevated {
-  background-color: #302A2A;
-  border: 1px solid #532121;
-  border-radius: 0.5rem;
+.panel-elevated {
+  background-color: #191F26;
+  border: 1px solid #2A323B;
+  border-radius: 10px;
+}
+
+/* Lime accent glow & button */
+.btn-lime {
+  background-color: #C6F36B;
+  color: #0B0D10;
+  font-weight: 700;
+  border-radius: 8px;
+  transition: all 0.15s ease;
+}
+
+.btn-lime:hover {
+  background-color: #D6F78B;
+  transform: translateY(-1px);
+}
+
+.btn-lime:active {
+  transform: translateY(0);
 }
 
 /* Range input styling */
 input[type="range"] {
-  accent-color: #A41717;
-}
-
-/* Subtle gold badge */
-.badge-gold {
-  background: rgba(181, 148, 71, 0.15);
-  border: 1px solid #B59447;
-  color: #E2C785;
-}
-
-/* Subtle red badge */
-.badge-red {
-  background: rgba(164, 23, 23, 0.18);
-  border: 1px solid #A41717;
-  color: #FFA4A4;
+  accent-color: #C6F36B;
 }

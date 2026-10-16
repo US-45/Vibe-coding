@@ -585,11 +585,11 @@ export class SimulationEngine {
     const ctx = this.ctx;
 
     // 1. Canvas Background (Surrounding ground / city blocks)
-    ctx.fillStyle = '#181414';
+    ctx.fillStyle = '#0B0D10';
     ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
 
     // 2. Asphalt Road Surfaces
-    ctx.fillStyle = '#262323'; // Fresh Indian asphalt
+    ctx.fillStyle = '#151A21'; // Clean engineered asphalt
     // Vertical Road
     ctx.fillRect(HALF_SIZE - HALF_ROAD, 0, ROAD_WIDTH, CANVAS_SIZE);
     // Horizontal Road
@@ -600,8 +600,8 @@ export class SimulationEngine {
     ctx.beginPath();
     ctx.rect(HALF_SIZE - HALF_ROAD, HALF_SIZE - HALF_ROAD, ROAD_WIDTH, ROAD_WIDTH);
     ctx.clip();
-    ctx.strokeStyle = 'rgba(245, 158, 11, 0.22)'; // Classic Indian yellow box
-    ctx.lineWidth = 2.5;
+    ctx.strokeStyle = 'rgba(255, 189, 89, 0.20)'; // Subtle Indian yellow box
+    ctx.lineWidth = 2;
     for (let pos = -ROAD_WIDTH; pos <= ROAD_WIDTH * 2; pos += 16) {
       ctx.beginPath();
       ctx.moveTo(HALF_SIZE - HALF_ROAD + pos, HALF_SIZE - HALF_ROAD);
@@ -611,8 +611,8 @@ export class SimulationEngine {
     ctx.restore();
 
     // 4. Outer Curbs / Footpaths
-    ctx.strokeStyle = '#3D3535';
-    ctx.lineWidth = 3;
+    ctx.strokeStyle = '#2A323B';
+    ctx.lineWidth = 2.5;
     ctx.strokeRect(0, 0, HALF_SIZE - HALF_ROAD, HALF_SIZE - HALF_ROAD);
     ctx.strokeRect(HALF_SIZE + HALF_ROAD, 0, HALF_SIZE - HALF_ROAD, HALF_SIZE - HALF_ROAD);
     ctx.strokeRect(0, HALF_SIZE + HALF_ROAD, HALF_SIZE - HALF_ROAD, HALF_SIZE - HALF_ROAD);
@@ -742,7 +742,7 @@ export class SimulationEngine {
   ): void {
     const signal = this.signalController.getSignalState(direction);
     ctx.save();
-    ctx.strokeStyle = signal.color === 'green' ? '#39B86B' : (signal.color === 'amber' ? '#F2B544' : '#E0D8D0');
+    ctx.strokeStyle = signal.color === 'green' ? '#36D98A' : (signal.color === 'amber' ? '#FFBD59' : '#D8DFE7');
     ctx.lineWidth = 4;
     ctx.beginPath();
     ctx.moveTo(x1, y1);
@@ -753,7 +753,7 @@ export class SimulationEngine {
 
   private drawIndianCrosswalks(ctx: CanvasRenderingContext2D): void {
     ctx.save();
-    ctx.fillStyle = 'rgba(224, 216, 208, 0.28)';
+    ctx.fillStyle = 'rgba(216, 223, 231, 0.25)';
     const stripeWidth = 6;
     const stripeGap = 6;
 
@@ -784,7 +784,7 @@ export class SimulationEngine {
 
     // Subtle slip path dashed lines if Free Left Turn is enabled
     if (this.config.freeLeftTurn) {
-      ctx.strokeStyle = 'rgba(181, 148, 71, 0.6)'; // Metallic Gold
+      ctx.strokeStyle = 'rgba(198, 243, 107, 0.55)'; // Accent Lime
       ctx.lineWidth = 2;
       ctx.setLineDash([4, 4]);
 
@@ -813,8 +813,8 @@ export class SimulationEngine {
 
     // Triangular Corner Islands with Yellow/Black Kerb edges
     const drawIsland = (px: number, py: number, r: number) => {
-      ctx.fillStyle = '#201C1C';
-      ctx.strokeStyle = '#F59E0B'; // Yellow curb border
+      ctx.fillStyle = '#12161B';
+      ctx.strokeStyle = '#FFBD59'; // IRC Yellow curb border
       ctx.lineWidth = 2;
       ctx.beginPath();
       ctx.arc(px, py, r, 0, Math.PI * 2);
@@ -852,8 +852,8 @@ export class SimulationEngine {
       const q = queues[d];
 
       // Badge Card
-      ctx.fillStyle = '#242020';
-      ctx.strokeStyle = q > 6 ? '#E54848' : (q > 3 ? '#F2B544' : '#413939');
+      ctx.fillStyle = '#12161B';
+      ctx.strokeStyle = q > 6 ? '#FF6268' : (q > 3 ? '#FFBD59' : '#2A323B');
       ctx.lineWidth = 1.5;
       ctx.beginPath();
       ctx.roundRect(pos.x - 38, pos.y - 12, 76, 24, 4);
@@ -861,7 +861,7 @@ export class SimulationEngine {
       ctx.stroke();
 
       // Text with queue
-      ctx.fillStyle = '#F2EEEE';
+      ctx.fillStyle = '#F3F5F7';
       ctx.fillText(`${pos.label}: ${q}`, pos.x, pos.y);
     }
     ctx.restore();

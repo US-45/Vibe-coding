@@ -8,40 +8,32 @@ export default {
     extend: {
       colors: {
         bg: {
-          primary: '#141010',
-          secondary: '#1C1919',
+          primary: '#0B0D10',
+          secondary: '#12161B',
         },
         surface: {
-          primary: '#242020',
-          elevated: '#302A2A',
+          primary: '#12161B',
+          elevated: '#191F26',
         },
         border: {
-          subtle: '#413939',
+          subtle: '#2A323B',
         },
         accent: {
-          red: '#A41717',
-          burgundy: '#532121',
-          rose: '#CEA4A4',
-          gold: '#B59447',
+          lime: '#C6F36B',
+          blue: '#75B8FF',
         },
         text: {
-          primary: '#F2EEEE',
-          secondary: '#A4A4A4',
-          muted: '#777171',
-        },
-        road: {
-          surface: '#292727',
-          markings: '#E0D8D0',
-          canvasBg: '#191616',
+          primary: '#F3F5F7',
+          secondary: '#929DA9',
         },
         signal: {
-          green: '#39B86B',
-          amber: '#F2B544',
-          red: '#E54848',
+          green: '#36D98A',
+          amber: '#FFBD59',
+          red: '#FF6268',
         }
       },
       fontFamily: {
-        sans: ['Inter', 'Manrope', 'system-ui', 'sans-serif'],
+        sans: ['Inter', 'Geist', 'Manrope', 'system-ui', 'sans-serif'],
       }
     },
   },

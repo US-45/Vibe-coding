@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Play, Pause, RotateCcw, Award, CheckCircle, TrendingDown, TrendingUp, Sliders } from 'lucide-react';
+import { Play, Pause, RotateCcw, GitCompare, CheckCircle2 } from 'lucide-react';
 import { SimulationEngine } from '../simulation/engine';
 import { SimulationStats } from '../types/simulation';
 
@@ -13,7 +13,7 @@ export const DualArena: React.FC = () => {
   const [isRunning, setIsRunning] = useState<boolean>(false);
   const [isPaused, setIsPaused] = useState<boolean>(false);
   const [spawnRate, setSpawnRate] = useState<number>(3.5);
-  const [freeLeftTurn, setFreeLeftTurn] = useState<boolean>(true);
+  const [freeLeftTurn] = useState<boolean>(true);
 
   const [fixedStats, setFixedStats] = useState<SimulationStats | null>(null);
   const [adaptiveStats, setAdaptiveStats] = useState<SimulationStats | null>(null);
@@ -84,26 +84,19 @@ export const DualArena: React.FC = () => {
     adaptiveEngineRef.current?.setSpawnRate(newRate);
   };
 
-  const handleFreeLeftToggle = () => {
-    const next = !freeLeftTurn;
-    setFreeLeftTurn(next);
-    fixedEngineRef.current?.setFreeLeftTurn(next);
-    adaptiveEngineRef.current?.setFreeLeftTurn(next);
-  };
-
   return (
     <div className="space-y-4">
-      {/* Top Banner & Arena Controls */}
-      <div className="bg-[#242020] border border-[#413939] rounded-xl p-4 flex flex-wrap items-center justify-between gap-3 shadow-xl">
+      {/* Top Banner & Synchronized Controls */}
+      <div className="bg-[#12161B] border border-[#2A323B] rounded-xl p-4 flex flex-wrap items-center justify-between gap-3 shadow-sm">
         <div>
           <div className="flex items-center space-x-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-[#B59447] animate-pulse" />
-            <h2 className="text-sm font-extrabold tracking-wider uppercase text-[#F2EEEE]">
-              LIVE DUAL-JUNCTION ARENA — SCIENTIFIC BENCHMARK
+            <span className="w-2 h-2 rounded-full bg-[#C6F36B] shadow-[0_0_8px_#C6F36B]" />
+            <h2 className="text-sm font-bold tracking-tight uppercase text-[#F3F5F7]">
+              Live Dual-Junction Arena — Scientific Benchmark
             </h2>
           </div>
-          <p className="text-xs text-[#A4A4A4]">
-            Both junctions receive the <span className="text-[#E2C785] font-bold">exact same vehicle arrival sequence</span> (Seed #{seed})
+          <p className="text-xs text-[#929DA9] mt-0.5">
+            Both junctions receive the <strong className="text-[#C6F36B]">exact same vehicle arrival sequence</strong> (Seed #{seed})
           </p>
         </div>
 
@@ -112,48 +105,48 @@ export const DualArena: React.FC = () => {
           {!isRunning ? (
             <button
               onClick={handleStart}
-              className="py-1.5 px-4 rounded-lg bg-[#A41717] hover:bg-[#bd1e1e] text-white font-bold text-xs uppercase tracking-wider transition-all flex items-center space-x-1.5"
+              className="py-1.5 px-4 rounded-lg bg-[#C6F36B] hover:bg-[#d6f78b] text-[#0B0D10] font-bold text-xs uppercase tracking-wider transition-all flex items-center space-x-1.5 shadow-sm"
             >
-              <Play className="w-3.5 h-3.5 fill-white" />
+              <Play className="w-3.5 h-3.5 fill-current" />
               <span>Launch Both</span>
             </button>
           ) : isPaused ? (
             <button
               onClick={handleResume}
-              className="py-1.5 px-4 rounded-lg bg-[#39B86B] text-black font-bold text-xs uppercase tracking-wider transition-all flex items-center space-x-1.5"
+              className="py-1.5 px-4 rounded-lg bg-[#36D98A] text-[#0B0D10] font-bold text-xs uppercase tracking-wider transition-all flex items-center space-x-1.5"
             >
-              <Play className="w-3.5 h-3.5 fill-black" />
+              <Play className="w-3.5 h-3.5 fill-current" />
               <span>Resume</span>
             </button>
           ) : (
             <button
               onClick={handlePause}
-              className="py-1.5 px-4 rounded-lg bg-[#302A2A] border border-[#532121] text-white font-bold text-xs uppercase tracking-wider transition-all flex items-center space-x-1.5"
+              className="py-1.5 px-4 rounded-lg bg-[#191F26] border border-[#2A323B] text-white font-bold text-xs uppercase tracking-wider transition-all flex items-center space-x-1.5"
             >
-              <Pause className="w-3.5 h-3.5 fill-white" />
+              <Pause className="w-3.5 h-3.5 fill-current" />
               <span>Pause</span>
             </button>
           )}
 
           <button
             onClick={handleReset}
-            className="py-1.5 px-3 rounded-lg bg-[#1C1919] border border-[#413939] text-[#A4A4A4] hover:text-white font-semibold text-xs uppercase tracking-wider transition-all flex items-center space-x-1"
+            className="py-1.5 px-3 rounded-lg bg-[#0B0D10] border border-[#2A323B] text-[#929DA9] hover:text-white font-semibold text-xs uppercase tracking-wider transition-all flex items-center space-x-1"
           >
             <RotateCcw className="w-3.5 h-3.5" />
             <span>Reset</span>
           </button>
 
-          <div className="h-6 w-px bg-[#413939] mx-1" />
+          <div className="h-6 w-px bg-[#2A323B] mx-1" />
 
           {/* Density preset for arena */}
-          <div className="flex items-center space-x-1 text-xs">
-            <span className="text-[11px] text-[#A4A4A4]">Density:</span>
+          <div className="flex items-center space-x-1 text-xs font-mono">
+            <span className="text-[10px] text-[#929DA9] uppercase">Rate:</span>
             {[2.0, 3.5, 5.0].map((r) => (
               <button
                 key={r}
                 onClick={() => handleSpawnRateChange(r)}
-                className={`px-2 py-1 rounded text-[10px] font-bold border transition-colors ${
-                  spawnRate === r ? 'bg-[#B59447] text-black border-[#B59447]' : 'bg-[#1C1919] text-[#A4A4A4] border-[#413939]'
+                className={`px-2 py-0.5 rounded text-[10px] font-bold border transition-colors ${
+                  spawnRate === r ? 'bg-[#C6F36B] text-[#0B0D10] border-[#C6F36B]' : 'bg-[#0B0D10] text-[#929DA9] border-[#2A323B]'
                 }`}
               >
                 {r} v/s
@@ -166,20 +159,20 @@ export const DualArena: React.FC = () => {
       {/* Split Canvases */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Left: Fixed Signal Junction */}
-        <div className="bg-[#242020] border border-[#413939] rounded-xl p-3 shadow-xl space-y-2">
+        <div className="bg-[#12161B] border border-[#2A323B] rounded-xl p-3.5 shadow-sm space-y-2.5">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
-              <span className="px-2 py-0.5 rounded bg-[#302A2A] text-xs font-bold text-[#A4A4A4] border border-[#413939]">
+              <span className="px-2 py-0.5 rounded bg-[#191F26] text-[10px] font-mono font-bold text-[#929DA9] border border-[#2A323B]">
                 STRATEGY A
               </span>
-              <span className="text-xs font-bold text-[#F2EEEE] uppercase tracking-wider">Fixed 15s Cycle</span>
+              <span className="text-xs font-bold text-[#F3F5F7] uppercase tracking-wider">Fixed 15s Cycle</span>
             </div>
-            <div className="text-xs font-mono text-[#A4A4A4]">
+            <div className="text-xs font-mono text-[#929DA9]">
               Passed: <strong className="text-white">{fixedStats?.carsPassed || 0}</strong> | Wait: <strong className="text-white">{fixedStats?.averageWaitTime.toFixed(1) || 0}s</strong>
             </div>
           </div>
 
-          <div className="relative rounded-lg overflow-hidden border border-[#413939] bg-[#191616] flex items-center justify-center">
+          <div className="relative rounded-lg overflow-hidden border border-[#2A323B] bg-[#0B0D10] flex items-center justify-center">
             <canvas
               ref={fixedCanvasRef}
               width={700}
@@ -189,36 +182,36 @@ export const DualArena: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-3 gap-2 text-center text-xs pt-1">
-            <div className="bg-[#1C1919] p-2 rounded border border-[#302A2A]">
-              <div className="text-[10px] text-[#A4A4A4]">Total Cleared</div>
-              <div className="text-lg font-bold font-mono text-[#F2EEEE]">{fixedStats?.carsPassed || 0}</div>
+            <div className="bg-[#191F26] p-2 rounded-lg border border-[#2A323B]">
+              <div className="text-[10px] font-mono text-[#929DA9] uppercase">Total Cleared</div>
+              <div className="text-lg font-bold font-mono text-[#F3F5F7]">{fixedStats?.carsPassed || 0}</div>
             </div>
-            <div className="bg-[#1C1919] p-2 rounded border border-[#302A2A]">
-              <div className="text-[10px] text-[#A4A4A4]">Avg Delay</div>
-              <div className="text-lg font-bold font-mono text-[#F2EEEE]">{fixedStats?.averageWaitTime.toFixed(1) || 0}s</div>
+            <div className="bg-[#191F26] p-2 rounded-lg border border-[#2A323B]">
+              <div className="text-[10px] font-mono text-[#929DA9] uppercase">Avg Delay</div>
+              <div className="text-lg font-bold font-mono text-[#F3F5F7]">{fixedStats?.averageWaitTime.toFixed(1) || 0}s</div>
             </div>
-            <div className="bg-[#1C1919] p-2 rounded border border-[#302A2A]">
-              <div className="text-[10px] text-[#A4A4A4]">Peak Queue</div>
-              <div className="text-lg font-bold font-mono text-[#E54848]">{fixedStats?.maxRecordedQueue || 0}</div>
+            <div className="bg-[#191F26] p-2 rounded-lg border border-[#2A323B]">
+              <div className="text-[10px] font-mono text-[#929DA9] uppercase">Peak Queue</div>
+              <div className="text-lg font-bold font-mono text-[#FF6268]">{fixedStats?.maxRecordedQueue || 0}</div>
             </div>
           </div>
         </div>
 
         {/* Right: Adaptive AI Junction */}
-        <div className="bg-[#242020] border border-[#B59447]/60 rounded-xl p-3 shadow-xl space-y-2">
+        <div className="bg-[#12161B] border border-[#C6F36B]/40 rounded-xl p-3.5 shadow-sm space-y-2.5">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
-              <span className="px-2 py-0.5 rounded bg-[#B59447]/20 text-xs font-bold text-[#E2C785] border border-[#B59447]">
+              <span className="px-2 py-0.5 rounded bg-[#C6F36B]/15 text-[10px] font-mono font-bold text-[#C6F36B] border border-[#C6F36B]/40">
                 STRATEGY B
               </span>
-              <span className="text-xs font-bold text-[#E2C785] uppercase tracking-wider">Adaptive Smart Timing</span>
+              <span className="text-xs font-bold text-[#C6F36B] uppercase tracking-wider">Adaptive Smart Timing</span>
             </div>
-            <div className="text-xs font-mono text-[#E2C785]">
+            <div className="text-xs font-mono text-[#C6F36B]">
               Passed: <strong className="text-white">{adaptiveStats?.carsPassed || 0}</strong> | Wait: <strong className="text-white">{adaptiveStats?.averageWaitTime.toFixed(1) || 0}s</strong>
             </div>
           </div>
 
-          <div className="relative rounded-lg overflow-hidden border border-[#532121] bg-[#191616] flex items-center justify-center">
+          <div className="relative rounded-lg overflow-hidden border border-[#2A323B] bg-[#0B0D10] flex items-center justify-center">
             <canvas
               ref={adaptiveCanvasRef}
               width={700}
@@ -228,17 +221,17 @@ export const DualArena: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-3 gap-2 text-center text-xs pt-1">
-            <div className="bg-[#1C1919] p-2 rounded border border-[#532121]">
-              <div className="text-[10px] text-[#A4A4A4]">Total Cleared</div>
-              <div className="text-lg font-bold font-mono text-[#E2C785]">{adaptiveStats?.carsPassed || 0}</div>
+            <div className="bg-[#191F26] p-2 rounded-lg border border-[#2A323B]">
+              <div className="text-[10px] font-mono text-[#929DA9] uppercase">Total Cleared</div>
+              <div className="text-lg font-bold font-mono text-[#C6F36B]">{adaptiveStats?.carsPassed || 0}</div>
             </div>
-            <div className="bg-[#1C1919] p-2 rounded border border-[#532121]">
-              <div className="text-[10px] text-[#A4A4A4]">Avg Delay</div>
-              <div className="text-lg font-bold font-mono text-[#39B86B]">{adaptiveStats?.averageWaitTime.toFixed(1) || 0}s</div>
+            <div className="bg-[#191F26] p-2 rounded-lg border border-[#2A323B]">
+              <div className="text-[10px] font-mono text-[#929DA9] uppercase">Avg Delay</div>
+              <div className="text-lg font-bold font-mono text-[#36D98A]">{adaptiveStats?.averageWaitTime.toFixed(1) || 0}s</div>
             </div>
-            <div className="bg-[#1C1919] p-2 rounded border border-[#532121]">
-              <div className="text-[10px] text-[#A4A4A4]">Peak Queue</div>
-              <div className="text-lg font-bold font-mono text-[#39B86B]">{adaptiveStats?.maxRecordedQueue || 0}</div>
+            <div className="bg-[#191F26] p-2 rounded-lg border border-[#2A323B]">
+              <div className="text-[10px] font-mono text-[#929DA9] uppercase">Peak Queue</div>
+              <div className="text-lg font-bold font-mono text-[#36D98A]">{adaptiveStats?.maxRecordedQueue || 0}</div>
             </div>
           </div>
         </div>

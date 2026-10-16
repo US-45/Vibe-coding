@@ -15,13 +15,15 @@ export const TrafficSignals: React.FC<TrafficSignalsProps> = ({ signals }) => {
   ];
 
   return (
-    <div className="bg-[#242020] border border-[#413939] rounded-xl p-4 shadow-xl space-y-3">
-      <div className="flex items-center justify-between border-b border-[#302A2A] pb-2">
+    <div className="bg-[#12161B] border border-[#2A323B] rounded-xl p-4 shadow-sm space-y-3">
+      <div className="flex items-center justify-between border-b border-[#1E252D] pb-2">
         <div className="flex items-center space-x-2">
-          <Compass className="w-4 h-4 text-[#A41717]" />
-          <h2 className="text-xs font-bold uppercase tracking-wider text-[#F2EEEE]">Signal Phase Array</h2>
+          <Compass className="w-4 h-4 text-[#75B8FF]" />
+          <h2 className="text-xs font-bold uppercase tracking-wider text-[#F3F5F7]">
+            Signal Phase Array
+          </h2>
         </div>
-        <span className="text-[10px] text-[#A4A4A4]">High Accessibility B&W</span>
+        <span className="text-[10px] font-mono text-[#929DA9]">High Accessibility B&W</span>
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
@@ -31,32 +33,36 @@ export const TrafficSignals: React.FC<TrafficSignalsProps> = ({ signals }) => {
           const isAmber = sig.color === 'amber';
           const isRed = sig.color === 'red';
 
-          const borderColor = isGreen ? 'border-[#39B86B]' : (isAmber ? 'border-[#F2B544]' : 'border-[#413939]');
-          const bgPill = isGreen ? 'bg-[#39B86B]/15 text-[#39B86B]' : (isAmber ? 'bg-[#F2B544]/15 text-[#F2B544]' : 'bg-[#E54848]/15 text-[#E54848]');
+          const borderColor = isGreen ? 'border-[#36D98A]/60' : (isAmber ? 'border-[#FFBD59]/60' : 'border-[#2A323B]');
+          const bgPill = isGreen 
+            ? 'bg-[#36D98A]/15 text-[#36D98A]' 
+            : isAmber 
+              ? 'bg-[#FFBD59]/15 text-[#FFBD59]' 
+              : 'bg-[#FF6268]/15 text-[#FF6268]';
 
           return (
             <div
               key={dir}
-              className={`bg-[#1C1919] border ${borderColor} rounded-lg p-3 flex flex-col justify-between transition-colors shadow-sm relative overflow-hidden`}
+              className={`bg-[#191F26] border ${borderColor} rounded-lg p-3 flex flex-col justify-between transition-colors shadow-sm relative overflow-hidden`}
             >
               {/* Top: Direction and Countdown */}
               <div className="flex justify-between items-start">
                 <div>
-                  <div className="font-bold text-xs text-[#F2EEEE]">{label}</div>
-                  <div className="text-[10px] text-[#A4A4A4] truncate">{sub}</div>
+                  <div className="font-bold text-xs text-[#F3F5F7]">{label}</div>
+                  <div className="text-[10px] text-[#929DA9] truncate">{sub}</div>
                 </div>
-                <div className="flex items-center space-x-1 text-xs font-mono font-bold text-[#F2EEEE] bg-[#242020] px-1.5 py-0.5 rounded border border-[#413939]">
-                  <Clock className="w-2.5 h-2.5 text-[#A4A4A4]" />
+                <div className="flex items-center space-x-1 text-xs font-mono font-bold text-[#F3F5F7] bg-[#0B0D10] px-1.5 py-0.5 rounded border border-[#2A323B]">
+                  <Clock className="w-2.5 h-2.5 text-[#929DA9]" />
                   <span>{sig.remainingTime}s</span>
                 </div>
               </div>
 
               {/* Middle: 3-Lamp Miniature Signal */}
-              <div className="my-2 py-1.5 px-2 bg-[#141010] rounded-md border border-[#302A2A] flex items-center justify-around">
+              <div className="my-2 py-1.5 px-2 bg-[#0B0D10] rounded-md border border-[#2A323B] flex items-center justify-around">
                 {/* Red */}
                 <div
                   className={`w-4 h-4 rounded-full flex items-center justify-center text-[8px] font-black transition-all ${
-                    isRed ? 'bg-[#E54848] text-white shadow-[0_0_8px_#E54848]' : 'bg-[#2A1818] text-[#552B2B]'
+                    isRed ? 'bg-[#FF6268] text-white shadow-[0_0_8px_#FF6268]' : 'bg-[#261618] text-[#552B2B]'
                   }`}
                   title="Red Light - STOP"
                 >
@@ -65,7 +71,7 @@ export const TrafficSignals: React.FC<TrafficSignalsProps> = ({ signals }) => {
                 {/* Amber */}
                 <div
                   className={`w-4 h-4 rounded-full flex items-center justify-center text-[8px] font-black transition-all ${
-                    isAmber ? 'bg-[#F2B544] text-black shadow-[0_0_8px_#F2B544]' : 'bg-[#2D2415] text-[#5A4520]'
+                    isAmber ? 'bg-[#FFBD59] text-black shadow-[0_0_8px_#FFBD59]' : 'bg-[#292214] text-[#5A4520]'
                   }`}
                   title="Amber Light - WAIT"
                 >
@@ -74,7 +80,7 @@ export const TrafficSignals: React.FC<TrafficSignalsProps> = ({ signals }) => {
                 {/* Green */}
                 <div
                   className={`w-4 h-4 rounded-full flex items-center justify-center text-[8px] font-black transition-all ${
-                    isGreen ? 'bg-[#39B86B] text-black shadow-[0_0_8px_#39B86B]' : 'bg-[#152B1E] text-[#245237]'
+                    isGreen ? 'bg-[#36D98A] text-black shadow-[0_0_8px_#36D98A]' : 'bg-[#11261B] text-[#245237]'
                   }`}
                   title="Green Light - GO"
                 >
