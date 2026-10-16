@@ -59,9 +59,11 @@ export const Simulation3DView: React.FC<Simulation3DViewProps> = ({
 
   const [cameraPreset, setCameraPreset] = useState<CameraPreset>('isometric');
   const [lightingMode, setLightingMode] = useState<LightingMode>('dusk');
+  const [showDecorations, setShowDecorations] = useState<boolean>(false);
 
   // Three.js internal references
   const sceneRef = useRef<THREE.Scene | null>(null);
+  const decorGroupRef = useRef<THREE.Group | null>(null);
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
   const controlsRef = useRef<OrbitControls | null>(null);
@@ -171,8 +173,15 @@ export const Simulation3DView: React.FC<Simulation3DViewProps> = ({
       emergencyLightBlue: ambBluePoint,
     };
 
-    // 8. Build 3D Indian Urban Environment: Roads, Medians, Markings, Gantries, and Buildings
-    build3DJunctionEnvironment(scene);
+    // 8. Build 3D Indian Urban Environment
+    // Dedicated group for surrounding background decorations (buildings, signs, trees)
+    const decorGroup = new THREE.Group();
+    decorGroup.visible = false; // Default: clean, de-artilized engineering focus
+    scene.add(decorGroup);
+    decorGroupRef.current = decorGroup;
+
+    // Roads, medians, and markings in scene; buildings & trees in decorGroup
+    build3DJunctionEnvironment(scene, decorGroup);
 
     // 9. Build Overhead Signal Gantries with Active Road Spot Illumination
     buildSignalGantries(scene, signalLampsRef);
@@ -260,6 +269,13 @@ export const Simulation3DView: React.FC<Simulation3DViewProps> = ({
     }
   }, [lightingMode]);
 
+  // Sync decoration visibility with showDecorations state
+  useEffect(() => {
+    if (decorGroupRef.current) {
+      decorGroupRef.current.visible = showDecorations;
+    }
+  }, [showDecorations]);
+
   // Handle Camera Presets
   const applyCameraPreset = (preset: CameraPreset) => {
     setCameraPreset(preset);
@@ -268,22 +284,22 @@ export const Simulation3DView: React.FC<Simulation3DViewProps> = ({
     const controls = controlsRef.current;
 
     if (preset === 'isometric') {
-      camera.position.set(28, 30, 36);
+      camera.position.set(24, 26, 30);
       controls.target.set(0, 0, 0);
     } else if (preset === 'driver') {
       // Ground perspective looking North into the Indian junction
-      camera.position.set(2.2, 1.9, 24);
-      controls.target.set(0, 1.2, -5);
+      camera.position.set(2.2, 1.8, 20);
+      controls.target.set(0, 1.0, -4);
     } else if (preset === 'topDown') {
-      camera.position.set(0, 52, 0.1);
+      camera.position.set(0, 44, 0.1);
       controls.target.set(0, 0, 0);
     } else if (preset === 'gantry') {
       // Overhead gantry viewpoint framing South waiting queue & slip lane
-      camera.position.set(7.5, 7.5, 17);
-      controls.target.set(2.5, 2.0, 6);
+      camera.position.set(6.5, 6.0, 14);
+      controls.target.set(1.5, 1.5, 4);
     } else if (preset === 'cinematic') {
-      // Dramatic wide city corner shot framing skyscrapers and traffic
-      camera.position.set(-26, 18, 28);
+      // Clean tight zoom directly on the yellow-box intersection center
+      camera.position.set(11, 12, 14);
       controls.target.set(0, 0, 0);
     }
     controls.update();
@@ -313,19 +329,45 @@ export const Simulation3DView: React.FC<Simulation3DViewProps> = ({
                 }}
               >
                 <Sparkles className="w-3 h-3 fill-current" />
-                <span>3D City Model</span>
+                <span>3D View</span>
               </button>
             </div>
           )}
 
           <div className="hidden sm:flex items-center space-x-1.5 font-mono text-[10px] text-[#929DA9]">
             <span className="w-1.5 h-1.5 rounded-full bg-[#36D98A] shadow-[0_0_6px_#36D98A]" />
-            <span>WebGL 3D Engine • Three.js • Indian Metro Junction</span>
+            <span>{showDecorations ? 'WebGL 3D • City Scene' : 'WebGL 3D • Clean De-Artilized CAD'}</span>
           </div>
         </div>
 
-        {/* Camera Views & Lighting Controls */}
+        {/* Mode Toggle, Camera Views & Lighting Controls */}
         <div className="flex items-center space-x-1.5 text-xs">
+          {/* De-artilize Mode Switcher */}
+          <div className="flex items-center space-x-0.5 bg-[#0B0D10] p-0.5 rounded-lg border border-[#2A323B] font-mono text-[10px]">
+            <button
+              onClick={() => setShowDecorations(false)}
+              className={`px-2 py-0.5 rounded transition-colors ${
+                !showDecorations
+                  ? 'bg-[#191F26] text-[#F3F5F7] font-bold border border-[#2A323B]'
+                  : 'text-[#929DA9] hover:text-[#F3F5F7]'
+              }`}
+              title="Clean CAD Mode: Focus strictly on road junction, signals, and vehicles"
+            >
+              Clean CAD
+            </button>
+            <button
+              onClick={() => setShowDecorations(true)}
+              className={`px-2 py-0.5 rounded transition-colors ${
+                showDecorations
+                  ? 'bg-[#191F26] text-[#F3F5F7] font-bold border border-[#2A323B]'
+                  : 'text-[#929DA9] hover:text-[#F3F5F7]'
+              }`}
+              title="Show surrounding city buildings, signs & trees"
+            >
+              City Decor
+            </button>
+          </div>
+
           {/* Camera Preset Selector */}
           <div className="flex items-center space-x-0.5 sm:space-x-1 bg-[#0B0D10] p-0.5 rounded-lg border border-[#2A323B] font-mono text-[10px]">
             <button
@@ -376,7 +418,7 @@ export const Simulation3DView: React.FC<Simulation3DViewProps> = ({
                   : 'text-[#929DA9] hover:text-[#F3F5F7]'
               }`}
             >
-              Cinematic
+              Focus
             </button>
           </div>
 
@@ -478,7 +520,7 @@ export const Simulation3DView: React.FC<Simulation3DViewProps> = ({
 // 3D ENVIRONMENT BUILDERS & MESH PROCEDURES
 // ==========================================
 
-function build3DJunctionEnvironment(scene: THREE.Scene) {
+function build3DJunctionEnvironment(scene: THREE.Scene, decorGroup: THREE.Group) {
   // 1. City Terrain Base
   const terrainGeo = new THREE.PlaneGeometry(180, 180);
   const terrainMat = new THREE.MeshStandardMaterial({
@@ -543,17 +585,17 @@ function build3DJunctionEnvironment(scene: THREE.Scene) {
   // 9. Corner Sidewalks with Alternating Yellow/Black Kerb Stones
   buildCornerSidewalks(scene, ROAD_W / 2);
 
-  // 10. Indian Urban Architecture: 4 Corner Building Complexes
-  buildCityCorners(scene, ROAD_W / 2);
+  // 10. Indian Urban Architecture: 4 Corner Building Complexes (Attached to decorGroup)
+  buildCityCorners(decorGroup, ROAD_W / 2);
 
-  // 11. Modern City Bus Stop Shelter on Sidewalk
-  buildBusStopShelter(scene, 10.5, 14.5);
+  // 11. Modern City Bus Stop Shelter on Sidewalk (Attached to decorGroup)
+  buildBusStopShelter(decorGroup, 10.5, 14.5);
 
-  // 12. Sidewalk Trees & Shade Foliage
-  buildSidewalkTrees(scene, ROAD_W / 2);
+  // 12. Sidewalk Trees & Shade Foliage (Attached to decorGroup)
+  buildSidewalkTrees(decorGroup, ROAD_W / 2);
 
-  // 13. Overhead Cantilever Highway Gantries with Green Indian Direction Signs
-  buildHighwayGantries(scene, ROAD_W);
+  // 13. Overhead Cantilever Highway Gantries (Attached to decorGroup)
+  buildHighwayGantries(decorGroup, ROAD_W);
 }
 
 // Build Indian Yellow-Box Junction Hatching
@@ -879,7 +921,7 @@ function buildCurbStones(scene: THREE.Scene, halfRoad: number) {
 }
 
 // Indian Urban Architecture: 4 Corner Building Complexes
-function buildCityCorners(scene: THREE.Scene, halfRoad: number) {
+function buildCityCorners(parent: THREE.Group, halfRoad: number) {
   // ----------------------------------------------------
   // CORNER 1: NORTH-EAST (Commercial & Banking Tower)
   // ----------------------------------------------------
@@ -929,7 +971,7 @@ function buildCityCorners(scene: THREE.Scene, halfRoad: number) {
   mast.position.set(-5, 28.5, -4);
   neGroup.add(mast);
 
-  scene.add(neGroup);
+  parent.add(neGroup);
 
   // ----------------------------------------------------
   // CORNER 2: SOUTH-EAST (Tech Park Tower)
@@ -966,7 +1008,7 @@ function buildCityCorners(scene: THREE.Scene, halfRoad: number) {
   seGroup.add(hvac);
 
   buildSintexWaterTank(seGroup, -4, 24.8, 3);
-  scene.add(seGroup);
+  parent.add(seGroup);
 
   // ----------------------------------------------------
   // CORNER 3: SOUTH-WEST (Metro Residency Apartments)
@@ -996,7 +1038,7 @@ function buildCityCorners(scene: THREE.Scene, halfRoad: number) {
 
   buildSintexWaterTank(swGroup, 4, 17.6, 4);
   buildSintexWaterTank(swGroup, 6.5, 17.6, 4);
-  scene.add(swGroup);
+  parent.add(swGroup);
 
   // ----------------------------------------------------
   // CORNER 4: NORTH-WEST (Commercial Complex & Pharmacy)
@@ -1025,7 +1067,7 @@ function buildCityCorners(scene: THREE.Scene, halfRoad: number) {
   nwGroup.add(apolloSign);
 
   buildSintexWaterTank(nwGroup, -3, 15.6, -3);
-  scene.add(nwGroup);
+  parent.add(nwGroup);
 }
 
 // Procedural Black Sintex Water Tank
@@ -1043,7 +1085,7 @@ function buildSintexWaterTank(parent: THREE.Group, x: number, y: number, z: numb
 }
 
 // Indian City Bus Stop Shelter on Sidewalk
-function buildBusStopShelter(scene: THREE.Scene, x: number, z: number) {
+function buildBusStopShelter(parent: THREE.Group, x: number, z: number) {
   const shelter = new THREE.Group();
   const steelMat = new THREE.MeshStandardMaterial({ color: 0x94a3b8, metalness: 0.9, roughness: 0.2 });
 
@@ -1083,11 +1125,11 @@ function buildBusStopShelter(scene: THREE.Scene, x: number, z: number) {
   shelter.add(totem);
 
   shelter.position.set(x, 0.35, z);
-  scene.add(shelter);
+  parent.add(shelter);
 }
 
 // Sidewalk Shade Trees (Neem / Banyan style)
-function buildSidewalkTrees(scene: THREE.Scene, halfRoad: number) {
+function buildSidewalkTrees(parent: THREE.Group, halfRoad: number) {
   const treePositions = [
     [halfRoad + 3.5, halfRoad + 4.5],
     [halfRoad + 10.5, halfRoad + 4.5],
@@ -1125,7 +1167,7 @@ function buildSidewalkTrees(scene: THREE.Scene, halfRoad: number) {
     tree.add(foliage2);
 
     tree.position.set(x, 0.35, z);
-    scene.add(tree);
+    parent.add(tree);
   });
 }
 
@@ -1160,7 +1202,7 @@ function buildCobraStreetLamp(scene: THREE.Scene, x: number, z: number) {
 }
 
 // Overhead Highway Direction Gantries (IRC Green Signboards)
-function buildHighwayGantries(scene: THREE.Scene, roadWidth: number) {
+function buildHighwayGantries(parent: THREE.Group, roadWidth: number) {
   const gantryMat = new THREE.MeshStandardMaterial({ color: 0x475569, metalness: 0.85, roughness: 0.3 });
 
   // 1. South Approach Gantry (Overhead across incoming lanes at z = 14)
@@ -1181,7 +1223,7 @@ function buildHighwayGantries(scene: THREE.Scene, roadWidth: number) {
   signMesh.position.set(3.5, 6.2, 14.15);
   southGantry.add(signMesh);
 
-  scene.add(southGantry);
+  parent.add(southGantry);
 }
 
 // Build 4 Overhead Cantilever Traffic Signal Gantries with Road Glow Lights
