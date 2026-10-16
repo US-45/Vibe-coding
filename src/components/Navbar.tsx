@@ -20,6 +20,8 @@ interface NavbarProps {
   viewMode: 'single' | 'arena';
   onToggleViewMode: () => void;
   onNavigate: (section: 'simulation' | 'analytics' | 'about') => void;
+  viewDimension?: '2D' | '3D';
+  onToggleDimension?: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -32,6 +34,8 @@ export const Navbar: React.FC<NavbarProps> = ({
   viewMode,
   onToggleViewMode,
   onNavigate,
+  viewDimension = '2D',
+  onToggleDimension,
 }) => {
   const { theme, setTheme, themeList, currentTheme } = useTheme();
   const [isThemePickerOpen, setIsThemePickerOpen] = useState(false);
@@ -186,6 +190,33 @@ export const Navbar: React.FC<NavbarProps> = ({
               </div>
             )}
           </div>
+
+          {/* 2D Plan / 3D Model View Toggle */}
+          {onToggleDimension && viewMode === 'single' && (
+            <button
+              onClick={onToggleDimension}
+              className="flex items-center space-x-1.5 px-2.5 py-1 rounded-md text-xs font-medium border transition-all"
+              style={
+                viewDimension === '3D'
+                  ? {
+                      backgroundColor: currentTheme.color,
+                      color: currentTheme.textColor,
+                      borderColor: currentTheme.color,
+                      fontWeight: 700,
+                      boxShadow: `0 0 10px ${currentTheme.glow}`,
+                    }
+                  : {
+                      backgroundColor: '#191F26',
+                      color: '#F3F5F7',
+                      borderColor: '#2A323B',
+                    }
+              }
+              title="Toggle between 2D Top-Down Canvas and 3D Model"
+            >
+              <Sparkles className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">{viewDimension === '3D' ? '3D Active' : '3D View'}</span>
+            </button>
+          )}
 
           {/* Dual Arena View Toggle */}
           <button

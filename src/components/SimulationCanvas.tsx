@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { Siren, Compass, Cpu, Clock, Car } from 'lucide-react';
+import { Siren, Compass, Cpu, Clock, Car, Layers, Sparkles } from 'lucide-react';
 import { Direction, SignalMode, SignalPhase, SignalState } from '../types/simulation';
 import { useTheme } from '../context/ThemeContext';
 
@@ -11,6 +11,7 @@ interface SimulationCanvasProps {
   elapsedTime: number;
   activeVehiclesCount: number;
   freeLeftTurnEnabled: boolean;
+  onSwitchTo3D?: () => void;
 }
 
 export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
@@ -21,6 +22,7 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
   elapsedTime,
   activeVehiclesCount,
   freeLeftTurnEnabled,
+  onSwitchTo3D,
 }) => {
   const { currentTheme } = useTheme();
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -60,8 +62,30 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
       {/* Top Header & Compact Overlay Bar */}
       <div className="w-full flex flex-wrap items-center justify-between gap-2 mb-3 text-xs">
         <div className="flex items-center space-x-2">
-          <span className="w-2 h-2 rounded-full" style={{ backgroundColor: currentTheme.color }} />
-          <span className="font-mono font-bold tracking-wider uppercase text-[#F3F5F7] text-[11px]">
+          {onSwitchTo3D && (
+            <div className="flex items-center space-x-1 bg-[#0B0D10] p-0.5 rounded-lg border border-[#2A323B]">
+              <button
+                className="px-2.5 py-1 rounded-md text-[11px] font-bold shadow-sm transition-colors flex items-center space-x-1"
+                style={{
+                  backgroundColor: currentTheme.color,
+                  color: currentTheme.textColor,
+                }}
+              >
+                <Layers className="w-3 h-3" />
+                <span>2D Plan</span>
+              </button>
+              <button
+                onClick={onSwitchTo3D}
+                className="px-2.5 py-1 rounded-md text-[11px] font-semibold text-[#929DA9] hover:text-[#F3F5F7] transition-colors flex items-center space-x-1"
+                title="Switch to Interactive 3D Model"
+              >
+                <Sparkles className="w-3 h-3 text-[#75B8FF]" />
+                <span>3D Model</span>
+              </button>
+            </div>
+          )}
+          <span className="w-2 h-2 rounded-full hidden sm:inline-block" style={{ backgroundColor: currentTheme.color }} />
+          <span className="font-mono font-bold tracking-wider uppercase text-[#F3F5F7] text-[11px] hidden sm:inline-block">
             FOUR-WAY INTERSECTION — LIVE FEED
           </span>
         </div>

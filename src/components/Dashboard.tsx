@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useSimulation } from '../hooks/useSimulation';
 import { Navbar } from './Navbar';
 import { SimulationCanvas } from './SimulationCanvas';
+import { Simulation3DView } from './Simulation3DView';
 import { TrafficControls } from './TrafficControls';
 import { TrafficSignals } from './TrafficSignals';
 import { StatisticsPanel } from './StatisticsPanel';
@@ -18,12 +19,14 @@ import { useTheme } from '../context/ThemeContext';
 export const Dashboard: React.FC = () => {
   const { currentTheme } = useTheme();
   const [viewMode, setViewMode] = useState<'single' | 'arena'>('single');
+  const [viewDimension, setViewDimension] = useState<'2D' | '3D'>('2D');
   const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
   const [isDemoTourOpen, setIsDemoTourOpen] = useState(false);
   const [isAboutOpen, setIsAboutOpen] = useState(false);
 
   const {
     attachCanvas,
+    engineRef,
     isRunning,
     isPaused,
     spawnRate,
@@ -77,6 +80,8 @@ export const Dashboard: React.FC = () => {
         viewMode={viewMode}
         onToggleViewMode={() => setViewMode((prev) => (prev === 'single' ? 'arena' : 'single'))}
         onNavigate={handleNavigate}
+        viewDimension={viewDimension}
+        onToggleDimension={() => setViewDimension((prev) => (prev === '2D' ? '3D' : '2D'))}
       />
 
       {/* Main Container */}
@@ -132,15 +137,28 @@ export const Dashboard: React.FC = () => {
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
                 {/* Section 4.C: Main Traffic Simulation Canvas (7 cols ~60%) */}
                 <div className="lg:col-span-7 flex flex-col justify-center">
-                  <SimulationCanvas
-                    onCanvasReady={attachCanvas}
-                    currentPhase={phase}
-                    signalMode={signalMode}
-                    signals={signals}
-                    elapsedTime={stats.elapsedTime}
-                    activeVehiclesCount={stats.activeVehicles}
-                    freeLeftTurnEnabled={freeLeftTurn}
-                  />
+                  {viewDimension === '2D' ? (
+                    <SimulationCanvas
+                      onCanvasReady={attachCanvas}
+                      currentPhase={phase}
+                      signalMode={signalMode}
+                      signals={signals}
+                      elapsedTime={stats.elapsedTime}
+                      activeVehiclesCount={stats.activeVehicles}
+                      freeLeftTurnEnabled={freeLeftTurn}
+                      onSwitchTo3D={() => setViewDimension('3D')}
+                    />
+                  ) : (
+                    <Simulation3DView
+                      engine={engineRef.current}
+                      currentPhase={phase}
+                      signals={signals}
+                      elapsedTime={stats.elapsedTime}
+                      activeVehiclesCount={stats.activeVehicles}
+                      freeLeftTurnEnabled={freeLeftTurn}
+                      onSwitchTo2D={() => setViewDimension('2D')}
+                    />
+                  )}
                 </div>
 
                 {/* Section 4.D: Primary Simulator Controls & Approach Signals (5 cols) */}

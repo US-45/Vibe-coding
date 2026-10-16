@@ -146,6 +146,10 @@ export class SimulationEngine {
     return this.adaptiveController.getLastDecision();
   }
 
+  public getVehicles(): Vehicle[] {
+    return this.vehicles;
+  }
+
   public start(): void {
     if (this.isRunning && !this.isPaused) return;
 
