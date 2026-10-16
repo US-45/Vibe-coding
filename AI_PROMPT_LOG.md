@@ -63,6 +63,10 @@ When traffic density was turned up to $4+\text{ veh/sec}$ (as judges will test!)
 - **Category:** Design Systems & User Experience
 - **Description:** Transformed the application interface into a modern Swiss-inspired minimal dark theme (`#0B0D10` primary background, `#12161B` secondary cards, `#C6F36B` lime accents, and restrained `#2A323B` borders). Built a 12-column engineering dashboard with an integrated Hero section, high-accessibility B&W traffic signal shapes (▲ GO, ◆ WAIT, ■ STOP), Signal Intelligence reasoning panel, and deterministic side-by-side benchmark comparison.
 
+### Prompt 7: Theme Customization & Button Harmony
+- **Category:** UI Components & Theming
+- **Description:** Replaced all stark white UI elements and text (`bg-white`, `text-white`) with dynamic theme-reactive tokens. Implemented a client-side reactive Theme Engine supporting 6 curated palettes (Swiss Lime, Cyber Cyan, Signal Emerald, Solar Amber, Hyper Violet, Minimal Mono) with an interactive top-bar Theme Selector, smooth transitions, and glowing button active states.
+
 ---
 
 ## 🔒 PRIVACY BY DEFAULT COMPLIANCE (DPDP ACT, 2023)
