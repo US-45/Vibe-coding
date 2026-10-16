@@ -71,6 +71,10 @@ When traffic density was turned up to $4+\text{ veh/sec}$ (as judges will test!)
 - **Category:** 3D Graphics & Simulation Visualization
 - **Description:** Built a fully synchronized 3D WebGL perspective view of the 4-way Indian intersection using Three.js. Features procedural 3D vehicle models (CNG auto-rickshaws, city transit buses, two-wheelers with riders, sedans, 108 emergency ambulances with dual flashing red/blue strobes), overhead cantilever signal gantries with real-time emissive lighting, raised IRC yellow/black medians, interactive mouse/touch OrbitControls, Day/Dusk/Night ambient lighting modes, and camera view presets (Orbit 45°, Street Eye, Top 90°, Signal Gantry).
 
+### Prompt 9: 3D Model Fidelity & Authentic Indian Urban Realism
+- **Category:** 3D Environment & Procedural Modeling
+- **Description:** Elevated the 3D WebGL simulation into a rich, authentic Indian metropolis intersection. Procedurally constructed four distinct corner architectural complexes (Commercial Banking Tower with HDFC Bank storefront & rooftop Sintex water tanks; Smart Tech Park Tower with rooftop HVAC chillers; Metro Residency Apartments with balconies; Commercial Bazaar with Apollo 24|7 Pharmacy & Chai Point). Installed Indian Roads Congress (IRC) overhead green cantilever highway direction signboards ("MUMBAI / TECH HUB", "FREE LEFT ↱"), an authentic transit bus stop shelter with stainless steel benches, sidewalk shade trees (Neem/Banyan style) and median planters. Engineered dynamic vehicle physics animations including velocity-governed wheel rotations, active rear brake lights that intensify when stopping, downward signal head road illumination, and an additional "Cinematic Corner" camera preset.
+
 ---
 
 ## 🔒 PRIVACY BY DEFAULT COMPLIANCE (DPDP ACT, 2023)
