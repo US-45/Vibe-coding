@@ -1,6 +1,7 @@
 import React from 'react';
 import { Cpu, Clock, Activity, Zap, CheckCircle2, ShieldAlert } from 'lucide-react';
 import { Direction, SignalMode, SignalPhase, SignalState } from '../types/simulation';
+import { useTheme } from '../context/ThemeContext';
 
 interface SignalIntelligencePanelProps {
   currentPhase: SignalPhase;
@@ -21,6 +22,8 @@ export const SignalIntelligencePanel: React.FC<SignalIntelligencePanelProps> = (
   phaseElapsed,
   phaseDuration,
 }) => {
+  const { currentTheme } = useTheme();
+
   const nsQueue = (queues.north || 0) + (queues.south || 0);
   const ewQueue = (queues.east || 0) + (queues.west || 0);
 
@@ -45,7 +48,7 @@ export const SignalIntelligencePanel: React.FC<SignalIntelligencePanelProps> = (
       {/* Header */}
       <div className="flex items-center justify-between border-b border-[#1E252D] pb-2.5">
         <div className="flex items-center space-x-2">
-          <Cpu className="w-4 h-4 text-[#C6F36B]" />
+          <Cpu className="w-4 h-4" style={{ color: currentTheme.color }} />
           <h2 className="text-xs font-bold uppercase tracking-wider text-[#F3F5F7]">
             Signal Intelligence
           </h2>
@@ -78,7 +81,7 @@ export const SignalIntelligencePanel: React.FC<SignalIntelligencePanelProps> = (
             <div className="text-[10px] font-mono uppercase tracking-wider text-[#929DA9]">
               Remaining
             </div>
-            <div className="text-sm font-mono font-bold text-[#C6F36B] tabular-nums">
+            <div className="text-sm font-mono font-bold tabular-nums" style={{ color: currentTheme.color }}>
               {remainingSeconds}s <span className="text-[10px] text-[#929DA9] font-normal">/ {phaseDuration}s</span>
             </div>
           </div>
@@ -87,8 +90,8 @@ export const SignalIntelligencePanel: React.FC<SignalIntelligencePanelProps> = (
         {/* Phase Progress Bar */}
         <div className="w-full h-1.5 bg-[#0B0D10] rounded-full overflow-hidden border border-[#2A323B]/60">
           <div
-            className="h-full bg-[#C6F36B] transition-all duration-200"
-            style={{ width: `${progressPct}%` }}
+            className="h-full transition-all duration-200"
+            style={{ width: `${progressPct}%`, backgroundColor: currentTheme.color }}
           />
         </div>
       </div>
@@ -128,7 +131,7 @@ export const SignalIntelligencePanel: React.FC<SignalIntelligencePanelProps> = (
 
       {/* Decision Rationale / Explanation */}
       <div className="bg-[#0B0D10] border border-[#2A323B] rounded-lg p-2.5 space-y-1">
-        <div className="flex items-center space-x-1.5 text-[10px] font-mono uppercase text-[#C6F36B]">
+        <div className="flex items-center space-x-1.5 text-[10px] font-mono uppercase" style={{ color: currentTheme.color }}>
           <Zap className="w-3 h-3" />
           <span>Controller Rationale:</span>
         </div>

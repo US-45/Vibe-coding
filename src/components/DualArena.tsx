@@ -2,8 +2,10 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Play, Pause, RotateCcw, GitCompare, CheckCircle2 } from 'lucide-react';
 import { SimulationEngine } from '../simulation/engine';
 import { SimulationStats } from '../types/simulation';
+import { useTheme } from '../context/ThemeContext';
 
 export const DualArena: React.FC = () => {
+  const { currentTheme } = useTheme();
   const fixedCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const adaptiveCanvasRef = useRef<HTMLCanvasElement | null>(null);
 
@@ -105,7 +107,12 @@ export const DualArena: React.FC = () => {
           {!isRunning ? (
             <button
               onClick={handleStart}
-              className="py-1.5 px-4 rounded-lg bg-[#C6F36B] hover:bg-[#d6f78b] text-[#0B0D10] font-bold text-xs uppercase tracking-wider transition-all flex items-center space-x-1.5 shadow-sm"
+              className="py-1.5 px-4 rounded-lg font-bold text-xs uppercase tracking-wider transition-all flex items-center space-x-1.5 shadow-sm active:scale-[0.98]"
+              style={{
+                backgroundColor: currentTheme.color,
+                color: currentTheme.textColor,
+                boxShadow: `0 0 12px ${currentTheme.glow}`,
+              }}
             >
               <Play className="w-3.5 h-3.5 fill-current" />
               <span>Launch Both</span>
@@ -113,7 +120,7 @@ export const DualArena: React.FC = () => {
           ) : isPaused ? (
             <button
               onClick={handleResume}
-              className="py-1.5 px-4 rounded-lg bg-[#36D98A] text-[#0B0D10] font-bold text-xs uppercase tracking-wider transition-all flex items-center space-x-1.5"
+              className="py-1.5 px-4 rounded-lg bg-[#36D98A] text-[#0B0D10] font-bold text-xs uppercase tracking-wider transition-all flex items-center space-x-1.5 shadow-sm active:scale-[0.98]"
             >
               <Play className="w-3.5 h-3.5 fill-current" />
               <span>Resume</span>
@@ -121,7 +128,7 @@ export const DualArena: React.FC = () => {
           ) : (
             <button
               onClick={handlePause}
-              className="py-1.5 px-4 rounded-lg bg-[#191F26] border border-[#2A323B] text-white font-bold text-xs uppercase tracking-wider transition-all flex items-center space-x-1.5"
+              className="py-1.5 px-4 rounded-lg bg-[#191F26] border border-[#2A323B] text-[#FFBD59] font-bold text-xs uppercase tracking-wider transition-all flex items-center space-x-1.5 active:scale-[0.98]"
             >
               <Pause className="w-3.5 h-3.5 fill-current" />
               <span>Pause</span>
@@ -130,7 +137,7 @@ export const DualArena: React.FC = () => {
 
           <button
             onClick={handleReset}
-            className="py-1.5 px-3 rounded-lg bg-[#0B0D10] border border-[#2A323B] text-[#929DA9] hover:text-white font-semibold text-xs uppercase tracking-wider transition-all flex items-center space-x-1"
+            className="py-1.5 px-3 rounded-lg bg-[#0B0D10] border border-[#2A323B] text-[#929DA9] hover:text-[#F3F5F7] font-semibold text-xs uppercase tracking-wider transition-all flex items-center space-x-1"
           >
             <RotateCcw className="w-3.5 h-3.5" />
             <span>Reset</span>
@@ -145,9 +152,20 @@ export const DualArena: React.FC = () => {
               <button
                 key={r}
                 onClick={() => handleSpawnRateChange(r)}
-                className={`px-2 py-0.5 rounded text-[10px] font-bold border transition-colors ${
-                  spawnRate === r ? 'bg-[#C6F36B] text-[#0B0D10] border-[#C6F36B]' : 'bg-[#0B0D10] text-[#929DA9] border-[#2A323B]'
-                }`}
+                className="px-2 py-0.5 rounded text-[10px] font-bold border transition-colors"
+                style={
+                  spawnRate === r
+                    ? {
+                        backgroundColor: currentTheme.color,
+                        color: currentTheme.textColor,
+                        borderColor: currentTheme.color,
+                      }
+                    : {
+                        backgroundColor: '#0B0D10',
+                        color: '#929DA9',
+                        borderColor: '#2A323B',
+                      }
+                }
               >
                 {r} v/s
               </button>
@@ -168,7 +186,7 @@ export const DualArena: React.FC = () => {
               <span className="text-xs font-bold text-[#F3F5F7] uppercase tracking-wider">Fixed 15s Cycle</span>
             </div>
             <div className="text-xs font-mono text-[#929DA9]">
-              Passed: <strong className="text-white">{fixedStats?.carsPassed || 0}</strong> | Wait: <strong className="text-white">{fixedStats?.averageWaitTime.toFixed(1) || 0}s</strong>
+              Passed: <strong className="text-[#F3F5F7]">{fixedStats?.carsPassed || 0}</strong> | Wait: <strong className="text-[#F3F5F7]">{fixedStats?.averageWaitTime.toFixed(1) || 0}s</strong>
             </div>
           </div>
 
@@ -198,16 +216,31 @@ export const DualArena: React.FC = () => {
         </div>
 
         {/* Right: Adaptive AI Junction */}
-        <div className="bg-[#12161B] border border-[#C6F36B]/40 rounded-xl p-3.5 shadow-sm space-y-2.5">
+        <div 
+          className="bg-[#12161B] rounded-xl p-3.5 shadow-sm space-y-2.5 border"
+          style={{ borderColor: currentTheme.mutedBorder }}
+        >
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
-              <span className="px-2 py-0.5 rounded bg-[#C6F36B]/15 text-[10px] font-mono font-bold text-[#C6F36B] border border-[#C6F36B]/40">
+              <span 
+                className="px-2 py-0.5 rounded text-[10px] font-mono font-bold border"
+                style={{
+                  backgroundColor: currentTheme.mutedBg,
+                  borderColor: currentTheme.mutedBorder,
+                  color: currentTheme.color,
+                }}
+              >
                 STRATEGY B
               </span>
-              <span className="text-xs font-bold text-[#C6F36B] uppercase tracking-wider">Adaptive Smart Timing</span>
+              <span 
+                className="text-xs font-bold uppercase tracking-wider"
+                style={{ color: currentTheme.color }}
+              >
+                Adaptive Smart Timing
+              </span>
             </div>
-            <div className="text-xs font-mono text-[#C6F36B]">
-              Passed: <strong className="text-white">{adaptiveStats?.carsPassed || 0}</strong> | Wait: <strong className="text-white">{adaptiveStats?.averageWaitTime.toFixed(1) || 0}s</strong>
+            <div className="text-xs font-mono" style={{ color: currentTheme.color }}>
+              Passed: <strong className="text-[#F3F5F7]">{adaptiveStats?.carsPassed || 0}</strong> | Wait: <strong className="text-[#F3F5F7]">{adaptiveStats?.averageWaitTime.toFixed(1) || 0}s</strong>
             </div>
           </div>
 
@@ -223,7 +256,7 @@ export const DualArena: React.FC = () => {
           <div className="grid grid-cols-3 gap-2 text-center text-xs pt-1">
             <div className="bg-[#191F26] p-2 rounded-lg border border-[#2A323B]">
               <div className="text-[10px] font-mono text-[#929DA9] uppercase">Total Cleared</div>
-              <div className="text-lg font-bold font-mono text-[#C6F36B]">{adaptiveStats?.carsPassed || 0}</div>
+              <div className="text-lg font-bold font-mono" style={{ color: currentTheme.color }}>{adaptiveStats?.carsPassed || 0}</div>
             </div>
             <div className="bg-[#191F26] p-2 rounded-lg border border-[#2A323B]">
               <div className="text-[10px] font-mono text-[#929DA9] uppercase">Avg Delay</div>

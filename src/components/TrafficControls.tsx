@@ -7,9 +7,9 @@ import {
   Zap, 
   Siren, 
   CornerUpLeft,
-  FastForward
 } from 'lucide-react';
 import { Direction, SignalMode } from '../types/simulation';
+import { useTheme } from '../context/ThemeContext';
 
 interface TrafficControlsProps {
   isRunning: boolean;
@@ -46,6 +46,7 @@ export const TrafficControls: React.FC<TrafficControlsProps> = ({
   onSetTimeScale,
   onSpawnEmergency,
 }) => {
+  const { currentTheme } = useTheme();
   const [emergencyDir, setEmergencyDir] = useState<Direction>('south');
 
   const presets = [
@@ -60,7 +61,7 @@ export const TrafficControls: React.FC<TrafficControlsProps> = ({
       {/* Header */}
       <div className="flex items-center justify-between border-b border-[#1E252D] pb-2.5">
         <div className="flex items-center space-x-2">
-          <Sliders className="w-4 h-4 text-[#C6F36B]" />
+          <Sliders className="w-4 h-4" style={{ color: currentTheme.color }} />
           <h2 className="text-xs font-bold uppercase tracking-wider text-[#F3F5F7]">
             Simulation Controls
           </h2>
@@ -72,11 +73,18 @@ export const TrafficControls: React.FC<TrafficControlsProps> = ({
             <button
               key={scale}
               onClick={() => onSetTimeScale(scale)}
-              className={`px-2 py-0.5 text-[10px] font-mono font-bold rounded transition-colors ${
+              className="px-2 py-0.5 text-[10px] font-mono font-bold rounded transition-all"
+              style={
                 timeScale === scale
-                  ? 'bg-[#C6F36B] text-[#0B0D10]'
-                  : 'text-[#929DA9] hover:text-white'
-              }`}
+                  ? {
+                      backgroundColor: currentTheme.color,
+                      color: currentTheme.textColor,
+                      boxShadow: `0 0 8px ${currentTheme.glow}`,
+                    }
+                  : {
+                      color: '#929DA9',
+                    }
+              }
             >
               {scale}x
             </button>
@@ -89,7 +97,12 @@ export const TrafficControls: React.FC<TrafficControlsProps> = ({
         {!isRunning ? (
           <button
             onClick={onStart}
-            className="flex items-center justify-center space-x-2 py-2.5 px-4 rounded-lg bg-[#C6F36B] hover:bg-[#d6f78b] text-[#0B0D10] font-bold text-xs uppercase tracking-wider shadow-sm transition-all active:scale-[0.98]"
+            className="flex items-center justify-center space-x-2 py-2.5 px-4 rounded-lg font-bold text-xs uppercase tracking-wider transition-all active:scale-[0.98]"
+            style={{
+              backgroundColor: currentTheme.color,
+              color: currentTheme.textColor,
+              boxShadow: `0 0 14px ${currentTheme.glow}`,
+            }}
           >
             <Play className="w-4 h-4 fill-current" />
             <span>Start Simulation</span>
@@ -105,7 +118,7 @@ export const TrafficControls: React.FC<TrafficControlsProps> = ({
         ) : (
           <button
             onClick={onPause}
-            className="flex items-center justify-center space-x-2 py-2.5 px-4 rounded-lg bg-[#191F26] hover:bg-[#202730] border border-[#2A323B] text-[#F3F5F7] font-bold text-xs uppercase tracking-wider shadow-sm transition-all active:scale-[0.98]"
+            className="flex items-center justify-center space-x-2 py-2.5 px-4 rounded-lg bg-[#191F26] hover:bg-[#202730] border border-[#2A323B] text-[#FFBD59] font-bold text-xs uppercase tracking-wider shadow-sm transition-all active:scale-[0.98]"
           >
             <Pause className="w-4 h-4 fill-current" />
             <span>Pause</span>
@@ -114,7 +127,10 @@ export const TrafficControls: React.FC<TrafficControlsProps> = ({
 
         <button
           onClick={onReset}
-          className="flex items-center justify-center space-x-2 py-2.5 px-4 rounded-lg bg-[#0B0D10] hover:bg-[#191F26] border border-[#2A323B] text-[#929DA9] hover:text-white font-semibold text-xs uppercase tracking-wider transition-all active:scale-[0.98]"
+          className="flex items-center justify-center space-x-2 py-2.5 px-4 rounded-lg bg-[#0B0D10] hover:bg-[#191F26] border border-[#2A323B] text-[#929DA9] hover:text-[#F3F5F7] font-semibold text-xs uppercase tracking-wider transition-all active:scale-[0.98]"
+          style={{
+            borderColor: '#2A323B',
+          }}
         >
           <RotateCcw className="w-3.5 h-3.5" />
           <span>Reset</span>
@@ -129,21 +145,40 @@ export const TrafficControls: React.FC<TrafficControlsProps> = ({
         <div className="grid grid-cols-2 gap-2 p-1 bg-[#0B0D10] rounded-lg border border-[#2A323B]">
           <button
             onClick={() => onSetSignalMode('fixed')}
-            className={`py-2 px-2.5 rounded-md text-xs font-semibold transition-all ${
+            className="py-2 px-2.5 rounded-md text-xs font-semibold transition-all border"
+            style={
               signalMode === 'fixed'
-                ? 'bg-[#191F26] text-white border border-[#2A323B] shadow-sm'
-                : 'text-[#929DA9] hover:text-white'
-            }`}
+                ? {
+                    backgroundColor: currentTheme.mutedBg,
+                    borderColor: currentTheme.mutedBorder,
+                    color: currentTheme.color,
+                  }
+                : {
+                    backgroundColor: 'transparent',
+                    borderColor: 'transparent',
+                    color: '#929DA9',
+                  }
+            }
           >
             Fixed Timing
           </button>
           <button
             onClick={() => onSetSignalMode('adaptive')}
-            className={`py-2 px-2.5 rounded-md text-xs font-bold transition-all flex items-center justify-center space-x-1.5 ${
+            className="py-2 px-2.5 rounded-md text-xs font-bold transition-all flex items-center justify-center space-x-1.5 border"
+            style={
               signalMode === 'adaptive'
-                ? 'bg-[#C6F36B] text-[#0B0D10] shadow-sm'
-                : 'text-[#929DA9] hover:text-white'
-            }`}
+                ? {
+                    backgroundColor: currentTheme.color,
+                    borderColor: currentTheme.color,
+                    color: currentTheme.textColor,
+                    boxShadow: `0 0 10px ${currentTheme.glow}`,
+                  }
+                : {
+                    backgroundColor: 'transparent',
+                    borderColor: 'transparent',
+                    color: '#929DA9',
+                  }
+            }
           >
             <Zap className="w-3 h-3 fill-current" />
             <span>Adaptive Timing</span>
@@ -174,20 +209,33 @@ export const TrafficControls: React.FC<TrafficControlsProps> = ({
 
         {/* Segmented Selector for Low, Medium, High, Extreme */}
         <div className="grid grid-cols-4 gap-1.5">
-          {presets.map((preset) => (
-            <button
-              key={preset.label}
-              onClick={() => onSetSpawnRate(preset.rate)}
-              className={`py-1 px-1 rounded-md text-center transition-colors border ${
-                Math.abs(spawnRate - preset.rate) < 0.1
-                  ? 'bg-[#191F26] text-[#C6F36B] border-[#C6F36B]/50 font-bold'
-                  : 'bg-[#0B0D10] text-[#929DA9] border-[#2A323B] hover:text-white'
-              }`}
-            >
-              <div className="text-[11px] leading-tight">{preset.label}</div>
-              <div className="text-[9px] font-mono text-[#929DA9] opacity-75">{preset.desc}</div>
-            </button>
-          ))}
+          {presets.map((preset) => {
+            const isSelected = Math.abs(spawnRate - preset.rate) < 0.1;
+            return (
+              <button
+                key={preset.label}
+                onClick={() => onSetSpawnRate(preset.rate)}
+                className="py-1 px-1 rounded-md text-center transition-all border"
+                style={
+                  isSelected
+                    ? {
+                        backgroundColor: currentTheme.mutedBg,
+                        borderColor: currentTheme.color,
+                        color: currentTheme.color,
+                        fontWeight: 700,
+                      }
+                    : {
+                        backgroundColor: '#0B0D10',
+                        borderColor: '#2A323B',
+                        color: '#929DA9',
+                      }
+                }
+              >
+                <div className="text-[11px] leading-tight">{preset.label}</div>
+                <div className="text-[9px] font-mono opacity-80">{preset.desc}</div>
+              </button>
+            );
+          })}
         </div>
       </div>
 
@@ -204,14 +252,18 @@ export const TrafficControls: React.FC<TrafficControlsProps> = ({
           </div>
           <button
             onClick={onToggleFreeLeftTurn}
-            className={`relative inline-flex h-5 w-10 items-center rounded-full transition-colors ${
-              freeLeftTurn ? 'bg-[#36D98A]' : 'bg-[#2A323B]'
-            }`}
+            className="relative inline-flex h-5 w-10 items-center rounded-full transition-colors"
+            style={{
+              backgroundColor: freeLeftTurn ? currentTheme.color : '#2A323B',
+            }}
           >
             <span
-              className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform ${
+              className={`inline-block h-3.5 w-3.5 transform rounded-full transition-transform ${
                 freeLeftTurn ? 'translate-x-5' : 'translate-x-1'
               }`}
+              style={{
+                backgroundColor: freeLeftTurn ? currentTheme.textColor : '#929DA9',
+              }}
             />
           </button>
         </div>
@@ -237,7 +289,7 @@ export const TrafficControls: React.FC<TrafficControlsProps> = ({
 
           <button
             onClick={() => onSpawnEmergency(emergencyDir)}
-            className="w-full py-1.5 px-3 rounded-lg bg-[#191F26] hover:bg-[#202730] text-[#FF6268] hover:text-white text-xs font-semibold uppercase tracking-wider border border-[#FF6268]/40 hover:border-[#FF6268] transition-all flex items-center justify-center space-x-2"
+            className="w-full py-2 px-3 rounded-lg bg-[#191F26] hover:bg-[#FF6268]/15 text-[#FF6268] text-xs font-semibold uppercase tracking-wider border border-[#FF6268]/40 hover:border-[#FF6268] transition-all flex items-center justify-center space-x-2"
           >
             <Siren className="w-3.5 h-3.5" />
             <span>Dispatch 108 Ambulance</span>

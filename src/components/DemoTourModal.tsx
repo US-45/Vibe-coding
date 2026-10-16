@@ -12,6 +12,7 @@ import {
   Sliders, 
   FileText 
 } from 'lucide-react';
+import { useTheme } from '../context/ThemeContext';
 
 interface DemoTourModalProps {
   isOpen: boolean;
@@ -28,6 +29,7 @@ export const DemoTourModal: React.FC<DemoTourModalProps> = ({
   onTriggerAdaptive,
   onTriggerAmbulance,
 }) => {
+  const { currentTheme } = useTheme();
   const [currentStep, setCurrentStep] = useState(0);
 
   if (!isOpen) return null;
@@ -49,7 +51,7 @@ export const DemoTourModal: React.FC<DemoTourModalProps> = ({
       title: '2. Must-Haves Verification',
       summary: 'Spawning, Signals, Queueing without overlap, Live Telemetry, Controls',
       points: [
-        'Four-way junction drawn with crisp HTML5 Canvas and Asphalt Noir dark automotive aesthetic.',
+        'Four-way junction drawn with crisp HTML5 Canvas and minimal Swiss aesthetic.',
         'Signals cycle through Green, Amber, Red with countdowns and B&W accessibility symbols (▲ GO, ◆ WAIT, ■ STOP).',
         'Cars stop at red, queue without any overlapping, and cross safely on green with zero middle-of-junction collisions.',
         'Live statistics update in real-time: Cars Passed, Average Waiting Time, Active Vehicles, Directional Queues.',
@@ -116,8 +118,14 @@ export const DemoTourModal: React.FC<DemoTourModalProps> = ({
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-[#1E252D] bg-[#191F26]">
           <div className="flex items-center space-x-2.5">
-            <div className="w-8 h-8 rounded-lg bg-[#C6F36B]/15 border border-[#C6F36B]/40 flex items-center justify-center">
-              <Sparkles className="w-4 h-4 text-[#C6F36B]" />
+            <div 
+              className="w-8 h-8 rounded-lg border flex items-center justify-center"
+              style={{
+                backgroundColor: currentTheme.mutedBg,
+                borderColor: currentTheme.mutedBorder,
+              }}
+            >
+              <Sparkles className="w-4 h-4" style={{ color: currentTheme.color }} />
             </div>
             <div>
               <h2 className="text-sm font-bold text-[#F3F5F7] uppercase tracking-wider">
@@ -128,7 +136,7 @@ export const DemoTourModal: React.FC<DemoTourModalProps> = ({
           </div>
           <button
             onClick={onClose}
-            className="w-7 h-7 rounded-lg bg-[#12161B] hover:bg-[#2A323B] text-[#929DA9] hover:text-white flex items-center justify-center transition-colors"
+            className="w-7 h-7 rounded-lg bg-[#12161B] hover:bg-[#2A323B] text-[#929DA9] hover:text-[#F3F5F7] flex items-center justify-center transition-colors"
           >
             <X className="w-4 h-4" />
           </button>
@@ -138,7 +146,10 @@ export const DemoTourModal: React.FC<DemoTourModalProps> = ({
         <div className="p-6 space-y-4 text-xs">
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-bold text-[#F3F5F7]">{current.title}</h3>
-            <span className="font-mono text-xs px-2.5 py-0.5 rounded bg-[#191F26] text-[#C6F36B] border border-[#2A323B]">
+            <span 
+              className="font-mono text-xs px-2.5 py-0.5 rounded bg-[#191F26] border border-[#2A323B]"
+              style={{ color: currentTheme.color }}
+            >
               {current.time}
             </span>
           </div>
@@ -159,9 +170,14 @@ export const DemoTourModal: React.FC<DemoTourModalProps> = ({
             <div className="pt-1">
               <button
                 onClick={current.action.onClick}
-                className="w-full py-2.5 px-4 rounded-lg bg-[#C6F36B] hover:bg-[#d6f78b] text-[#0B0D10] font-bold text-xs uppercase tracking-wider transition-all shadow-sm flex items-center justify-center space-x-2"
+                className="w-full py-2.5 px-4 rounded-lg font-bold text-xs uppercase tracking-wider transition-all shadow-sm flex items-center justify-center space-x-2 active:scale-[0.98]"
+                style={{
+                  backgroundColor: currentTheme.color,
+                  color: currentTheme.textColor,
+                  boxShadow: `0 0 12px ${currentTheme.glow}`,
+                }}
               >
-                <Zap className="w-3.5 h-3.5 fill-[#0B0D10]" />
+                <Zap className="w-3.5 h-3.5 fill-current" />
                 <span>{current.action.label}</span>
               </button>
             </div>
@@ -184,9 +200,11 @@ export const DemoTourModal: React.FC<DemoTourModalProps> = ({
               <button
                 key={i}
                 onClick={() => setCurrentStep(i)}
-                className={`w-2 h-2 rounded-full transition-all ${
-                  i === currentStep ? 'bg-[#C6F36B] w-5' : 'bg-[#2A323B]'
-                }`}
+                className="w-2 h-2 rounded-full transition-all"
+                style={{
+                  backgroundColor: i === currentStep ? currentTheme.color : '#2A323B',
+                  width: i === currentStep ? '20px' : '8px',
+                }}
               />
             ))}
           </div>
@@ -194,7 +212,11 @@ export const DemoTourModal: React.FC<DemoTourModalProps> = ({
           {currentStep < steps.length - 1 ? (
             <button
               onClick={() => setCurrentStep((prev) => Math.min(steps.length - 1, prev + 1))}
-              className="px-3 py-1.5 rounded-lg bg-[#C6F36B] hover:bg-[#d6f78b] text-xs font-bold text-[#0B0D10] flex items-center space-x-1 transition-colors"
+              className="px-3 py-1.5 rounded-lg text-xs font-bold flex items-center space-x-1 transition-colors shadow-sm"
+              style={{
+                backgroundColor: currentTheme.color,
+                color: currentTheme.textColor,
+              }}
             >
               <span>Next</span>
               <ChevronRight className="w-3.5 h-3.5" />

@@ -13,8 +13,10 @@ import { PrivacyModal } from './PrivacyModal';
 import { DemoTourModal } from './DemoTourModal';
 import { AboutModal } from './AboutModal';
 import { Activity, Cpu, Sparkles, ShieldCheck } from 'lucide-react';
+import { useTheme } from '../context/ThemeContext';
 
 export const Dashboard: React.FC = () => {
+  const { currentTheme } = useTheme();
   const [viewMode, setViewMode] = useState<'single' | 'arena'>('single');
   const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
   const [isDemoTourOpen, setIsDemoTourOpen] = useState(false);
@@ -82,8 +84,11 @@ export const Dashboard: React.FC = () => {
         {/* Section 4.B: Hero and Introduction */}
         <section className="flex flex-wrap items-end justify-between gap-4 border-b border-[#2A323B] pb-6">
           <div className="space-y-1.5">
-            <div className="flex items-center space-x-2 text-[#C6F36B] font-mono text-xs uppercase tracking-widest font-semibold">
-              <span className="w-2 h-0.5 bg-[#C6F36B]" />
+            <div 
+              className="flex items-center space-x-2 font-mono text-xs uppercase tracking-widest font-semibold"
+              style={{ color: currentTheme.color }}
+            >
+              <span className="w-2 h-0.5" style={{ backgroundColor: currentTheme.color }} />
               <span>URBAN MOBILITY / SIMULATION LAB</span>
             </div>
             <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-[#F3F5F7]">
@@ -110,9 +115,11 @@ export const Dashboard: React.FC = () => {
             </div>
 
             <div className="px-3 py-1.5 rounded-lg bg-[#12161B] border border-[#2A323B] flex items-center space-x-2">
-              <Cpu className="w-3.5 h-3.5 text-[#C6F36B]" />
+              <Cpu className="w-3.5 h-3.5" style={{ color: currentTheme.color }} />
               <span className="text-[#929DA9]">Logic:</span>
-              <span className="font-bold text-[#C6F36B] uppercase">{signalMode === 'adaptive' ? 'Actuated' : 'Fixed'}</span>
+              <span className="font-bold uppercase" style={{ color: currentTheme.color }}>
+                {signalMode === 'adaptive' ? 'Actuated' : 'Fixed'}
+              </span>
             </div>
           </div>
         </section>
@@ -190,7 +197,10 @@ export const Dashboard: React.FC = () => {
             {/* Section 4.G & 4.H: Comparison & Analytics Section */}
             <section id="analytics-section" className="space-y-4 pt-4 border-t border-[#2A323B]">
               <div className="space-y-1">
-                <div className="text-[10px] font-mono uppercase tracking-widest text-[#C6F36B] font-semibold">
+                <div 
+                  className="text-[10px] font-mono uppercase tracking-widest font-semibold"
+                  style={{ color: currentTheme.color }}
+                >
                   REAL-TIME COMPARISON & BENCHMARKING
                 </div>
                 <h2 className="text-2xl font-bold tracking-tight text-[#F3F5F7]">
@@ -235,7 +245,14 @@ export const Dashboard: React.FC = () => {
           <div className="flex items-center space-x-2.5">
             {/* Custom geometric mark */}
             <div className="w-5 h-5 rounded bg-[#191F26] border border-[#2A323B] flex items-center justify-center p-1">
-              <svg className="w-full h-full text-[#C6F36B]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <svg 
+                className="w-full h-full" 
+                style={{ color: currentTheme.color }}
+                viewBox="0 0 24 24" 
+                fill="none" 
+                stroke="currentColor" 
+                strokeWidth="2.5"
+              >
                 <path d="M12 3v18M3 12h18" />
               </svg>
             </div>
@@ -254,7 +271,8 @@ export const Dashboard: React.FC = () => {
             <span>•</span>
             <button
               onClick={() => setIsAboutOpen(true)}
-              className="text-[#C6F36B] hover:underline"
+              className="hover:underline font-medium"
+              style={{ color: currentTheme.color }}
             >
               About System
             </button>

@@ -1,5 +1,6 @@
 import React from 'react';
 import { X, ShieldCheck, Lock, CheckCircle2, EyeOff, ServerOff } from 'lucide-react';
+import { useTheme } from '../context/ThemeContext';
 
 interface PrivacyModalProps {
   isOpen: boolean;
@@ -7,6 +8,8 @@ interface PrivacyModalProps {
 }
 
 export const PrivacyModal: React.FC<PrivacyModalProps> = ({ isOpen, onClose }) => {
+  const { currentTheme } = useTheme();
+
   if (!isOpen) return null;
 
   return (
@@ -27,7 +30,7 @@ export const PrivacyModal: React.FC<PrivacyModalProps> = ({ isOpen, onClose }) =
           </div>
           <button
             onClick={onClose}
-            className="w-7 h-7 rounded-lg bg-[#12161B] hover:bg-[#2A323B] text-[#929DA9] hover:text-white flex items-center justify-center transition-colors"
+            className="w-7 h-7 rounded-lg bg-[#12161B] hover:bg-[#2A323B] text-[#929DA9] hover:text-[#F3F5F7] flex items-center justify-center transition-colors"
           >
             <X className="w-4 h-4" />
           </button>
@@ -67,7 +70,12 @@ export const PrivacyModal: React.FC<PrivacyModalProps> = ({ isOpen, onClose }) =
           <div className="pt-2">
             <button
               onClick={onClose}
-              className="w-full py-2.5 rounded-lg bg-[#C6F36B] hover:bg-[#d6f78b] text-[#0B0D10] font-bold uppercase tracking-wider text-xs transition-colors shadow-sm"
+              className="w-full py-2.5 rounded-lg font-bold uppercase tracking-wider text-xs transition-colors shadow-sm"
+              style={{
+                backgroundColor: currentTheme.color,
+                color: currentTheme.textColor,
+                boxShadow: `0 0 12px ${currentTheme.glow}`,
+              }}
             >
               Acknowledge & Close
             </button>

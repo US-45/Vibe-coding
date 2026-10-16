@@ -1,12 +1,15 @@
 import React from 'react';
 import { BarChart3, Car, Clock, Activity, Users } from 'lucide-react';
 import { Direction, SimulationStats } from '../types/simulation';
+import { useTheme } from '../context/ThemeContext';
 
 interface StatisticsPanelProps {
   stats: SimulationStats;
 }
 
 export const StatisticsPanel: React.FC<StatisticsPanelProps> = ({ stats }) => {
+  const { currentTheme } = useTheme();
+
   const directions: { dir: Direction; label: string }[] = [
     { dir: 'north', label: 'North' },
     { dir: 'south', label: 'South' },
@@ -19,7 +22,7 @@ export const StatisticsPanel: React.FC<StatisticsPanelProps> = ({ stats }) => {
       {/* Header */}
       <div className="flex items-center justify-between border-b border-[#1E252D] pb-2.5">
         <div className="flex items-center space-x-2">
-          <BarChart3 className="w-4 h-4 text-[#C6F36B]" />
+          <BarChart3 className="w-4 h-4" style={{ color: currentTheme.color }} />
           <h2 className="text-xs font-bold uppercase tracking-wider text-[#F3F5F7]">
             Live Traffic Metrics
           </h2>
@@ -48,9 +51,9 @@ export const StatisticsPanel: React.FC<StatisticsPanelProps> = ({ stats }) => {
         <div className="bg-[#191F26] border border-[#2A323B] rounded-lg p-3">
           <div className="flex items-center justify-between text-[#929DA9] mb-1">
             <span className="text-[10px] font-mono uppercase tracking-wider">Average Wait</span>
-            <Clock className="w-3.5 h-3.5 text-[#C6F36B]" />
+            <Clock className="w-3.5 h-3.5" style={{ color: currentTheme.color }} />
           </div>
-          <div className="text-2xl font-bold text-[#C6F36B] font-mono tabular-nums">
+          <div className="text-2xl font-bold font-mono tabular-nums" style={{ color: currentTheme.color }}>
             {stats.averageWaitTime.toFixed(1)}<span className="text-xs text-[#929DA9] ml-1">s</span>
           </div>
           <div className="text-[10px] text-[#929DA9] mt-0.5">Per cleared vehicle</div>

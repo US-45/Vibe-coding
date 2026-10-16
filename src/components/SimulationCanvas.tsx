@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { Siren, Compass, Cpu, Clock, Car } from 'lucide-react';
 import { Direction, SignalMode, SignalPhase, SignalState } from '../types/simulation';
+import { useTheme } from '../context/ThemeContext';
 
 interface SimulationCanvasProps {
   onCanvasReady: (canvas: HTMLCanvasElement | null) => void;
@@ -21,6 +22,7 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
   activeVehiclesCount,
   freeLeftTurnEnabled,
 }) => {
+  const { currentTheme } = useTheme();
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   useEffect(() => {
@@ -58,7 +60,7 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
       {/* Top Header & Compact Overlay Bar */}
       <div className="w-full flex flex-wrap items-center justify-between gap-2 mb-3 text-xs">
         <div className="flex items-center space-x-2">
-          <span className="w-2 h-2 rounded-full bg-[#C6F36B]" />
+          <span className="w-2 h-2 rounded-full" style={{ backgroundColor: currentTheme.color }} />
           <span className="font-mono font-bold tracking-wider uppercase text-[#F3F5F7] text-[11px]">
             FOUR-WAY INTERSECTION — LIVE FEED
           </span>
@@ -70,7 +72,7 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
             PHASE: <strong className="text-[#F3F5F7]">{phaseDisplay}</strong>
           </span>
           <span className="px-2 py-0.5 rounded bg-[#191F26] border border-[#2A323B] text-[#929DA9]">
-            TIME: <strong className="text-[#C6F36B]">{formatTime(elapsedTime)}</strong>
+            TIME: <strong style={{ color: currentTheme.color }}>{formatTime(elapsedTime)}</strong>
           </span>
           <span className="px-2 py-0.5 rounded bg-[#191F26] border border-[#2A323B] text-[#929DA9]">
             ON GRID: <strong className="text-[#F3F5F7]">{activeVehiclesCount}</strong>
@@ -142,7 +144,7 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
             <span>Bike</span>
           </div>
           <div className="flex items-center space-x-1">
-            <span className="w-3 h-2 rounded-sm bg-white border border-red-500 inline-block" />
+            <span className="w-3 h-2 rounded-sm bg-[#F1F5F9] border border-[#FF6268] inline-block" />
             <span>108 Amb</span>
           </div>
         </div>

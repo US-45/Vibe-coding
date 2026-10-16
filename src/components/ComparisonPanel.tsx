@@ -20,6 +20,7 @@ import {
 } from 'recharts';
 import { SimulationEngine } from '../simulation/engine';
 import { SimulationStats } from '../types/simulation';
+import { useTheme } from '../context/ThemeContext';
 
 interface ComparisonPanelProps {
   currentStats: SimulationStats;
@@ -49,6 +50,7 @@ interface BenchmarkResult {
 }
 
 export const ComparisonPanel: React.FC<ComparisonPanelProps> = ({ currentStats }) => {
+  const { currentTheme } = useTheme();
   const [isBenchmarking, setIsBenchmarking] = useState(false);
   const [benchmarkResult, setBenchmarkResult] = useState<BenchmarkResult | null>(null);
 
@@ -146,7 +148,12 @@ export const ComparisonPanel: React.FC<ComparisonPanelProps> = ({ currentStats }
         <button
           onClick={runControlledBenchmark}
           disabled={isBenchmarking}
-          className="flex items-center space-x-2 px-3.5 py-2 rounded-lg bg-[#C6F36B] hover:bg-[#d6f78b] text-[#0B0D10] font-bold text-xs uppercase tracking-wider transition-all disabled:opacity-50 shadow-sm"
+          className="flex items-center space-x-2 px-3.5 py-2 rounded-lg font-bold text-xs uppercase tracking-wider transition-all disabled:opacity-50 shadow-sm active:scale-[0.98]"
+          style={{
+            backgroundColor: currentTheme.color,
+            color: currentTheme.textColor,
+            boxShadow: `0 0 12px ${currentTheme.glow}`,
+          }}
         >
           {isBenchmarking ? (
             <>
@@ -257,8 +264,8 @@ export const ComparisonPanel: React.FC<ComparisonPanelProps> = ({ currentStats }
                 <AreaChart data={chartData} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
                   <defs>
                     <linearGradient id="waitGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#C6F36B" stopOpacity={0.35} />
-                      <stop offset="95%" stopColor="#C6F36B" stopOpacity={0} />
+                      <stop offset="5%" stopColor={currentTheme.color} stopOpacity={0.35} />
+                      <stop offset="95%" stopColor={currentTheme.color} stopOpacity={0} />
                     </linearGradient>
                     <linearGradient id="queueGrad" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="5%" stopColor="#75B8FF" stopOpacity={0.25} />
@@ -280,7 +287,7 @@ export const ComparisonPanel: React.FC<ComparisonPanelProps> = ({ currentStats }
                     type="monotone"
                     dataKey="wait"
                     name="Avg Wait (s)"
-                    stroke="#C6F36B"
+                    stroke={currentTheme.color}
                     strokeWidth={2}
                     fillOpacity={1}
                     fill="url(#waitGrad)"

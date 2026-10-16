@@ -8,13 +8,20 @@
   --surface-primary: #12161B;
   --surface-elevated: #191F26;
   --border-subtle: #2A323B;
-  --accent-lime: #C6F36B;
-  --accent-blue: #75B8FF;
   --text-primary: #F3F5F7;
   --text-secondary: #929DA9;
   --signal-green: #36D98A;
   --signal-amber: #FFBD59;
   --signal-red: #FF6268;
+  --accent-blue: #75B8FF;
+
+  /* Dynamic Theme Tokens */
+  --theme-accent: #C6F36B;
+  --theme-accent-hover: #D6F78B;
+  --theme-accent-text: #0B0D10;
+  --theme-accent-muted: rgba(198, 243, 107, 0.12);
+  --theme-accent-border: rgba(198, 243, 107, 0.35);
+  --theme-accent-glow: rgba(198, 243, 107, 0.4);
 }
 
 body {
@@ -68,25 +75,46 @@ body {
   border-radius: 10px;
 }
 
-/* Lime accent glow & button */
-.btn-lime {
-  background-color: #C6F36B;
-  color: #0B0D10;
+/* Dynamic Theme Button Utilities */
+.btn-theme-primary {
+  background-color: var(--theme-accent);
+  color: var(--theme-accent-text);
   font-weight: 700;
+  border-radius: 8px;
+  transition: all 0.15s ease;
+  box-shadow: 0 0 12px var(--theme-accent-glow);
+}
+
+.btn-theme-primary:hover {
+  background-color: var(--theme-accent-hover);
+  transform: translateY(-1px);
+}
+
+.btn-theme-primary:active {
+  transform: translateY(0);
+}
+
+.btn-theme-secondary {
+  background-color: #12161B;
+  color: var(--text-primary);
+  border: 1px solid #2A323B;
   border-radius: 8px;
   transition: all 0.15s ease;
 }
 
-.btn-lime:hover {
-  background-color: #D6F78B;
-  transform: translateY(-1px);
-}
-
-.btn-lime:active {
-  transform: translateY(0);
+.btn-theme-secondary:hover {
+  background-color: #191F26;
+  border-color: var(--theme-accent-border);
+  color: var(--theme-accent);
 }
 
 /* Range input styling */
 input[type="range"] {
-  accent-color: #C6F36B;
+  accent-color: var(--theme-accent);
+}
+
+/* Interactive selection */
+::selection {
+  background-color: var(--theme-accent);
+  color: var(--theme-accent-text);
 }
