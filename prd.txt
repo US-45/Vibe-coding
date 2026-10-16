@@ -1,0 +1,597 @@
+# Product Requirements Document (PRD)
+# Traffic Junction Simulator — SmartJunction
+
+**Project Name:** SmartJunction  
+**Project Type:** Browser-Based Traffic Simulation and Signal Optimization  
+**Hackathon Category:** Hard  
+**Platform:** Desktop Web Browser  
+**Target Users:** Hackathon judges, students, traffic management enthusiasts  
+**Version:** 1.0
+
+---
+
+## 1. Product Overview
+
+SmartJunction is an interactive, browser-based traffic simulation that models a four-way signalized road junction inspired by real Indian traffic conditions.
+
+Users can control traffic density, observe vehicles moving through the junction, monitor traffic statistics, and compare fixed signal timing with an adaptive traffic signal system.
+
+The simulator must demonstrate realistic vehicle movement, proper queue formation, safe intersection crossing, and measurable improvements when adaptive signal control is enabled.
+
+The application will run entirely in the browser using HTML, CSS, JavaScript, and the HTML Canvas API. It will not require a backend, paid API keys, locally installed AI models, or personal information.
+
+### Product Vision
+
+Build a visually engaging and technically reliable traffic simulator that demonstrates how intelligent signal timing can reduce congestion and vehicle waiting time at busy Indian intersections.
+
+### Core Value Proposition
+
+**Visualize traffic congestion, experiment with signal timing, and prove whether adaptive traffic signals improve traffic flow through measurable results.**
+
+---
+
+## 2. Problem Statement
+
+Traditional traffic signals often use fixed timing regardless of the number of vehicles waiting in each direction.
+
+This can cause:
+- Long queues on busy roads.
+- Unnecessary waiting on roads with little traffic.
+- Increased average vehicle waiting time.
+- Uneven traffic flow between directions.
+- Congestion during high traffic demand.
+
+SmartJunction simulates these problems and provides an adaptive signal mode that allocates green time according to queue lengths.
+
+The simulator will compare both approaches under identical traffic conditions to evaluate their effectiveness.
+
+---
+
+## 3. Product Goals
+
+1. Simulate a functioning four-way signalized junction.
+2. Support vehicle spawning from all four directions.
+3. Prevent vehicles from overlapping while waiting in queues.
+4. Prevent conflicting vehicles from entering or colliding within the intersection.
+5. Display real-time traffic signals and readable signal states.
+6. Measure vehicles passed, average waiting time, and queue lengths.
+7. Allow users to pause, resume, and reset the simulation.
+8. Compare fixed and adaptive signal timing using measurable statistics.
+9. Deliver a polished, responsive, demo-ready interface.
+
+### Non-Goals
+
+- Real-world traffic prediction using live traffic data.
+- Integration with actual traffic signals or surveillance cameras.
+- Machine learning model training.
+- Backend databases or cloud deployment requirements.
+- Physically accurate vehicle dynamics.
+
+---
+
+## 4. Target Users
+
+### Primary User: Hackathon Judge
+
+Wants to verify that all required features work, test high traffic density, and evaluate the adaptive mode.
+
+### Secondary User: Student or Developer
+
+Wants to understand how traffic signal timing affects congestion and experiment with different simulation parameters.
+
+### Tertiary User: Traffic Planning Enthusiast
+
+Wants to observe traffic patterns and compare different signal control strategies.
+
+---
+
+## 5. Core User Journey
+
+1. The user opens SmartJunction in a browser.
+2. The dashboard displays a four-way intersection with traffic signals and vehicles.
+3. The user selects a traffic spawn rate.
+4. The user starts the simulation.
+5. Vehicles spawn from all four directions and form queues at red signals.
+6. Vehicles move through the intersection when their signals permit entry.
+7. Live statistics update as vehicles move and wait.
+8. The user switches between fixed and adaptive signal timing.
+9. The user compares traffic throughput, waiting time, and congestion.
+10. The user pauses or resets the simulation to run another experiment.
+
+---
+
+## 6. Functional Requirements
+
+### FR-01: Four-Way Junction Canvas
+
+**Priority: Must-have**
+
+- Render a top-down four-way road intersection using HTML Canvas.
+- Include north, south, east, and west approaches.
+- Draw road lanes, stop lines, lane markings, and the central intersection.
+- Display vehicle sprites or simple vehicle shapes.
+- Show traffic signals for all four directions.
+- Include clear visual separation between roads and the intersection.
+- Ensure that vehicles, signals, and road markings remain readable at desktop resolution.
+
+### FR-02: Vehicle Spawning and Traffic Density
+
+**Priority: Must-have**
+
+- Spawn cars from all four directions.
+- Provide a user-controlled spawn rate.
+- Allow the user to increase or decrease traffic density during the simulation.
+- Spawn vehicles at controlled intervals rather than placing them randomly without spacing constraints.
+- Maintain safe distances between vehicles.
+- Prevent newly spawned vehicles from overlapping existing vehicles.
+- Use deterministic or seeded spawning when comparing different signal strategies.
+
+**Suggested traffic density control:**
+- Low: 1 vehicle per second overall.
+- Medium: 2 vehicles per second overall.
+- High: 4 vehicles per second overall.
+- Extreme: 6 vehicles per second overall.
+
+These values are initial configuration targets and may be adjusted after testing.
+
+### FR-03: Traffic Signal System
+
+**Priority: Must-have**
+
+Each direction must have a signal with three states:
+
+- Green: Vehicles may enter the intersection when it is safe.
+- Amber: Vehicles must not begin entering the intersection; vehicles already committed to crossing may finish.
+- Red: Vehicles must stop before the stop line.
+
+Requirements:
+- Signals must cycle automatically.
+- Display the current state using both color and text or shapes.
+- Use labels such as GO, WAIT, and STOP or equivalent visual indicators.
+- Display the remaining time in the current signal phase.
+- Prevent conflicting traffic movements from receiving permission to enter the intersection simultaneously.
+- Enforce a short all-red clearance period when switching between conflicting traffic phases.
+
+### FR-04: Vehicle Movement and Queue Management
+
+**Priority: Must-have**
+
+- Vehicles must move forward along their designated lanes.
+- Vehicles must stop before the stop line when their signal does not permit entry.
+- Vehicles must queue behind one another without overlapping.
+- Vehicles must accelerate or decelerate smoothly enough to avoid abrupt movement.
+- Vehicles must enter the intersection only when the signal allows it and the crossing path is clear.
+- Vehicles must leave the intersection through a valid outgoing path.
+- Vehicles must not disappear simply because a signal changes.
+- Vehicles already committed to crossing must be allowed to clear the junction safely.
+
+**Movement rules:**
+1. Every vehicle maintains a target position and safe following distance.
+2. A vehicle cannot move beyond its permitted stop position on red or amber.
+3. A vehicle may enter the intersection only when its movement is authorized.
+4. Conflicting crossing paths must never be occupied simultaneously.
+5. Vehicles must remain in their assigned lanes.
+6. The simulation must handle long queues without vehicle overlap.
+
+### FR-05: Live Traffic Statistics
+
+**Priority: Must-have**
+
+Display a dashboard containing:
+
+**Cars Passed**
+- Total number of vehicles that successfully exit the intersection.
+
+**Average Waiting Time**
+- Average time vehicles spend stopped or waiting for permission to proceed.
+- Use a consistent definition throughout the simulation.
+- Track waiting time per vehicle and aggregate it when vehicles finish their journeys.
+
+**Current Queue Length**
+- Number of vehicles waiting in each approach.
+- Display separate values for north, south, east, and west.
+- Update values continuously.
+
+Additional useful metrics:
+- Vehicles currently on the road.
+- Simulation elapsed time.
+- Current signal mode.
+- Maximum queue length observed.
+
+All metrics must update during the simulation and reset correctly when the user resets it.
+
+### FR-06: Simulation Controls
+
+**Priority: Must-have**
+
+Provide the following controls:
+
+- Start: Begin or restart a stopped simulation.
+- Pause: Freeze vehicle movement, signal timers, and simulation time.
+- Resume: Continue from the exact paused state.
+- Reset: Clear vehicles, queues, timers, counters, and accumulated statistics.
+- Traffic Density: Adjust the vehicle spawn rate.
+- Signal Mode: Select fixed or adaptive timing.
+
+Reset must initialize the application to a clean state without reloading the browser page.
+
+### FR-07: Fixed Signal Mode
+
+**Priority: Must-have**
+
+- Use predetermined green, amber, and red durations.
+- Maintain a predictable signal sequence.
+- Use the same signal timings across repeated tests.
+- Ensure opposing compatible traffic can move together when safe.
+- Record statistics for performance comparison.
+
+Initial configurable timing targets:
+- Green: 15 seconds.
+- Amber: 3 seconds.
+- All-red clearance: 1 second.
+
+These are simulation parameters, not claims about official Indian signal standards.
+
+### FR-08: Adaptive Signal Mode
+
+**Priority: Stretch Goal — High Priority**
+
+Adaptive mode allocates green time based on observed queue lengths.
+
+Requirements:
+- Measure the queue length for each eligible traffic phase.
+- Give longer green time to phases with longer queues.
+- Reduce green time for directions with little or no traffic.
+- Enforce minimum and maximum green durations.
+- Prevent rapid or unsafe signal switching.
+- Preserve amber and all-red clearance phases.
+- Display why a phase was selected, such as "North-South queue: 12 vehicles."
+
+Suggested initial parameters:
+- Minimum green: 5 seconds.
+- Maximum green: 30 seconds.
+- Amber: 3 seconds.
+- All-red clearance: 1 second.
+
+Adaptive timing should be based on actual queue data, not randomly generated values.
+
+### FR-09: Side-by-Side Performance Comparison
+
+**Priority: Stretch Goal — High Priority**
+
+Provide a comparison between fixed and adaptive signal control.
+
+Compare:
+- Total vehicles passed.
+- Average waiting time.
+- Average or final queue length.
+- Maximum queue length.
+- Total simulation duration.
+
+Both modes should be evaluated under equivalent conditions:
+- Same traffic arrival rate.
+- Same directional traffic distribution.
+- Same simulation duration or vehicle demand.
+- Same initial conditions where possible.
+
+Prefer running two independent simulations using the same seeded traffic arrivals. This avoids misleading comparisons caused by different random traffic patterns.
+
+Display the results using a simple table, bar chart, or metric cards.
+
+Highlight whether adaptive mode improved or worsened each metric. Never claim improvement unless the measured results support it.
+
+### FR-10: Free Left Turn
+
+**Priority: Stretch Goal**
+
+- Allow vehicles making designated left turns to bypass the normal signal queue when safe.
+- Use a clearly marked left-turn path.
+- Check for conflicts with pedestrians or other simulated vehicle paths if those elements are implemented.
+- Prevent free-turning vehicles from crossing active conflicting traffic.
+- Add a toggle to enable or disable the feature.
+
+This feature must not compromise intersection safety.
+
+### FR-11: Emergency Vehicle Priority
+
+**Priority: Stretch Goal**
+
+- Allow the user to spawn an emergency vehicle.
+- Visually distinguish the vehicle using a label, shape, or flashing indicator.
+- Detect its approach and intended movement.
+- Give the emergency vehicle priority by requesting a safe green corridor.
+- Complete amber and all-red clearance transitions before enabling conflicting movements.
+- Temporarily hold or stop conflicting traffic.
+- Return to normal signal control after the emergency vehicle clears the junction.
+
+Emergency priority must not cause vehicles to collide or allow conflicting movements to enter simultaneously.
+
+---
+
+## 7. User Interface and Design Requirements
+
+### Visual Direction
+
+Create a modern, professional traffic control dashboard with a clean operations-center aesthetic.
+
+The interface should look like a real traffic monitoring tool rather than a basic student demonstration.
+
+### Layout
+
+**Top Navigation Bar**
+- SmartJunction logo or wordmark.
+- Live simulation status.
+- Current signal mode.
+- Simulation timer.
+
+**Main Simulation Area**
+- Large four-way intersection canvas.
+- Visible vehicles and lane markings.
+- Signal heads and phase countdowns.
+- Direction labels: North, South, East, and West.
+- Queue indicators near the corresponding approaches.
+
+**Control Panel**
+- Start, pause, resume, and reset buttons.
+- Traffic spawn-rate slider.
+- Fixed/adaptive mode selector.
+- Optional toggles for free left turn and emergency priority.
+
+**Statistics Panel**
+- Cars passed.
+- Average waiting time.
+- Queue length for each direction.
+- Vehicles currently active.
+
+**Comparison Section**
+- Fixed versus adaptive results.
+- Performance indicators.
+- A chart showing throughput or waiting time.
+- A short, data-based summary of the results.
+
+### Design Principles
+
+- Use a dark navy or charcoal background with high-contrast road markings.
+- Use traffic colors conventionally: green, amber, and red.
+- Include text or symbols alongside colors for accessibility.
+- Use consistent spacing, typography, and card styles.
+- Keep the junction as the primary visual focus.
+- Avoid excessive animations that distract from vehicle movement.
+- Ensure controls remain visible and easy to operate during the demo.
+
+---
+
+## 8. Technical Architecture
+
+### Recommended Stack
+
+- HTML5 for structure.
+- CSS3 for layout and styling.
+- Vanilla JavaScript for simulation logic.
+- HTML Canvas API for rendering the junction.
+- `requestAnimationFrame()` for rendering.
+- A fixed simulation timestep for consistent vehicle movement.
+- Optional Chart.js from a CDN for performance graphs.
+
+No backend, database, API key, or local AI model is required.
+
+### Architecture Components
+
+**1. Simulation Engine**
+- Maintains vehicles, positions, speeds, and movement states.
+- Tracks signal phases and phase timers.
+- Manages vehicle spawning and queueing.
+- Enforces safe entry into the intersection.
+- Updates simulation statistics.
+
+**2. Rendering Engine**
+- Draws the road, lanes, signals, vehicles, and labels.
+- Reads simulation state without modifying it.
+- Redraws the scene using Canvas.
+
+**3. Signal Controller**
+- Implements fixed timing.
+- Implements adaptive queue-based timing.
+- Manages phase transitions and clearance periods.
+- Controls permission to enter each traffic movement.
+
+**4. Statistics Manager**
+- Counts completed vehicles.
+- Tracks individual vehicle waiting time.
+- Calculates average waiting time.
+- Calculates current and maximum queue lengths.
+- Resets all metrics when required.
+
+**5. User Interface Controller**
+- Handles buttons, sliders, and mode selectors.
+- Updates metric cards.
+- Displays simulation status and comparison results.
+
+### Simulation Loop
+
+1. Calculate elapsed real time.
+2. Accumulate elapsed time for fixed simulation steps.
+3. Update signal timers.
+4. Spawn vehicles when scheduled.
+5. Update vehicle movement and queue positions.
+6. Check entry permissions and crossing conflicts.
+7. Update statistics.
+8. Render the current simulation state.
+9. Repeat using `requestAnimationFrame()`.
+
+The simulation state must remain separate from drawing logic.
+
+---
+
+## 9. Safety and Collision Prevention
+
+Collision prevention is a core requirement, not an optional visual effect.
+
+### Queue Safety
+
+- Each vehicle must have a defined length and minimum gap.
+- Vehicles must follow the vehicle ahead at a safe distance.
+- A following vehicle must not pass through or overlap a stopped vehicle.
+- Spawning must check available space.
+
+### Intersection Safety
+
+- Represent each vehicle's intended movement as a path.
+- Define which paths conflict with one another.
+- Only allow compatible movements to enter together.
+- Reserve the required intersection path before a vehicle enters.
+- Do not release a vehicle if its exit path is blocked.
+- Keep the intersection clear of newly entering traffic during phase transitions.
+- Allow vehicles already inside the junction to finish clearing it.
+
+### Recommended Simplification
+
+For the first working version, support only straight-through movements with compatible opposing directions.
+
+Implement turns only after straight-through movement, queueing, and collision prevention have been tested successfully.
+
+This reduces complexity while satisfying the main requirements.
+
+---
+
+## 10. Performance and Reliability Requirements
+
+- Run in a modern desktop browser.
+- Require no installation or backend service.
+- Maintain smooth animation at normal traffic densities.
+- Avoid simulation speed depending directly on the computer's rendering frame rate.
+- Support increased traffic density without overlapping vehicles.
+- Ensure pause and resume preserve the simulation state.
+- Ensure reset clears all simulation and statistical data.
+- Keep all user-configured simulation settings within the browser.
+- Avoid collecting personal information.
+- Display clear fallback messages if optional visual features fail to load.
+
+---
+
+## 11. Acceptance Criteria
+
+The product is considered complete when all must-haves pass the following tests.
+
+| ID | Test | Expected Result |
+|---|---|---|
+| AC-01 | Open the application | Four-way junction is visible |
+| AC-02 | Increase traffic spawn rate | More vehicles enter the roads |
+| AC-03 | Set a direction to red | Vehicles stop before its stop line |
+| AC-04 | Allow vehicles to queue | Vehicles remain separated |
+| AC-05 | Enable green for a compatible phase | Vehicles cross safely |
+| AC-06 | Switch between conflicting phases | No conflicting entry during transition |
+| AC-07 | Observe the statistics | Passed vehicles, waiting time, and queues update |
+| AC-08 | Pause and resume | Simulation continues from the same state |
+| AC-09 | Reset the simulation | Vehicles, timers, and statistics return to initial values |
+| AC-10 | Run high-density traffic | No vehicle overlaps or middle-of-junction collisions |
+| AC-11 | Switch to adaptive mode | Green duration responds to queue lengths |
+| AC-12 | Compare both modes | Results reflect measured simulation outcomes |
+
+AC-11 and AC-12 apply to the adaptive-mode stretch goal.
+
+---
+
+## 12. Development Priorities
+
+### Phase 1 — Core Simulation
+- Draw the four-way intersection.
+- Implement the signal state machine.
+- Spawn vehicles from four directions.
+- Implement stopping, queueing, and straight-through crossing.
+- Prevent vehicle overlap and conflicting entry.
+
+### Phase 2 — Must-Have Completion
+- Add adjustable spawn rates.
+- Add live statistics.
+- Add pause, resume, and reset.
+- Test high-density traffic.
+- Fix all simulation state and timing bugs.
+
+### Phase 3 — High-Value Stretch Goals
+- Implement adaptive signal timing.
+- Add fixed-versus-adaptive comparison.
+- Record and compare real simulation metrics.
+- Display performance charts.
+
+### Phase 4 — Polish
+- Improve vehicle and road visuals.
+- Add countdown timers and queue indicators.
+- Improve dashboard layout.
+- Add emergency vehicle priority if time permits.
+- Test the complete three-minute demo flow.
+
+---
+
+## 13. Hackathon Demo Plan — 3 Minutes
+
+**0:00–0:20 — Introduction**
+Explain that SmartJunction compares fixed and adaptive signal timing at a simulated Indian intersection.
+
+**0:20–1:10 — Demonstrate Must-Haves**
+- Start the simulation.
+- Increase traffic density.
+- Show vehicles queueing at red signals.
+- Show safe crossing on green.
+- Point out live statistics.
+- Pause, resume, and reset the simulation.
+
+**1:10–2:10 — Demonstrate Stretch Goals**
+- Enable adaptive mode.
+- Show how a longer queue receives more green time.
+- Display the measured fixed-versus-adaptive comparison.
+- Explain whether waiting time or throughput improved.
+
+**2:10–2:40 — Technical Reliability**
+- Show high-density traffic.
+- Demonstrate that vehicles do not overlap.
+- Explain how conflicting paths and phase clearance are handled.
+
+**2:40–3:00 — AI Prompt Log and Conclusion**
+- Show one failed AI-generated implementation or prompt.
+- Explain the bug and the correction.
+- Summarize the measured result and the value of adaptive signals.
+
+Keep screenshots of the failed output and the successful correction for the judges.
+
+---
+
+## 14. Risks and Mitigation
+
+**Risk: Vehicles overlap in queues.**  
+Mitigation: Use fixed vehicle dimensions, safe gaps, and leader-following movement.
+
+**Risk: Vehicles collide in the intersection.**  
+Mitigation: Restrict the initial implementation to compatible straight-through movements and use conflict checks before entry.
+
+**Risk: Amber signals allow unsafe entry.**  
+Mitigation: Require all new entries to be authorized by the signal controller and stop line rules.
+
+**Risk: Adaptive mode shows no measurable improvement.**  
+Mitigation: Test multiple traffic distributions and use identical traffic arrivals for both modes. Report actual outcomes honestly.
+
+**Risk: Simulation behaves differently at different frame rates.**  
+Mitigation: Use fixed-step simulation updates with an elapsed-time accumulator.
+
+**Risk: The application is incomplete near the deadline.**  
+Mitigation: Finish and test all must-haves before adding optional features.
+
+---
+
+## 15. Definition of Done
+
+SmartJunction is ready for judging when:
+
+- Every must-have is implemented and tested.
+- Traffic can be increased until queues form.
+- Queued vehicles do not overlap.
+- Conflicting vehicles cannot enter the intersection together.
+- All live statistics update and reset correctly.
+- Pause and resume work reliably.
+- Adaptive mode, if implemented, uses real queue lengths.
+- The comparison uses equivalent traffic demand and actual measurements.
+- The application runs in the provided browser without installation.
+- The AI prompt history is saved and ready to show.
+- The team can demonstrate the application in three minutes.
+
+**Final Product Principle:** Reliability first, measurable intelligence second, visual polish third.

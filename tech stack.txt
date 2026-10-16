@@ -1,0 +1,108 @@
+# SmartJunction — Recommended Tech Stack
+
+## 1. Frontend Framework
+- React — Build the dashboard, control panels, statistics cards, and simulation interface.
+- Vite — Fast development server and production build tool.
+- TypeScript — Improve code reliability and reduce bugs in vehicle movement, signal states, and simulation logic.
+
+## 2. Simulation and Rendering
+- HTML5 Canvas API — Render the four-way junction, road lanes, vehicles, traffic signals, and vehicle movement.
+- JavaScript/TypeScript simulation engine — Manage vehicle positions, velocities, queues, traffic signals, and collision prevention.
+- requestAnimationFrame() — Render smooth animations in the browser.
+- Fixed-timestep simulation loop — Keep vehicle movement and signal timing consistent across different frame rates.
+
+## 3. Styling and UI
+- CSS3 — Create the dashboard layout, responsive design, animations, and visual effects.
+- Tailwind CSS — Optional utility-first styling for rapid dashboard development.
+- Lucide React — Provide clean icons for controls, traffic metrics, and navigation.
+
+## 4. Data Visualization
+- Recharts — Display fixed-versus-adaptive performance comparisons, waiting-time changes, and traffic throughput.
+- React state management — Keep the UI synchronized with simulation statistics and user controls.
+
+## 5. Traffic Simulation Logic
+- Custom traffic signal state machine — Manage green, amber, red, and all-red clearance phases.
+- Queue management system — Maintain vehicle spacing and prevent overlapping.
+- Intersection conflict management — Prevent incompatible vehicle movements from entering the junction simultaneously.
+- Fixed-time signal controller — Provide predictable signal cycles.
+- Adaptive signal controller — Allocate green time based on actual queue lengths.
+- Seeded random number generation — Reproduce equivalent traffic arrival patterns when comparing signal strategies.
+
+## 6. Development Tools
+- Visual Studio Code — Code editor.
+- Git and GitHub — Version control and repository hosting.
+- Browser DevTools — Debug rendering, simulation timing, and vehicle collisions.
+- AI coding assistant — Generate, debug, and refine the implementation. Preserve the prompt history for hackathon judging.
+
+## 7. Deployment
+- Vercel — Host the frontend application.
+- Vite production build — Generate optimized static files for deployment.
+- GitHub integration with Vercel — Automatically deploy updates when changes are pushed to the configured branch.
+
+## 8. Architecture and Storage
+- Client-side only — All simulation calculations run in the browser.
+- No backend or database required.
+- No paid APIs or API keys.
+- No local AI models.
+- No personal data collection.
+- Simulation state is maintained in browser memory and reset when requested.
+
+## 9. Recommended Project Structure
+
+src/
+  components/
+    Dashboard.tsx
+    SimulationCanvas.tsx
+    TrafficControls.tsx
+    TrafficSignals.tsx
+    StatisticsPanel.tsx
+    ComparisonPanel.tsx
+  simulation/
+    engine.ts
+    vehicle.ts
+    trafficSignal.ts
+    queueManager.ts
+    collisionManager.ts
+    adaptiveController.ts
+    statistics.ts
+  hooks/
+    useSimulation.ts
+  types/
+    simulation.ts
+  styles/
+    global.css
+  App.tsx
+  main.tsx
+
+index.html
+package.json
+vite.config.ts
+tsconfig.json
+tech-stack.txt
+
+## 10. Final Stack Selection
+
+Required:
+- React
+- Vite
+- TypeScript
+- HTML5 Canvas
+- CSS3
+- Recharts
+- Lucide React
+- Vercel
+
+Optional:
+- Tailwind CSS
+- React hooks for simulation state integration
+
+Deployment command:
+npm run build
+
+Vercel configuration:
+- Framework Preset: Vite
+- Build Command: npm run build
+- Output Directory: dist
+- Install Command: npm install
+
+The application must run entirely in the browser and must not depend on a locally installed backend or server process after deployment.

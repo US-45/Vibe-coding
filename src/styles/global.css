@@ -1,0 +1,93 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg-primary: #141010;
+  --bg-secondary: #1C1919;
+  --surface-primary: #242020;
+  --surface-elevated: #302A2A;
+  --border-subtle: #413939;
+  --accent-red: #A41717;
+  --deep-burgundy: #532121;
+  --muted-rose: #CEA4A4;
+  --metallic-gold: #B59447;
+  --text-primary: #F2EEEE;
+  --text-secondary: #A4A4A4;
+  --text-muted: #777171;
+  --road-surface: #292727;
+  --road-markings: #E0D8D0;
+  --canvas-bg: #191616;
+  --signal-green: #39B86B;
+  --signal-amber: #F2B544;
+  --signal-red: #E54848;
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  overflow-x: hidden;
+}
+
+/* Custom scrollbars matching Asphalt Noir */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #141010;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #302A2A;
+  border-radius: 3px;
+  border: 1px solid #413939;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #532121;
+}
+
+/* Tabular numerals for timers and metrics */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Smooth glass/card effect */
+.noir-card {
+  background-color: #242020;
+  border: 1px solid #413939;
+  border-radius: 0.5rem;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.noir-card:hover {
+  border-color: #532121;
+}
+
+.noir-card-elevated {
+  background-color: #302A2A;
+  border: 1px solid #532121;
+  border-radius: 0.5rem;
+}
+
+/* Range input styling */
+input[type="range"] {
+  accent-color: #A41717;
+}
+
+/* Subtle gold badge */
+.badge-gold {
+  background: rgba(181, 148, 71, 0.15);
+  border: 1px solid #B59447;
+  color: #E2C785;
+}
+
+/* Subtle red badge */
+.badge-red {
+  background: rgba(164, 23, 23, 0.18);
+  border: 1px solid #A41717;
+  color: #FFA4A4;
+}

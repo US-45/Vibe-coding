@@ -1,0 +1,361 @@
+# SMARTJUNCTION — UI THEME & DESIGN SYSTEM
+
+## 1. Design Inspiration
+
+Reference: Dribbble — Motorcycle E-Commerce Website Design by Nixtio
+https://dribbble.com/shots/27766449-Motorcycle-E-Commerce-Website-Design
+
+Adapt the reference's premium automotive aesthetic, minimalist composition, strong visual hierarchy, refined dark surfaces, muted red accents, and metallic gold details.
+
+Transform the design into a futuristic traffic simulation and intelligent signal-control dashboard.
+
+The final product must feel like a premium automotive technology platform, not an online shopping website, generic admin template, or gaming interface.
+
+## 2. Design Philosophy
+
+Theme Name: Asphalt Noir
+
+Core keywords:
+- Premium automotive
+- Minimalist
+- Industrial luxury
+- Intelligent mobility
+- Dark editorial layout
+- Precision engineering
+- High contrast
+- Refined data visualization
+
+Design principles:
+- Make the traffic junction the main visual attraction.
+- Use dark, understated backgrounds to emphasize the road simulation.
+- Use red and amber selectively for traffic signals and important alerts.
+- Use muted gold as a secondary accent for premium visual details.
+- Keep dashboard elements clean, compact, and purposeful.
+- Avoid unnecessary gradients, excessive glowing effects, and clutter.
+- Use generous spacing, thin borders, and clear typographic hierarchy.
+- Prioritize readability and simulation visibility over decoration.
+
+## 3. Color Palette
+
+### Primary Colors
+
+Background Primary: #141010
+Use for the main application background.
+
+Background Secondary: #1C1919
+Use for navigation areas, secondary sections, and side panels.
+
+Surface Primary: #242020
+Use for dashboard cards and control panels.
+
+Surface Elevated: #302A2A
+Use for active cards, popovers, and elevated components.
+
+Border Subtle: #413939
+Use for card outlines, separators, and panel boundaries.
+
+### Accent Colors
+
+Accent Red: #A41717
+Use for primary actions, active navigation indicators, and important highlights.
+
+Deep Burgundy: #532121
+Use for selected states, secondary accent surfaces, and subdued red backgrounds.
+
+Muted Rose: #CEA4A4
+Use sparingly for secondary highlights, selected labels, and subtle decorative details.
+
+Metallic Gold: #B59447
+Use for premium accents, selected metrics, small highlights, and adaptive-mode indicators.
+
+### Neutral Colors
+
+Text Primary: #F2EEEE
+Use for headings, important values, and primary content.
+
+Text Secondary: #A4A4A4
+Use for descriptions, labels, and secondary information.
+
+Text Muted: #777171
+Use for less important metadata.
+
+Road Surface: #292727
+Use for the road and intersection.
+
+Road Markings: #E0D8D0
+Use for lane dividers, stop lines, and road markings.
+
+Canvas Background: #191616
+Use for the area surrounding the simulated junction.
+
+### Traffic Signal Colors
+
+Signal Green: #39B86B
+Signal Amber: #F2B544
+Signal Red: #E54848
+
+Signal labels and shapes must remain readable without relying on color alone.
+
+Use text labels, distinctive shapes, and clear indicators for GO, WAIT, and STOP.
+
+Do not recolor traffic signals to match the decorative brand palette if doing so reduces real-world recognizability.
+
+## 4. Typography
+
+Use a modern, premium sans-serif typeface.
+
+Recommended fonts:
+- Primary: Inter
+- Alternative: Manrope
+- Optional display font: Space Grotesk
+
+Typography rules:
+- Use bold, compact headings.
+- Use medium font weights for section titles.
+- Use regular font weights for descriptions.
+- Use tabular numerals for timers, counters, and statistics.
+- Use uppercase text sparingly for technical labels and section identifiers.
+- Maintain excellent readability at typical desktop resolutions.
+
+Suggested hierarchy:
+- Main dashboard title: 30–36px
+- Section heading: 18–22px
+- Metric values: 26–34px
+- Body text: 13–15px
+- Labels and metadata: 11–12px
+
+Avoid oversized text that reduces the available space for the traffic simulation.
+
+## 5. Overall Layout
+
+Build a desktop-first dashboard with a premium automotive control-room appearance.
+
+### Top Navigation
+
+Include:
+- SmartJunction wordmark
+- Small geometric road-junction logo
+- Simulation status indicator
+- Fixed / Adaptive mode indicator
+- Simulation elapsed time
+- Compact settings control
+
+Use a dark background, subtle bottom border, and restrained red accent.
+
+Keep the navigation compact so that the main simulation receives the most screen space.
+
+### Main Dashboard Header
+
+Display:
+- Main heading: TRAFFIC INTELLIGENCE
+- Supporting text: Four-way junction simulation and signal optimization
+- Live simulation badge
+- Current traffic density
+- Current signal phase
+
+Use an editorial layout inspired by premium automotive product pages, with strong typography and minimal supporting text.
+
+### Main Simulation Area
+
+The four-way junction must occupy the largest section of the dashboard.
+
+Requirements:
+- Large, centered HTML Canvas.
+- Four clearly visible road approaches.
+- Detailed lane markings and stop lines.
+- Realistic top-down vehicles.
+- Visible traffic signals.
+- Direction labels for North, South, East, and West.
+- Queue indicators positioned near each approach.
+- A subtle border and dark canvas surround.
+
+Treat the junction as the equivalent of a hero product visual in the reference design.
+
+Do not place oversized cards or decorative elements over the junction.
+
+### Simulation Controls
+
+Place the controls in a dedicated panel adjacent to or directly below the canvas.
+
+Include:
+- Start
+- Pause / Resume
+- Reset
+- Traffic density slider
+- Fixed / Adaptive selector
+- Optional emergency vehicle control
+
+Use compact controls, clear active states, rounded corners, and consistent spacing.
+
+Primary actions should use Accent Red. Secondary actions should use neutral dark surfaces.
+
+### Statistics Panel
+
+Display four main metrics:
+- Cars Passed
+- Average Waiting Time
+- Active Vehicles
+- Total Vehicles Waiting
+
+Below the main metrics, display the queue length for each direction.
+
+Use clean metric cards with:
+- Small uppercase labels
+- Large numerical values
+- Minimal icons
+- Subtle borders
+- Optional trend indicators based on actual measurements
+
+Use gold sparingly to highlight selected performance values.
+
+Never fabricate trend indicators or performance improvements.
+
+### Signal Status Panel
+
+Show the signal state for all four approaches.
+
+Each signal indicator must include:
+- Direction label
+- Current signal state
+- Remaining phase time
+- Distinctive red, amber, or green indicator
+
+Use a clear, compact layout that remains readable while the simulation runs.
+
+### Performance Comparison Section
+
+Create a fixed-versus-adaptive comparison panel.
+
+Compare:
+- Vehicles passed
+- Average waiting time
+- Average queue length
+- Maximum queue length
+
+Use simple charts, aligned metrics, and restrained accent colors.
+
+Use gold for adaptive-mode highlights and neutral tones for fixed-mode data. Show red or green performance changes only when supported by actual measurements.
+
+## 6. Component Styling
+
+### Cards
+- Dark charcoal surfaces.
+- Thin, subtle borders.
+- Small to medium corner radius.
+- Consistent internal padding.
+- Minimal or no shadows.
+
+### Buttons
+- Primary: Deep red background with light text.
+- Secondary: Charcoal background with light border.
+- Active: Visible red or gold indicator.
+- Disabled: Reduced contrast without losing readability.
+- Hover: Slight brightness change and a subtle transition.
+
+### Sliders
+- Dark track.
+- Red active track.
+- Clearly visible thumb.
+- Visible minimum and maximum values.
+- Display the selected traffic rate.
+
+### Badges
+- Small and compact.
+- Dark tinted backgrounds.
+- Clear labels and high contrast.
+- Reserve red for alerts and active signal-related warnings.
+
+### Charts
+- Dark background or transparent chart container.
+- Thin grid lines.
+- Muted axis labels.
+- Clear legends.
+- Restrained red and gold data series.
+- No unnecessary 3D effects.
+
+### Icons
+Use Lucide React icons with consistent stroke widths.
+
+Prefer simple technical icons over decorative illustrations.
+
+## 7. Animation and Interaction
+
+Use subtle, functional animations.
+
+Allowed:
+- Smooth vehicle movement.
+- Traffic signal transitions.
+- Small button hover transitions.
+- Subtle card hover states.
+- Smooth updates to metric values.
+- Gentle highlight transitions when the active signal changes.
+
+Avoid:
+- Excessive neon glow.
+- Constant pulsing of every component.
+- Large animated backgrounds.
+- Unnecessary parallax.
+- Animations that interfere with simulation performance.
+
+Vehicle motion must be driven by the simulation engine, not CSS animations.
+
+## 8. Responsive Behavior
+
+Primary target: Desktop browser at 1440 × 900.
+
+Also support:
+- 1280 × 720
+- 1366 × 768
+- Smaller laptop screens
+
+Responsive requirements:
+- Keep the simulation visible without excessive scrolling.
+- Allow statistics panels to reorganize into fewer columns.
+- Move secondary controls below the simulation when space is limited.
+- Preserve readable text and accessible controls.
+- Prevent the canvas from distorting the intersection geometry.
+- Scale the canvas rendering correctly for high-density displays.
+
+The desktop layout is the priority because the application will be judged on a provided desktop.
+
+## 9. Accessibility and Readability
+
+- Maintain strong text contrast.
+- Never use color as the only indicator of a traffic state.
+- Include text labels for traffic signals.
+- Use visible keyboard focus states.
+- Ensure buttons have descriptive accessible labels.
+- Use sufficiently large interactive targets.
+- Avoid tiny text and low-contrast metadata.
+- Respect reduced-motion preferences where applicable.
+
+## 10. Performance Requirements
+
+- Keep the Canvas simulation separate from React dashboard rendering.
+- Avoid unnecessary React re-renders on every animation frame.
+- Use requestAnimationFrame for rendering.
+- Use fixed-step updates for simulation logic.
+- Avoid excessive blur filters, shadows, and animated effects.
+- Ensure the dashboard remains responsive when traffic density increases.
+- Use lightweight visual assets and browser-native drawing wherever possible.
+
+## 11. Implementation Constraints
+
+- Use React, Vite, TypeScript, HTML5 Canvas, and CSS.
+- Use Lucide React for icons.
+- Use Recharts for performance comparisons if needed.
+- Load optional fonts and libraries from reliable CDNs or package dependencies.
+- Deploy the frontend as a static Vercel application.
+- Do not require a backend, database, paid APIs, or local AI models.
+- Do not collect personal information.
+- Keep all simulation calculations and metrics within the browser.
+
+## 12. Final Design Direction
+
+The finished interface should combine the premium simplicity of an automotive showroom with the precision of a professional traffic operations dashboard.
+
+The intersection should dominate the screen. Controls should be practical, statistics should be immediately understandable, and every visual element should reinforce the theme of intelligent traffic management.
+
+Use the reference for visual inspiration, not as a template to reproduce literally.
+
+**Final aesthetic:** Asphalt Noir — premium charcoal surfaces, restrained racing red, metallic gold accents, refined typography, realistic road visualization, and precise technical data presentation.
