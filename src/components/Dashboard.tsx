@@ -9,19 +9,15 @@ import { StatisticsPanel } from './StatisticsPanel';
 import { ComparisonPanel } from './ComparisonPanel';
 import { SignalIntelligencePanel } from './SignalIntelligencePanel';
 import { ExperimentConfigPanel } from './ExperimentConfigPanel';
-import { DualArena } from './DualArena';
 import { PrivacyModal } from './PrivacyModal';
-import { DemoTourModal } from './DemoTourModal';
 import { AboutModal } from './AboutModal';
 import { Activity, Cpu } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 
 export const Dashboard: React.FC = () => {
   const { currentTheme, mode } = useTheme();
-  const [viewMode, setViewMode] = useState<'single' | 'arena'>('single');
   const [viewDimension, setViewDimension] = useState<'2D' | '3D'>('2D');
   const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
-  const [isDemoTourOpen, setIsDemoTourOpen] = useState(false);
   const [isAboutOpen, setIsAboutOpen] = useState(false);
 
   const {
@@ -62,15 +58,9 @@ export const Dashboard: React.FC = () => {
     if (section === 'about') {
       setIsAboutOpen(true);
     } else if (section === 'simulation') {
-      if (viewMode !== 'single') setViewMode('single');
-      setTimeout(() => {
-        document.getElementById('simulation-section')?.scrollIntoView({ behavior: 'smooth' });
-      }, 50);
+      document.getElementById('simulation-section')?.scrollIntoView({ behavior: 'smooth' });
     } else if (section === 'analytics') {
-      if (viewMode !== 'single') setViewMode('single');
-      setTimeout(() => {
-        document.getElementById('analytics-section')?.scrollIntoView({ behavior: 'smooth' });
-      }, 50);
+      document.getElementById('analytics-section')?.scrollIntoView({ behavior: 'smooth' });
     }
   };
 
@@ -83,12 +73,8 @@ export const Dashboard: React.FC = () => {
       <Navbar
         isRunning={isRunning}
         isPaused={isPaused}
-        signalMode={signalMode}
         elapsedTime={stats.elapsedTime}
-        onOpenDemoTour={() => setIsDemoTourOpen(true)}
         onOpenPrivacy={() => setIsPrivacyOpen(true)}
-        viewMode={viewMode}
-        onToggleViewMode={() => setViewMode((prev) => (prev === 'single' ? 'arena' : 'single'))}
         onNavigate={handleNavigate}
         viewDimension={viewDimension}
         onToggleDimension={() => setViewDimension((prev) => (prev === '2D' ? '3D' : '2D'))}
@@ -139,9 +125,8 @@ export const Dashboard: React.FC = () => {
           </div>
         </section>
 
-        {/* View Selection: Single Junction vs Dual Comparative Arena */}
-        {viewMode === 'single' ? (
-          <div className="space-y-6 sm:space-y-8">
+        {/* Main Traffic Intersection and Analytics */}
+        <div className="space-y-6 sm:space-y-8">
             {/* Simulation Canvas & Immediate Controls */}
             <section id="simulation-section" className="space-y-4 sm:space-y-6">
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 items-start">
@@ -259,13 +244,7 @@ export const Dashboard: React.FC = () => {
                 </div>
               </div>
             </section>
-          </div>
-        ) : (
-          /* Live Dual-Junction Arena (Side-by-Side Synchronized Comparison) */
-          <div className="space-y-6">
-            <DualArena />
-          </div>
-        )}
+        </div>
       </main>
 
       {/* Section 4.I: Understated Footer */}
@@ -313,20 +292,6 @@ export const Dashboard: React.FC = () => {
       <PrivacyModal
         isOpen={isPrivacyOpen}
         onClose={() => setIsPrivacyOpen(false)}
-      />
-
-      <DemoTourModal
-        isOpen={isDemoTourOpen}
-        onClose={() => setIsDemoTourOpen(false)}
-        onTriggerExtremeDensity={() => {
-          setSpawnRate(6.0);
-          if (!isRunning) start();
-        }}
-        onTriggerAdaptive={() => setSignalMode('adaptive')}
-        onTriggerAmbulance={() => {
-          if (!isRunning) start();
-          spawnEmergency('south');
-        }}
       />
 
       <AboutModal

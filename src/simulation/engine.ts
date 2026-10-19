@@ -614,12 +614,12 @@ export class SimulationEngine {
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
     // 1. Surrounding Terrain Ground / City Blocks
-    const groundColor = isDark ? '#141010' : '#EAE7E2';
+    const groundColor = isDark ? '#141010' : '#E2E8F0';
     ctx.fillStyle = groundColor;
     ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
 
     // 2. Asphalt Road Surfaces
-    const asphaltColor = isDark ? '#1C1919' : '#363230';
+    const asphaltColor = isDark ? '#1C1919' : '#334155';
     ctx.fillStyle = asphaltColor;
     // Vertical Road (x: 280 to 420)
     ctx.fillRect(HALF_SIZE - HALF_ROAD, 0, ROAD_WIDTH, CANVAS_SIZE);
@@ -636,7 +636,7 @@ export class SimulationEngine {
     this.drawYellowBoxJunction(ctx, isDark);
 
     // 6. Outer Curbs / Footpaths
-    const curbStroke = isDark ? '#413939' : '#D8D2CA';
+    const curbStroke = isDark ? '#413939' : '#CBD5E1';
     ctx.strokeStyle = curbStroke;
     ctx.lineWidth = 2.5;
     ctx.strokeRect(0, 0, HALF_SIZE - HALF_ROAD, HALF_SIZE - HALF_ROAD);
@@ -1038,8 +1038,8 @@ export class SimulationEngine {
       ctx.arc(px + 1.5, py + 1.5, r, 0, Math.PI * 2);
       ctx.fill();
 
-      ctx.fillStyle = isDark ? '#1C1919' : '#FFFFFF';
-      ctx.strokeStyle = isDark ? '#B59447' : '#9B792F';
+      ctx.fillStyle = isDark ? '#1C1919' : '#E2E8F0';
+      ctx.strokeStyle = isDark ? '#B59447' : '#0284C7';
       ctx.lineWidth = 2;
       ctx.beginPath();
       ctx.arc(px, py, r, 0, Math.PI * 2);
@@ -1077,8 +1077,8 @@ export class SimulationEngine {
       const q = queues[d];
 
       // Badge Card
-      ctx.fillStyle = isDark ? '#242020' : '#FFFFFF';
-      ctx.strokeStyle = q > 6 ? '#A41717' : (q > 3 ? '#FFBD59' : (isDark ? '#413939' : '#D8D2CA'));
+      ctx.fillStyle = isDark ? '#242020' : '#F1F5F9';
+      ctx.strokeStyle = q > 6 ? '#DC2626' : (q > 3 ? '#FFBD59' : (isDark ? '#413939' : '#CBD5E1'));
       ctx.lineWidth = 1.5;
       ctx.beginPath();
       ctx.roundRect(pos.x - 38, pos.y - 12, 76, 24, 6);
@@ -1086,7 +1086,7 @@ export class SimulationEngine {
       ctx.stroke();
 
       // Text with queue
-      ctx.fillStyle = isDark ? '#F2EEEE' : '#242020';
+      ctx.fillStyle = isDark ? '#F2EEEE' : '#0F172A';
       ctx.fillText(`${pos.label}: ${q}`, pos.x, pos.y);
     }
     ctx.restore();

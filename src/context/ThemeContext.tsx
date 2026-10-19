@@ -37,26 +37,26 @@ export const DARK_TOKENS: ThemeTokens = {
 };
 
 export const LIGHT_TOKENS: ThemeTokens = {
-  bgPrimary: '#F4F2EF',
-  bgSecondary: '#EAE7E2',
-  cards: '#FFFFFF',
-  borders: '#D8D2CA',
-  primaryText: '#242020',
-  secondaryText: '#6F6963',
-  accentRed: '#A41717',
-  metallicGold: '#9B792F',
+  bgPrimary: '#EDF2F7',
+  bgSecondary: '#E2E8F0',
+  cards: '#F1F5F9',
+  borders: '#CBD5E1',
+  primaryText: '#0F172A',
+  secondaryText: '#475569',
+  accentRed: '#DC2626',
+  metallicGold: '#0284C7',
 };
 
 export const THEMES: Record<ThemeId, (isDark: boolean) => ThemeOption> = {
   gold: (isDark) => ({
     id: 'gold',
-    name: 'Metallic Gold',
-    color: isDark ? '#B59447' : '#9B792F',
-    hoverColor: isDark ? '#C7A558' : '#8A6B29',
+    name: isDark ? 'Metallic Gold' : 'Precision Cyan',
+    color: isDark ? '#B59447' : '#0284C7',
+    hoverColor: isDark ? '#C7A558' : '#0369A1',
     textColor: isDark ? '#141010' : '#FFFFFF',
-    mutedBg: isDark ? 'rgba(181, 148, 71, 0.15)' : 'rgba(155, 121, 47, 0.12)',
-    mutedBorder: isDark ? 'rgba(181, 148, 71, 0.4)' : 'rgba(155, 121, 47, 0.35)',
-    glow: isDark ? 'rgba(181, 148, 71, 0.45)' : 'rgba(155, 121, 47, 0.3)',
+    mutedBg: isDark ? 'rgba(181, 148, 71, 0.15)' : 'rgba(2, 132, 199, 0.12)',
+    mutedBorder: isDark ? 'rgba(181, 148, 71, 0.4)' : 'rgba(2, 132, 199, 0.35)',
+    glow: isDark ? 'rgba(181, 148, 71, 0.45)' : 'rgba(2, 132, 199, 0.25)',
   }),
   lime: (isDark) => ({
     id: 'lime',

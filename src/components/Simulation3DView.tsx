@@ -247,20 +247,20 @@ export const Simulation3DView: React.FC<Simulation3DViewProps> = ({
 
     // Update road and terrain surface materials
     if (terrainMatRef.current) {
-      terrainMatRef.current.color.setHex(isDark ? 0x141010 : 0xEAE7E2);
+      terrainMatRef.current.color.setHex(isDark ? 0x141010 : 0xE2E8F0);
     }
     if (roadMatRef.current) {
-      roadMatRef.current.color.setHex(isDark ? 0x1C1919 : 0x363230);
+      roadMatRef.current.color.setHex(isDark ? 0x1C1919 : 0x334155);
     }
 
     if (!isDark) {
-      // Architectural Light Theme Mode
-      scene.background = new THREE.Color(0xF4F2EF);
-      scene.fog = new THREE.FogExp2(0xF4F2EF, 0.007);
+      // Architectural Cool-Toned Slate Light Theme Mode
+      scene.background = new THREE.Color(0xEDF2F7);
+      scene.fog = new THREE.FogExp2(0xEDF2F7, 0.007);
       ambient.intensity = 1.15;
-      ambient.color.setHex(0xffffff);
-      dirLight.intensity = 2.2;
-      dirLight.color.setHex(0xfff8ee);
+      ambient.color.setHex(0xf1f5f9);
+      dirLight.intensity = 2.0;
+      dirLight.color.setHex(0xe2e8f0);
       streetLights.forEach((l) => (l.intensity = 0.2));
     } else {
       // Dark Theme (Asphalt Noir) Mode
