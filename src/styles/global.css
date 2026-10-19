@@ -43,14 +43,14 @@
 }
 
 [data-theme="light"] {
-  --bg-primary: #EDF2F7;
-  --bg-secondary: #E2E8F0;
-  --bg-card: #F1F5F9;
-  --bg-card-elevated: #F8FAFC;
-  --border-color: #CBD5E1;
-  --border-subtle: #E2E8F0;
-  --text-primary: #0F172A;
-  --text-secondary: #475569;
+  --bg-primary: #DCE3EA;
+  --bg-secondary: #D1D9E2;
+  --bg-card: #E4EAF0;
+  --bg-card-elevated: #D8DFE7;
+  --border-color: #B0BCC9;
+  --border-subtle: #C4CFDC;
+  --text-primary: #0B1120;
+  --text-secondary: #334155;
   --accent-red: #DC2626;
   --metallic-gold: #0284C7;
 
@@ -61,20 +61,20 @@
   --theme-accent-border: rgba(2, 132, 199, 0.35);
   --theme-accent-glow: rgba(2, 132, 199, 0.25);
 
-  --canvas-ground: #E2E8F0;
-  --canvas-asphalt: #334155;
-  --canvas-curb: #CBD5E1;
-  --canvas-markings: #F8FAFC;
-  --canvas-inner-border: #CBD5E1;
+  --canvas-ground: #D1D9E2;
+  --canvas-asphalt: #2B3441;
+  --canvas-curb: #94A3B8;
+  --canvas-markings: #F1F5F9;
+  --canvas-inner-border: #B0BCC9;
 
   --signal-green: #059669;
   --signal-amber: #D97706;
   --signal-red: #DC2626;
   --accent-blue: #0284C7;
 
-  --tooltip-bg: #F1F5F9;
-  --tooltip-border: #CBD5E1;
-  --tooltip-text: #0F172A;
+  --tooltip-bg: #E4EAF0;
+  --tooltip-border: #B0BCC9;
+  --tooltip-text: #0B1120;
 }
 
 /* =========================================================
@@ -223,13 +223,17 @@ input[type="range"] {
 [data-theme="light"] .bg-\[\#0B0D10\]\/95,
 [data-theme="light"] .bg-\[\#0B0D10\]\/90,
 [data-theme="light"] .bg-\[\#0B0D10\]\/85 {
-  background-color: rgba(237, 242, 247, 0.95) !important;
+  background-color: rgba(220, 227, 234, 0.95) !important;
 }
 
 [data-theme="light"] .bg-\[\#12161B\]\/85,
 [data-theme="light"] .bg-\[\#12161B\]\/90,
 [data-theme="light"] .bg-\[\#12161B\]\/80 {
-  background-color: rgba(226, 232, 240, 0.90) !important;
+  background-color: rgba(209, 217, 226, 0.90) !important;
+}
+
+[data-theme="light"] .bg-white {
+  background-color: var(--bg-card) !important;
 }
 
 /* In light mode, preserve clean text on light cards */

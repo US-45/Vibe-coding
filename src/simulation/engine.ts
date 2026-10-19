@@ -250,10 +250,13 @@ export class SimulationEngine {
       }
 
       // Free Left Turn: outer lane vehicles can turn left smoothly
-      const isLeftTurn = this.config.freeLeftTurn && this.getRandom() < 0.30;
+      const isLeftTurn = this.config.freeLeftTurn && this.getRandom() < 0.35;
       const movement: MovementType = isLeftTurn ? 'left' : 'straight';
-      // Left turn vehicles must take lane 0 (curbside lane)
-      const laneIndex = isLeftTurn ? 0 : (this.getRandom() < 0.5 ? 0 : 1);
+      // When Free Left Turn is enabled: Lane 0 is dedicated to left turns!
+      // Straight vehicles take Lane 1 to keep the slip road 100% open and unblocked.
+      const laneIndex = this.config.freeLeftTurn
+        ? (isLeftTurn ? 0 : 1)
+        : (isLeftTurn ? 0 : (this.getRandom() < 0.5 ? 0 : 1));
 
       // Verify lane clearance
       if (QueueManager.canSpawnInLane(this.vehicles, selectedDirection, laneIndex)) {
@@ -315,15 +318,6 @@ export class SimulationEngine {
     // 5. Group vehicles by lane for leader-follower tracking
     const laneMap = QueueManager.groupVehiclesByLane(this.vehicles);
 
-    // Check if any conflicting traffic is currently inside the central intersection
-    let hasCrossingTrafficInJunction = false;
-    for (const v of this.vehicles) {
-      if (v.hasCrossedStopLine && v.distanceAlongPath < STOP_LINE_DISTANCE + ROAD_WIDTH) {
-        hasCrossingTrafficInJunction = true;
-        break;
-      }
-    }
-
     // 6. Update vehicle physics, collision avoidance, and coordinates
     for (let i = this.vehicles.length - 1; i >= 0; i--) {
       const v = this.vehicles[i];
@@ -341,12 +335,25 @@ export class SimulationEngine {
 
       const signal = this.signalController.getSignalState(v.origin);
 
+      // Local spatial check: only yield if an active cross-traffic vehicle is physically in the merge exit
+      let hasMergeConflict = false;
+      if (v.movement === 'left' && v.distanceAlongPath >= 310 && v.distanceAlongPath <= 375) {
+        for (const other of this.vehicles) {
+          if (other === v || other.origin === v.origin) continue;
+          const distSq = (other.x - v.x) * (other.x - v.x) + (other.y - v.y) * (other.y - v.y);
+          if (distSq < 35 * 35 && other.hasCrossedStopLine) {
+            hasMergeConflict = true;
+            break;
+          }
+        }
+      }
+
       CollisionManager.updateVehiclePhysics(
         v,
         leader,
         signal,
         this.config.freeLeftTurn,
-        hasCrossingTrafficInJunction
+        hasMergeConflict
       );
 
       // Compute actual (x, y, angle) coordinates based on distanceAlongPath
@@ -614,12 +621,12 @@ export class SimulationEngine {
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
     // 1. Surrounding Terrain Ground / City Blocks
-    const groundColor = isDark ? '#141010' : '#E2E8F0';
+    const groundColor = isDark ? '#141010' : '#D1D9E2';
     ctx.fillStyle = groundColor;
     ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
 
     // 2. Asphalt Road Surfaces
-    const asphaltColor = isDark ? '#1C1919' : '#334155';
+    const asphaltColor = isDark ? '#1C1919' : '#2B3441';
     ctx.fillStyle = asphaltColor;
     // Vertical Road (x: 280 to 420)
     ctx.fillRect(HALF_SIZE - HALF_ROAD, 0, ROAD_WIDTH, CANVAS_SIZE);
@@ -636,7 +643,7 @@ export class SimulationEngine {
     this.drawYellowBoxJunction(ctx, isDark);
 
     // 6. Outer Curbs / Footpaths
-    const curbStroke = isDark ? '#413939' : '#CBD5E1';
+    const curbStroke = isDark ? '#413939' : '#94A3B8';
     ctx.strokeStyle = curbStroke;
     ctx.lineWidth = 2.5;
     ctx.strokeRect(0, 0, HALF_SIZE - HALF_ROAD, HALF_SIZE - HALF_ROAD);
@@ -1077,8 +1084,8 @@ export class SimulationEngine {
       const q = queues[d];
 
       // Badge Card
-      ctx.fillStyle = isDark ? '#242020' : '#F1F5F9';
-      ctx.strokeStyle = q > 6 ? '#DC2626' : (q > 3 ? '#FFBD59' : (isDark ? '#413939' : '#CBD5E1'));
+      ctx.fillStyle = isDark ? '#242020' : '#E4EAF0';
+      ctx.strokeStyle = q > 6 ? '#DC2626' : (q > 3 ? '#FFBD59' : (isDark ? '#413939' : '#B0BCC9'));
       ctx.lineWidth = 1.5;
       ctx.beginPath();
       ctx.roundRect(pos.x - 38, pos.y - 12, 76, 24, 6);
@@ -1086,7 +1093,7 @@ export class SimulationEngine {
       ctx.stroke();
 
       // Text with queue
-      ctx.fillStyle = isDark ? '#F2EEEE' : '#0F172A';
+      ctx.fillStyle = isDark ? '#F2EEEE' : '#0B1120';
       ctx.fillText(`${pos.label}: ${q}`, pos.x, pos.y);
     }
     ctx.restore();

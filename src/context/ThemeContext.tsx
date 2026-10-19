@@ -37,12 +37,12 @@ export const DARK_TOKENS: ThemeTokens = {
 };
 
 export const LIGHT_TOKENS: ThemeTokens = {
-  bgPrimary: '#EDF2F7',
-  bgSecondary: '#E2E8F0',
-  cards: '#F1F5F9',
-  borders: '#CBD5E1',
-  primaryText: '#0F172A',
-  secondaryText: '#475569',
+  bgPrimary: '#DCE3EA',
+  bgSecondary: '#D1D9E2',
+  cards: '#E4EAF0',
+  borders: '#B0BCC9',
+  primaryText: '#0B1120',
+  secondaryText: '#334155',
   accentRed: '#DC2626',
   metallicGold: '#0284C7',
 };

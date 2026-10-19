@@ -153,21 +153,16 @@ export const ComparisonPanel: React.FC<ComparisonPanelProps> = ({ currentStats }
         <button
           onClick={runControlledBenchmark}
           disabled={isBenchmarking}
-          className="flex items-center space-x-2 px-3.5 py-2 rounded-lg font-bold text-xs uppercase tracking-wider transition-all disabled:opacity-50 shadow-sm active:scale-[0.98] min-h-[44px]"
-          style={{
-            backgroundColor: currentTheme.color,
-            color: currentTheme.textColor,
-            boxShadow: `0 0 12px ${currentTheme.glow}`,
-          }}
+          className="flex items-center space-x-2 px-4 py-2.5 rounded-lg bg-gradient-to-r from-[#0284C7] to-[#2563EB] hover:from-[#0369A1] hover:to-[#1D4ED8] text-white font-bold text-xs uppercase tracking-wider transition-all disabled:opacity-50 shadow-md hover:shadow-lg active:scale-[0.98] min-h-[44px]"
         >
           {isBenchmarking ? (
             <>
               <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-              <span>Running Simulation...</span>
+              <span>Running 60s Simulation...</span>
             </>
           ) : (
             <>
-              <Award className="w-3.5 h-3.5" />
+              <Award className="w-4 h-4" />
               <span>Run 60s Scientific Benchmark</span>
             </>
           )}
@@ -181,56 +176,56 @@ export const ComparisonPanel: React.FC<ComparisonPanelProps> = ({ currentStats }
           <div className="space-y-4">
             <div className="flex items-center justify-between text-xs">
               <span className="font-bold text-[var(--text-primary)] flex items-center space-x-1.5">
-                <CheckCircle2 className="w-4 h-4 text-[#36D98A]" />
+                <CheckCircle2 className="w-4 h-4 text-[#10B981]" />
                 <span>Measured Benchmark Results: Identical Seed (#987654321 @ 3.5 veh/s)</span>
               </span>
-              <span className="text-[11px] font-mono text-[var(--text-secondary)]">60s Controlled Test</span>
+              <span className="text-[11px] font-mono text-[#0284C7] font-bold">60s Controlled Test</span>
             </div>
 
             {/* Metrics Comparison Table / Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               {/* Metric 1: Average Waiting Time */}
-              <div className="bg-[var(--bg-card-elevated)] border border-[var(--border-color)] rounded-lg p-3.5 text-center">
-                <div className="text-[11px] font-mono text-[var(--text-secondary)] uppercase">Average Wait Time</div>
+              <div className="bg-[var(--bg-card-elevated)] border border-[#10B981]/30 hover:border-[#10B981] rounded-xl p-3.5 text-center shadow-sm">
+                <div className="text-[11px] font-mono text-[var(--text-secondary)] uppercase font-semibold">Average Wait Time</div>
                 <div className="flex items-center justify-center space-x-2.5 my-1.5 font-mono">
                   <span className="text-sm line-through text-[var(--text-secondary)]">{benchmarkResult.fixed.avgWaitTime}s</span>
-                  <span className="text-2xl font-bold text-[#36D98A]">
+                  <span className="text-2xl font-black text-[#10B981]">
                     {benchmarkResult.adaptive.avgWaitTime}s
                   </span>
                 </div>
-                <div className="text-xs font-semibold text-[#36D98A] flex items-center justify-center space-x-1">
+                <div className="text-xs font-bold text-[#10B981] flex items-center justify-center space-x-1">
                   <TrendingDown className="w-3.5 h-3.5" />
                   <span>{benchmarkResult.improvementPct.waitTime}% Less Delay</span>
                 </div>
               </div>
 
               {/* Metric 2: Vehicles Cleared */}
-              <div className="bg-[var(--bg-card-elevated)] border border-[var(--border-color)] rounded-lg p-3.5 text-center">
-                <div className="text-[11px] font-mono text-[var(--text-secondary)] uppercase">Total Cars Passed</div>
+              <div className="bg-[var(--bg-card-elevated)] border border-[#0284C7]/30 hover:border-[#0284C7] rounded-xl p-3.5 text-center shadow-sm">
+                <div className="text-[11px] font-mono text-[var(--text-secondary)] uppercase font-semibold">Total Cars Passed</div>
                 <div className="flex items-center justify-center space-x-2.5 my-1.5 font-mono">
                   <span className="text-sm line-through text-[var(--text-secondary)]">{benchmarkResult.fixed.carsPassed}</span>
-                  <span className="text-2xl font-bold" style={{ color: currentTheme.color }}>
+                  <span className="text-2xl font-black text-[#0284C7]">
                     {benchmarkResult.adaptive.carsPassed}
                   </span>
                 </div>
-                <div className="text-xs font-semibold text-[#36D98A] flex items-center justify-center space-x-1">
+                <div className="text-xs font-bold text-[#0284C7] flex items-center justify-center space-x-1">
                   <TrendingUp className="w-3.5 h-3.5" />
-                  <span>+{benchmarkResult.improvementPct.throughput}% Higher Throughput</span>
+                  <span>+{benchmarkResult.improvementPct.throughput}% Throughput</span>
                 </div>
               </div>
 
               {/* Metric 3: Peak Queue */}
-              <div className="bg-[var(--bg-card-elevated)] border border-[var(--border-color)] rounded-lg p-3.5 text-center">
-                <div className="text-[11px] font-mono text-[var(--text-secondary)] uppercase">Peak Queue Length</div>
+              <div className="bg-[var(--bg-card-elevated)] border border-[#8B5CF6]/30 hover:border-[#8B5CF6] rounded-xl p-3.5 text-center shadow-sm">
+                <div className="text-[11px] font-mono text-[var(--text-secondary)] uppercase font-semibold">Peak Queue Length</div>
                 <div className="flex items-center justify-center space-x-2.5 my-1.5 font-mono">
                   <span className="text-sm line-through text-[var(--text-secondary)]">{benchmarkResult.fixed.maxQueue}</span>
-                  <span className="text-2xl font-bold text-[var(--text-primary)]">
+                  <span className="text-2xl font-black text-[#8B5CF6]">
                     {benchmarkResult.adaptive.maxQueue}
                   </span>
                 </div>
-                <div className="text-xs font-semibold text-[#36D98A] flex items-center justify-center space-x-1">
+                <div className="text-xs font-bold text-[#8B5CF6] flex items-center justify-center space-x-1">
                   <TrendingDown className="w-3.5 h-3.5" />
-                  <span>{benchmarkResult.improvementPct.queue}% Shorter Backlog</span>
+                  <span>{benchmarkResult.improvementPct.queue}% Shorter Queue</span>
                 </div>
               </div>
             </div>

@@ -5,16 +5,16 @@ export class CollisionManager {
   /**
    * Updates speed and position for a vehicle while guaranteeing:
    * 1. No collision with leader vehicle in the same lane
-   * 2. Proper stopping at RED/AMBER signals
-   * 3. Smooth crossing once committed to the intersection
-   * 4. Free left turn yield logic
+   * 2. Proper stopping at RED/AMBER signals for through-traffic
+   * 3. Fluid, unhindered Free Left Turn flow with realistic cornering deceleration
+   * 4. Safe merge yielding if another vehicle is occupying the slip exit point
    */
   public static updateVehiclePhysics(
     vehicle: Vehicle,
     leader: Vehicle | null,
     signal: SignalState,
     freeLeftTurnEnabled: boolean,
-    hasConflictingCrossingTraffic: boolean
+    hasMergeConflict: boolean = false
   ): void {
     // 1. Determine effective obstacle distance ahead along the vehicle's path
     let obstacleDistance = Infinity;
@@ -33,31 +33,32 @@ export class CollisionManager {
     const isFreeLeft = freeLeftTurnEnabled && vehicle.movement === 'left';
     const isEmergency = vehicle.isEmergency;
 
+    // Left turn vehicles enter the slip curve at distance 240
+    if (vehicle.movement === 'left' && vehicle.distanceAlongPath >= 240) {
+      vehicle.hasCrossedStopLine = true;
+      vehicle.state = 'crossing';
+    }
+
     // If vehicle has not yet committed to crossing the stop line:
     if (!vehicle.hasCrossedStopLine && vehicle.distanceAlongPath < STOP_LINE_DISTANCE) {
       let mustStopAtSignal = false;
 
       if (isEmergency) {
         // Emergency vehicles get priority; only stop if absolute red and no corridor yet
-        mustStopAtSignal = signal.color === 'red' && signal.remainingTime > 25; // brief hold if in clearance
+        mustStopAtSignal = signal.color === 'red' && signal.remainingTime > 25;
       } else if (isFreeLeft) {
-        // Free left turn bypasses normal stop line, but must yield if crossing traffic is right there
-        if (hasConflictingCrossingTraffic && vehicle.distanceAlongPath > STOP_LINE_DISTANCE - 30) {
-          mustStopAtSignal = true;
-        }
+        // Free Left Turn bypasses signal entirely! Never stops at the signal stop line.
+        mustStopAtSignal = false;
       } else {
         if (signal.color === 'red') {
           mustStopAtSignal = true;
         } else if (signal.color === 'amber') {
-          // Calculate safe stopping distance: d = v^2 / (2 * decel)
           const safeStoppingDistance = (vehicle.speed * vehicle.speed) / (2 * vehicle.deceleration);
           const distanceToStopLine = STOP_LINE_DISTANCE - vehicle.distanceAlongPath;
 
-          // If we have enough room to stop safely before the stop line, we must stop!
           if (distanceToStopLine > safeStoppingDistance * 0.9) {
             mustStopAtSignal = true;
           } else {
-            // Already committed to entering; proceed smoothly across
             vehicle.hasCrossedStopLine = true;
             vehicle.state = 'crossing';
           }
@@ -72,13 +73,25 @@ export class CollisionManager {
         }
       }
     } else {
-      // Vehicle has crossed or is crossing the stop line
       vehicle.hasCrossedStopLine = true;
       vehicle.state = 'crossing';
     }
 
     // 2. Intelligent Speed & Acceleration Adjustment
     const distanceToObstacle = obstacleDistance - vehicle.distanceAlongPath;
+
+    // Maximum cruising speed adjusted for cornering
+    let effectiveMaxSpeed = vehicle.maxSpeed;
+    if (vehicle.movement === 'left') {
+      if (vehicle.distanceAlongPath >= 235 && vehicle.distanceAlongPath <= 370) {
+        // Smooth cornering speed while traversing the curved slip road
+        effectiveMaxSpeed = Math.min(vehicle.maxSpeed, 2.0);
+      }
+      // If there's an active vehicle occupying the merge point at the curve exit, yield slightly
+      if (hasMergeConflict && vehicle.distanceAlongPath >= 320 && vehicle.distanceAlongPath <= 375) {
+        effectiveMaxSpeed = Math.min(effectiveMaxSpeed, 0.7);
+      }
+    }
 
     if (distanceToObstacle <= 0) {
       // Direct constraint: absolute hard stop at bumper gap to guarantee 0% overlap
@@ -89,16 +102,15 @@ export class CollisionManager {
       }
     } else if (distanceToObstacle < 80) {
       // Approaching obstacle / stop line / leader: smooth deceleration
-      // Desired speed based on distance
       const targetSpeed = Math.min(
-        vehicle.maxSpeed,
+        effectiveMaxSpeed,
         Math.sqrt(Math.max(0, 2 * vehicle.deceleration * distanceToObstacle)) + obstacleSpeed * 0.5
       );
 
       if (vehicle.speed > targetSpeed) {
         vehicle.speed = Math.max(0, vehicle.speed - vehicle.deceleration);
       } else {
-        vehicle.speed = Math.min(targetSpeed, vehicle.speed + vehicle.acceleration * 0.5);
+        vehicle.speed = Math.min(targetSpeed, vehicle.speed + vehicle.acceleration * 0.6);
       }
 
       if (vehicle.speed < 0.2 && distanceToObstacle < 12) {
@@ -108,10 +120,13 @@ export class CollisionManager {
         }
       }
     } else {
-      // Open road ahead: accelerate up to cruising speed
-      if (vehicle.speed < vehicle.maxSpeed) {
-        vehicle.speed = Math.min(vehicle.maxSpeed, vehicle.speed + vehicle.acceleration);
+      // Open road ahead: accelerate up to effective cruising speed
+      if (vehicle.speed < effectiveMaxSpeed) {
+        vehicle.speed = Math.min(effectiveMaxSpeed, vehicle.speed + vehicle.acceleration);
+      } else if (vehicle.speed > effectiveMaxSpeed + 0.1) {
+        vehicle.speed = Math.max(effectiveMaxSpeed, vehicle.speed - vehicle.deceleration * 0.5);
       }
+
       if (vehicle.hasCrossedStopLine) {
         vehicle.state = 'crossing';
       } else {

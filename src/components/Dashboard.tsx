@@ -103,22 +103,26 @@ export const Dashboard: React.FC = () => {
           {/* Quick Header Indicators */}
           <div className="flex flex-wrap items-center gap-2 text-xs font-mono">
             {isRunning && !isPaused && (
-              <div className="px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg bg-[#36D98A]/10 border border-[#36D98A]/30 flex items-center space-x-2 text-[#36D98A]">
-                <span className="w-2 h-2 rounded-full bg-[#36D98A] shadow-[0_0_8px_#36D98A] animate-pulse" />
+              <div className="px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg bg-[#10B981]/15 border border-[#10B981]/40 flex items-center space-x-2 text-[#10B981] shadow-sm">
+                <span className="w-2 h-2 rounded-full bg-[#10B981] shadow-[0_0_8px_#10B981] animate-pulse" />
                 <span className="font-bold tracking-wider text-[11px] sm:text-xs">LIVE SIMULATION</span>
               </div>
             )}
 
-            <div className="px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg bg-[var(--bg-secondary)] border border-[var(--border-color)] flex items-center space-x-2">
-              <Activity className="w-3.5 h-3.5 text-[#75B8FF]" />
-              <span className="text-[var(--text-secondary)] text-[11px] sm:text-xs">Grid Load:</span>
-              <span className="font-bold text-[var(--text-primary)] tabular-nums text-[11px] sm:text-xs">{stats.activeVehicles} veh</span>
+            <div className="px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg bg-[var(--bg-card)] border border-[#0284C7]/30 flex items-center space-x-2 shadow-sm">
+              <Activity className="w-3.5 h-3.5 text-[#0284C7]" />
+              <span className="text-[var(--text-secondary)] text-[11px] sm:text-xs font-semibold">Grid Load:</span>
+              <span className="font-black text-[#0284C7] tabular-nums text-[11px] sm:text-xs">{stats.activeVehicles} veh</span>
             </div>
 
-            <div className="px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg bg-[var(--bg-secondary)] border border-[var(--border-color)] flex items-center space-x-2">
-              <Cpu className="w-3.5 h-3.5" style={{ color: currentTheme.color }} />
-              <span className="text-[var(--text-secondary)] text-[11px] sm:text-xs">Logic:</span>
-              <span className="font-bold uppercase text-[11px] sm:text-xs" style={{ color: currentTheme.color }}>
+            <div className={`px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg border flex items-center space-x-2 shadow-sm ${
+              signalMode === 'adaptive'
+                ? 'bg-[#10B981]/15 border-[#10B981]/40 text-[#10B981]'
+                : 'bg-[#F59E0B]/15 border-[#F59E0B]/40 text-[#F59E0B]'
+            }`}>
+              <Cpu className="w-3.5 h-3.5" />
+              <span className="text-[var(--text-secondary)] text-[11px] sm:text-xs font-semibold">Logic:</span>
+              <span className="font-black uppercase text-[11px] sm:text-xs">
                 {signalMode === 'adaptive' ? 'Actuated' : 'Fixed'}
               </span>
             </div>

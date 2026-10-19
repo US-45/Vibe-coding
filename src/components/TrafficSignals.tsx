@@ -7,82 +7,102 @@ interface TrafficSignalsProps {
 }
 
 export const TrafficSignals: React.FC<TrafficSignalsProps> = ({ signals }) => {
-  const directions: { dir: Direction; label: string; sub: string }[] = [
-    { dir: 'north', label: 'NORTH', sub: 'Southbound Flow' },
-    { dir: 'south', label: 'SOUTH', sub: 'Northbound Flow' },
-    { dir: 'east', label: 'EAST', sub: 'Westbound Flow' },
-    { dir: 'west', label: 'WEST', sub: 'Eastbound Flow' },
+  const directions: { dir: Direction; label: string; sub: string; accentColor: string; accentBg: string }[] = [
+    { dir: 'north', label: 'NORTH', sub: 'Southbound Flow', accentColor: '#0284C7', accentBg: 'rgba(2, 132, 199, 0.12)' },
+    { dir: 'south', label: 'SOUTH', sub: 'Northbound Flow', accentColor: '#6366F1', accentBg: 'rgba(99, 102, 241, 0.12)' },
+    { dir: 'east', label: 'EAST', sub: 'Westbound Flow', accentColor: '#F59E0B', accentBg: 'rgba(245, 158, 11, 0.12)' },
+    { dir: 'west', label: 'WEST', sub: 'Eastbound Flow', accentColor: '#10B981', accentBg: 'rgba(16, 185, 129, 0.12)' },
   ];
 
   return (
     <div className="bg-[var(--bg-card)] border border-[var(--border-color)] rounded-xl p-4 shadow-sm space-y-3 transition-colors duration-250">
       <div className="flex items-center justify-between border-b border-[var(--border-subtle)] pb-2">
         <div className="flex items-center space-x-2">
-          <Compass className="w-4 h-4 text-[#75B8FF]" />
+          <div className="w-6 h-6 rounded-md bg-[#0284C7]/15 border border-[#0284C7]/30 flex items-center justify-center text-[#0284C7]">
+            <Compass className="w-3.5 h-3.5" />
+          </div>
           <h2 className="text-xs font-bold uppercase tracking-wider text-[var(--text-primary)]">
             Signal Phase Array
           </h2>
         </div>
-        <span className="text-[10px] font-mono text-[var(--text-secondary)]">High Accessibility B&W</span>
+        <span className="text-[10px] font-mono text-[var(--text-secondary)]">IRC Standard 4-Way</span>
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-        {directions.map(({ dir, label, sub }) => {
+        {directions.map(({ dir, label, sub, accentColor, accentBg }) => {
           const sig = signals[dir];
           const isGreen = sig.color === 'green';
           const isAmber = sig.color === 'amber';
           const isRed = sig.color === 'red';
 
-          const borderColor = isGreen 
-            ? 'border-[#36D98A]/60' 
-            : (isAmber ? 'border-[#FFBD59]/60' : 'border-[var(--border-color)]');
-          const bgPill = isGreen 
-            ? 'bg-[#36D98A]/15 text-[#36D98A]' 
+          const cardBorder = isGreen 
+            ? 'border-[#10B981]/60 shadow-[0_0_12px_rgba(16,185,129,0.15)]' 
             : isAmber 
-              ? 'bg-[#FFBD59]/15 text-[#FFBD59]' 
-              : 'bg-[#FF6268]/15 text-[#FF6268]';
+              ? 'border-[#F59E0B]/60 shadow-[0_0_12px_rgba(245,158,11,0.15)]' 
+              : 'border-[#EF4444]/40 shadow-[0_0_12px_rgba(239,68,68,0.1)]';
+
+          const statusBadge = isGreen 
+            ? 'bg-[#10B981] text-white shadow-sm' 
+            : isAmber 
+              ? 'bg-[#F59E0B] text-black shadow-sm' 
+              : 'bg-[#EF4444] text-white shadow-sm';
 
           return (
             <div
               key={dir}
-              className={`bg-[var(--bg-card-elevated)] border ${borderColor} rounded-lg p-3 flex flex-col justify-between transition-colors shadow-sm relative overflow-hidden`}
+              className={`bg-[var(--bg-card-elevated)] border ${cardBorder} rounded-xl p-3 flex flex-col justify-between transition-all relative overflow-hidden`}
             >
-              {/* Top: Direction and Countdown */}
-              <div className="flex justify-between items-start">
+              {/* Top Colored Direction Pill & Countdown */}
+              <div className="flex justify-between items-start mb-2">
                 <div>
-                  <div className="font-bold text-xs text-[var(--text-primary)]">{label}</div>
-                  <div className="text-[10px] text-[var(--text-secondary)] truncate">{sub}</div>
+                  <div className="flex items-center space-x-1.5">
+                    <span 
+                      className="w-2 h-2 rounded-full" 
+                      style={{ backgroundColor: accentColor }} 
+                    />
+                    <span className="font-bold text-xs text-[var(--text-primary)] tracking-wide">
+                      {label}
+                    </span>
+                  </div>
+                  <div className="text-[10px] text-[var(--text-secondary)] truncate mt-0.5">{sub}</div>
                 </div>
-                <div className="flex items-center space-x-1 text-xs font-mono font-bold text-[var(--text-primary)] bg-[var(--bg-secondary)] px-1.5 py-0.5 rounded border border-[var(--border-color)]">
+
+                <div className="flex items-center space-x-1 text-xs font-mono font-bold text-[var(--text-primary)] bg-[var(--bg-secondary)] px-2 py-0.5 rounded-md border border-[var(--border-subtle)]">
                   <Clock className="w-2.5 h-2.5 text-[var(--text-secondary)]" />
-                  <span>{sig.remainingTime}s</span>
+                  <span className="tabular-nums">{sig.remainingTime}s</span>
                 </div>
               </div>
 
               {/* Middle: 3-Lamp Miniature Signal */}
-              <div className="my-2 py-1.5 px-2 bg-[var(--bg-secondary)] rounded-md border border-[var(--border-color)] flex items-center justify-around">
-                {/* Red */}
+              <div className="my-1.5 py-1.5 px-3 bg-[var(--bg-secondary)] rounded-lg border border-[var(--border-color)] flex items-center justify-around">
+                {/* Red Lamp */}
                 <div
                   className={`w-4 h-4 rounded-full flex items-center justify-center text-[8px] font-black transition-all ${
-                    isRed ? 'bg-[#FF6268] text-white shadow-[0_0_8px_#FF6268]' : 'bg-[#261618] text-[#552B2B]'
+                    isRed 
+                      ? 'bg-[#EF4444] text-white shadow-[0_0_10px_#EF4444]' 
+                      : 'bg-black/20 text-transparent opacity-30 border border-black/10'
                   }`}
                   title="Red Light - STOP"
                 >
                   ■
                 </div>
-                {/* Amber */}
+                {/* Amber Lamp */}
                 <div
                   className={`w-4 h-4 rounded-full flex items-center justify-center text-[8px] font-black transition-all ${
-                    isAmber ? 'bg-[#FFBD59] text-black shadow-[0_0_8px_#FFBD59]' : 'bg-[#292214] text-[#5A4520]'
+                    isAmber 
+                      ? 'bg-[#F59E0B] text-black shadow-[0_0_10px_#F59E0B]' 
+                      : 'bg-black/20 text-transparent opacity-30 border border-black/10'
                   }`}
-                  title="Amber Light - WAIT"
+                  title="Amber Light - CLEAR"
                 >
                   ◆
                 </div>
-                {/* Green */}
+                {/* Green Lamp */}
                 <div
                   className={`w-4 h-4 rounded-full flex items-center justify-center text-[8px] font-black transition-all ${
-                    isGreen ? 'bg-[#36D98A] text-black shadow-[0_0_8px_#36D98A]' : 'bg-[#11261B] text-[#245237]'
+                    isGreen 
+                      ? 'bg-[#10B981] text-white shadow-[0_0_10px_#10B981]' 
+                      : 'bg-black/20 text-transparent opacity-30 border border-black/10'
                   }`}
                   title="Green Light - GO"
                 >
@@ -90,8 +110,8 @@ export const TrafficSignals: React.FC<TrafficSignalsProps> = ({ signals }) => {
                 </div>
               </div>
 
-              {/* Bottom: Explicit Text Label & Distinct Shape for B&W */}
-              <div className={`w-full py-1 rounded text-center text-xs font-black tracking-widest uppercase flex items-center justify-center space-x-1.5 ${bgPill}`}>
+              {/* Bottom: Status Pill with Symbol */}
+              <div className={`w-full py-1 rounded-md text-center text-xs font-black tracking-widest uppercase flex items-center justify-center space-x-1.5 ${statusBadge} mt-1`}>
                 <span>{sig.symbol}</span>
                 <span>{sig.label}</span>
               </div>
