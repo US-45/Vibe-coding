@@ -4,36 +4,53 @@ export default {
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
+  darkMode: ['class', '[data-theme="dark"]'],
   theme: {
     extend: {
       colors: {
+        app: {
+          bg: 'var(--bg-primary)',
+          secondary: 'var(--bg-secondary)',
+          card: 'var(--bg-card)',
+          elevated: 'var(--bg-card-elevated)',
+          border: 'var(--border-color)',
+          'border-subtle': 'var(--border-subtle)',
+          text: 'var(--text-primary)',
+          muted: 'var(--text-secondary)',
+          red: 'var(--accent-red)',
+          gold: 'var(--metallic-gold)',
+        },
         bg: {
-          primary: '#0B0D10',
-          secondary: '#12161B',
+          primary: 'var(--bg-primary)',
+          secondary: 'var(--bg-secondary)',
         },
         surface: {
-          primary: '#12161B',
-          elevated: '#191F26',
+          primary: 'var(--bg-secondary)',
+          elevated: 'var(--bg-card-elevated)',
         },
         border: {
-          subtle: '#2A323B',
-        },
-        accent: {
-          lime: '#C6F36B',
-          blue: '#75B8FF',
+          subtle: 'var(--border-color)',
         },
         text: {
-          primary: '#F3F5F7',
-          secondary: '#929DA9',
+          primary: 'var(--text-primary)',
+          secondary: 'var(--text-secondary)',
         },
         signal: {
-          green: '#36D98A',
-          amber: '#FFBD59',
-          red: '#FF6268',
+          green: 'var(--signal-green)',
+          amber: 'var(--signal-amber)',
+          red: 'var(--signal-red)',
         }
       },
       fontFamily: {
         sans: ['Inter', 'Geist', 'Manrope', 'system-ui', 'sans-serif'],
+      },
+      screens: {
+        'xs': '420px',
+        'sm': '640px',
+        'md': '768px',
+        'lg': '1024px',
+        'xl': '1280px',
+        '2xl': '1440px',
       }
     },
   },

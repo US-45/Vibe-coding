@@ -1,5 +1,5 @@
 import React from 'react';
-import { Cpu, Clock, Activity, Zap, CheckCircle2, ShieldAlert } from 'lucide-react';
+import { Cpu, Zap } from 'lucide-react';
 import { Direction, SignalMode, SignalPhase, SignalState } from '../types/simulation';
 import { useTheme } from '../context/ThemeContext';
 
@@ -16,7 +16,7 @@ interface SignalIntelligencePanelProps {
 export const SignalIntelligencePanel: React.FC<SignalIntelligencePanelProps> = ({
   currentPhase,
   signalMode,
-  signals,
+  signals: _signals,
   queues,
   adaptiveReason,
   phaseElapsed,
@@ -44,28 +44,28 @@ export const SignalIntelligencePanel: React.FC<SignalIntelligencePanelProps> = (
   const progressPct = Math.min(100, (phaseElapsed / Math.max(1, phaseDuration)) * 100);
 
   return (
-    <div className="bg-[#12161B] border border-[#2A323B] rounded-xl p-4 shadow-sm space-y-3.5">
+    <div className="bg-[var(--bg-card)] border border-[var(--border-color)] rounded-xl p-4 shadow-sm space-y-3.5 transition-colors duration-250">
       {/* Header */}
-      <div className="flex items-center justify-between border-b border-[#1E252D] pb-2.5">
+      <div className="flex items-center justify-between border-b border-[var(--border-subtle)] pb-2.5">
         <div className="flex items-center space-x-2">
           <Cpu className="w-4 h-4" style={{ color: currentTheme.color }} />
-          <h2 className="text-xs font-bold uppercase tracking-wider text-[#F3F5F7]">
+          <h2 className="text-xs font-bold uppercase tracking-wider text-[var(--text-primary)]">
             Signal Intelligence
           </h2>
         </div>
-        <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded bg-[#191F26] text-[#929DA9] border border-[#2A323B]">
+        <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded bg-[var(--bg-card-elevated)] text-[var(--text-secondary)] border border-[var(--border-color)]">
           {signalMode === 'adaptive' ? 'Actuated Logic' : 'Static Cycle'}
         </span>
       </div>
 
       {/* Current Phase & Countdown Display */}
-      <div className="bg-[#191F26] border border-[#2A323B] rounded-lg p-3 space-y-2">
+      <div className="bg-[var(--bg-card-elevated)] border border-[var(--border-color)] rounded-lg p-3 space-y-2">
         <div className="flex items-center justify-between">
           <div className="space-y-0.5">
-            <div className="text-[10px] font-mono uppercase tracking-wider text-[#929DA9]">
+            <div className="text-[10px] font-mono uppercase tracking-wider text-[var(--text-secondary)]">
               Active Corridor
             </div>
-            <div className="text-xs font-bold text-[#F3F5F7] tracking-tight flex items-center space-x-1.5">
+            <div className="text-xs font-bold text-[var(--text-primary)] tracking-tight flex items-center space-x-1.5">
               <span className={`w-2 h-2 rounded-full ${
                 isEmergency 
                   ? 'bg-[#FF6268] animate-ping' 
@@ -78,17 +78,17 @@ export const SignalIntelligencePanel: React.FC<SignalIntelligencePanelProps> = (
           </div>
 
           <div className="text-right">
-            <div className="text-[10px] font-mono uppercase tracking-wider text-[#929DA9]">
+            <div className="text-[10px] font-mono uppercase tracking-wider text-[var(--text-secondary)]">
               Remaining
             </div>
             <div className="text-sm font-mono font-bold tabular-nums" style={{ color: currentTheme.color }}>
-              {remainingSeconds}s <span className="text-[10px] text-[#929DA9] font-normal">/ {phaseDuration}s</span>
+              {remainingSeconds}s <span className="text-[10px] text-[var(--text-secondary)] font-normal">/ {phaseDuration}s</span>
             </div>
           </div>
         </div>
 
         {/* Phase Progress Bar */}
-        <div className="w-full h-1.5 bg-[#0B0D10] rounded-full overflow-hidden border border-[#2A323B]/60">
+        <div className="w-full h-1.5 bg-[var(--bg-secondary)] rounded-full overflow-hidden border border-[var(--border-color)]">
           <div
             className="h-full transition-all duration-200"
             style={{ width: `${progressPct}%`, backgroundColor: currentTheme.color }}
@@ -101,41 +101,41 @@ export const SignalIntelligencePanel: React.FC<SignalIntelligencePanelProps> = (
         {/* NS Approach Queue */}
         <div className={`p-2.5 rounded-lg border transition-all ${
           isNsActive 
-            ? 'bg-[#191F26] border-[#36D98A]/50 text-[#F3F5F7]' 
-            : 'bg-[#0B0D10]/50 border-[#2A323B] text-[#929DA9]'
+            ? 'bg-[var(--bg-card-elevated)] border-[#36D98A]/50 text-[var(--text-primary)]' 
+            : 'bg-[var(--bg-secondary)]/50 border-[var(--border-color)] text-[var(--text-secondary)]'
         }`}>
           <div className="flex justify-between items-center mb-1">
             <span className="font-semibold text-[11px]">North–South</span>
             {isNsActive && <span className="text-[9px] font-bold text-[#36D98A] uppercase">Active</span>}
           </div>
-          <div className="text-lg font-mono font-bold text-[#F3F5F7] tabular-nums">
-            {nsQueue} <span className="text-[10px] font-normal text-[#929DA9]">waiting</span>
+          <div className="text-lg font-mono font-bold text-[var(--text-primary)] tabular-nums">
+            {nsQueue} <span className="text-[10px] font-normal text-[var(--text-secondary)]">waiting</span>
           </div>
         </div>
 
         {/* EW Approach Queue */}
         <div className={`p-2.5 rounded-lg border transition-all ${
           isEwActive 
-            ? 'bg-[#191F26] border-[#36D98A]/50 text-[#F3F5F7]' 
-            : 'bg-[#0B0D10]/50 border-[#2A323B] text-[#929DA9]'
+            ? 'bg-[var(--bg-card-elevated)] border-[#36D98A]/50 text-[var(--text-primary)]' 
+            : 'bg-[var(--bg-secondary)]/50 border-[var(--border-color)] text-[var(--text-secondary)]'
         }`}>
           <div className="flex justify-between items-center mb-1">
             <span className="font-semibold text-[11px]">East–West</span>
             {isEwActive && <span className="text-[9px] font-bold text-[#36D98A] uppercase">Active</span>}
           </div>
-          <div className="text-lg font-mono font-bold text-[#F3F5F7] tabular-nums">
-            {ewQueue} <span className="text-[10px] font-normal text-[#929DA9]">waiting</span>
+          <div className="text-lg font-mono font-bold text-[var(--text-primary)] tabular-nums">
+            {ewQueue} <span className="text-[10px] font-normal text-[var(--text-secondary)]">waiting</span>
           </div>
         </div>
       </div>
 
       {/* Decision Rationale / Explanation */}
-      <div className="bg-[#0B0D10] border border-[#2A323B] rounded-lg p-2.5 space-y-1">
+      <div className="bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-lg p-2.5 space-y-1">
         <div className="flex items-center space-x-1.5 text-[10px] font-mono uppercase" style={{ color: currentTheme.color }}>
           <Zap className="w-3 h-3" />
           <span>Controller Rationale:</span>
         </div>
-        <p className="text-[11px] text-[#F3F5F7] leading-relaxed">
+        <p className="text-[11px] text-[var(--text-primary)] leading-relaxed">
           {signalMode === 'adaptive'
             ? adaptiveReason || (
                 nsQueue > ewQueue
@@ -149,7 +149,7 @@ export const SignalIntelligencePanel: React.FC<SignalIntelligencePanelProps> = (
       </div>
 
       {/* Constraints & Limits */}
-      <div className="flex items-center justify-between text-[10px] font-mono text-[#929DA9] pt-1">
+      <div className="flex items-center justify-between text-[10px] font-mono text-[var(--text-secondary)] pt-1">
         <span>Min Green: 6s • Max Green: 28s</span>
         <span>All-Red Clearance: 1.5s</span>
       </div>

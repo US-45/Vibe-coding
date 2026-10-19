@@ -14,15 +14,15 @@ export const PrivacyModal: React.FC<PrivacyModalProps> = ({ isOpen, onClose }) =
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fadeIn">
-      <div className="bg-[#12161B] border border-[#2A323B] rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden">
+      <div className="bg-[var(--bg-card)] border border-[var(--border-color)] rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden transition-colors duration-250">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[#1E252D] bg-[#191F26]">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--border-subtle)] bg-[var(--bg-secondary)]">
           <div className="flex items-center space-x-2.5">
             <div className="w-8 h-8 rounded-lg bg-[#36D98A]/15 border border-[#36D98A]/40 flex items-center justify-center">
               <ShieldCheck className="w-4 h-4 text-[#36D98A]" />
             </div>
             <div>
-              <h2 className="text-sm font-bold text-[#F3F5F7] uppercase tracking-wider">
+              <h2 className="text-sm font-bold text-[var(--text-primary)] uppercase tracking-wider">
                 Privacy by Default Notice
               </h2>
               <p className="text-[11px] text-[#36D98A] font-mono">DPDP Act, 2023 Compliant</p>
@@ -30,19 +30,19 @@ export const PrivacyModal: React.FC<PrivacyModalProps> = ({ isOpen, onClose }) =
           </div>
           <button
             onClick={onClose}
-            className="w-7 h-7 rounded-lg bg-[#12161B] hover:bg-[#2A323B] text-[#929DA9] hover:text-[#F3F5F7] flex items-center justify-center transition-colors"
+            className="w-7 h-7 rounded-lg bg-[var(--bg-card-elevated)] hover:bg-[var(--bg-card)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] flex items-center justify-center transition-colors"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Content */}
-        <div className="p-6 space-y-4 text-xs text-[#F3F5F7]">
-          <div className="p-3.5 rounded-xl bg-[#0B0D10] border border-[#2A323B] flex items-start space-x-3">
+        <div className="p-6 space-y-4 text-xs text-[var(--text-primary)]">
+          <div className="p-3.5 rounded-xl bg-[var(--bg-secondary)] border border-[var(--border-color)] flex items-start space-x-3">
             <Lock className="w-5 h-5 text-[#36D98A] shrink-0 mt-0.5" />
             <div className="space-y-1">
               <div className="font-bold text-[#36D98A]">Zero Personal Data Collection</div>
-              <p className="text-[11px] text-[#929DA9] leading-relaxed">
+              <p className="text-[11px] text-[var(--text-secondary)] leading-relaxed">
                 SmartJunction operates under the principle of <em>Data Minimization and Privacy by Design</em> in compliance with India's <strong>Digital Personal Data Protection (DPDP) Act, 2023</strong>.
               </p>
             </div>
@@ -51,26 +51,26 @@ export const PrivacyModal: React.FC<PrivacyModalProps> = ({ isOpen, onClose }) =
           <div className="space-y-2.5 pt-1">
             <div className="flex items-center space-x-2.5">
               <CheckCircle2 className="w-4 h-4 text-[#36D98A] shrink-0" />
-              <span><strong className="text-[#F3F5F7]">100% Client-Side:</strong> All simulation calculations and rendering run entirely within your local browser memory.</span>
+              <span><strong className="text-[var(--text-primary)]">100% Client-Side:</strong> All simulation calculations and rendering run entirely within your local browser memory.</span>
             </div>
             <div className="flex items-center space-x-2.5">
               <ServerOff className="w-4 h-4 text-[#36D98A] shrink-0" />
-              <span><strong className="text-[#F3F5F7]">Zero Remote Telemetry:</strong> No tracking scripts, analytics endpoints, or cookies.</span>
+              <span><strong className="text-[var(--text-primary)]">Zero Remote Telemetry:</strong> No tracking scripts, analytics endpoints, or cookies.</span>
             </div>
             <div className="flex items-center space-x-2.5">
               <EyeOff className="w-4 h-4 text-[#36D98A] shrink-0" />
-              <span><strong className="text-[#F3F5F7]">Ephemeral Memory:</strong> All simulation metrics are kept strictly in RAM and cleared on Reset or tab refresh.</span>
+              <span><strong className="text-[var(--text-primary)]">Ephemeral Memory:</strong> All simulation metrics are kept strictly in RAM and cleared on Reset or tab refresh.</span>
             </div>
           </div>
 
-          <div className="p-3 rounded-lg bg-[#191F26] border border-[#2A323B] text-[11px] text-[#929DA9]">
-            <strong className="text-[#F3F5F7]">Hackathon Bonus Criterion:</strong> Meets full DPDP 2023 standards for maximum Code Quality points.
+          <div className="p-3 rounded-lg bg-[var(--bg-card-elevated)] border border-[var(--border-color)] text-[11px] text-[var(--text-secondary)]">
+            <strong className="text-[var(--text-primary)]">Hackathon Bonus Criterion:</strong> Meets full DPDP 2023 standards for maximum Code Quality points.
           </div>
 
           <div className="pt-2">
             <button
               onClick={onClose}
-              className="w-full py-2.5 rounded-lg font-bold uppercase tracking-wider text-xs transition-colors shadow-sm"
+              className="w-full py-2.5 rounded-lg font-bold uppercase tracking-wider text-xs transition-colors shadow-sm min-h-[44px]"
               style={{
                 backgroundColor: currentTheme.color,
                 color: currentTheme.textColor,

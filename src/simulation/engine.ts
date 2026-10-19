@@ -59,6 +59,7 @@ export class SimulationEngine {
   private spawnAccumulator: number = 0;
   private seedValue: number = 123456789;
   private useSeededRng: boolean = false;
+  private themeMode: 'dark' | 'light' = 'dark';
 
   // Callback to update React state
   private onStatsUpdate: ((stats: SimulationStats) => void) | null = null;
@@ -95,9 +96,25 @@ export class SimulationEngine {
     return this.useSeededRng ? this.mulberry32() : Math.random();
   }
 
+  public setThemeMode(mode: 'dark' | 'light'): void {
+    this.themeMode = mode;
+  }
+
+  public getThemeMode(): 'dark' | 'light' {
+    return this.themeMode;
+  }
+
   public setCanvas(canvas: HTMLCanvasElement): void {
     this.canvas = canvas;
     this.ctx = canvas.getContext('2d');
+    this.resizeCanvas();
+  }
+
+  public resizeCanvas(): void {
+    if (!this.canvas) return;
+    const dpr = Math.min(typeof window !== 'undefined' ? (window.devicePixelRatio || 1) : 1, 2);
+    this.canvas.width = CANVAS_SIZE * dpr;
+    this.canvas.height = CANVAS_SIZE * dpr;
   }
 
   public setCallbacks(
@@ -578,33 +595,174 @@ export class SimulationEngine {
 
   /**
    * Render the 4-way intersection, authentic Indian road elements:
-   * - Left-Hand Traffic alignment
-   * - Central Concrete Medians with Yellow-Black Kerb Striping
-   * - Corner Triangular Slip Islands for Free Left Turn
+   * - Left-Hand Traffic (LHT) alignment
+   * - Realistic asphalt depth with ambient curb edge shadows
+   * - Central Concrete Medians with 3D bevels & IRC Yellow-Black Kerb Striping
+   * - Painted IRC Directional Stencil Arrows on asphalt lanes
+   * - 3D Cantilever Signal Gantries with Sun Visors, Active Lens Glow, Downward Road Light
    * - Indian Zebra Crossings & Yellow Box Anti-Gridlock
-   * - Signals, Vehicles, and Real-time Queue Counters
+   * - Corner Triangular Slip Islands for Free Left Turn
+   * - Seamless adaptation to Dark (Asphalt Noir) and Light Themes
    */
   public render(timestamp: number): void {
     if (!this.ctx || !this.canvas) return;
     const ctx = this.ctx;
+    const isDark = this.themeMode === 'dark';
 
-    // 1. Canvas Background (Surrounding ground / city blocks)
-    ctx.fillStyle = '#0B0D10';
+    const dpr = Math.min(typeof window !== 'undefined' ? (window.devicePixelRatio || 1) : 1, 2);
+    ctx.save();
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    // 1. Surrounding Terrain Ground / City Blocks
+    const groundColor = isDark ? '#141010' : '#EAE7E2';
+    ctx.fillStyle = groundColor;
     ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
 
     // 2. Asphalt Road Surfaces
-    ctx.fillStyle = '#151A21'; // Clean engineered asphalt
-    // Vertical Road
+    const asphaltColor = isDark ? '#1C1919' : '#363230';
+    ctx.fillStyle = asphaltColor;
+    // Vertical Road (x: 280 to 420)
     ctx.fillRect(HALF_SIZE - HALF_ROAD, 0, ROAD_WIDTH, CANVAS_SIZE);
-    // Horizontal Road
+    // Horizontal Road (y: 280 to 420)
     ctx.fillRect(0, HALF_SIZE - HALF_ROAD, CANVAS_SIZE, ROAD_WIDTH);
 
-    // 3. Indian Central Intersection: Yellow Box Junction Marking (Anti-Gridlock)
+    // 3. Ambient Curb Edge Shadows (Road Depth Effect)
+    this.drawAsphaltEdgeShadows(ctx, isDark);
+
+    // 4. Downward Road Illumination from Signals
+    this.drawRoadSignalReflections(ctx);
+
+    // 5. Indian Central Intersection: Yellow Box Junction Marking (Anti-Gridlock)
+    this.drawYellowBoxJunction(ctx, isDark);
+
+    // 6. Outer Curbs / Footpaths
+    const curbStroke = isDark ? '#413939' : '#D8D2CA';
+    ctx.strokeStyle = curbStroke;
+    ctx.lineWidth = 2.5;
+    ctx.strokeRect(0, 0, HALF_SIZE - HALF_ROAD, HALF_SIZE - HALF_ROAD);
+    ctx.strokeRect(HALF_SIZE + HALF_ROAD, 0, HALF_SIZE - HALF_ROAD, HALF_SIZE - HALF_ROAD);
+    ctx.strokeRect(0, HALF_SIZE + HALF_ROAD, HALF_SIZE - HALF_ROAD, HALF_SIZE - HALF_ROAD);
+    ctx.strokeRect(HALF_SIZE + HALF_ROAD, HALF_SIZE + HALF_ROAD, HALF_SIZE - HALF_ROAD, HALF_SIZE - HALF_ROAD);
+
+    // 7. Authentic Indian Raised Concrete Medians with Yellow & Black Kerb Striping (IRC Standard)
+    this.drawIndianMedians(ctx, isDark);
+
+    // 8. Dashed Lane Divider Markings
+    this.drawLaneDividers(ctx, isDark);
+
+    // 9. Painted IRC Lane Directional Stencil Arrows
+    this.drawLaneArrows(ctx, isDark);
+
+    // 10. Stop Lines for Incoming Traffic (LHT Alignment)
+    this.drawStopLine(ctx, HALF_SIZE, HALF_SIZE - HALF_ROAD, HALF_SIZE + HALF_ROAD, HALF_SIZE - HALF_ROAD, 'north');
+    this.drawStopLine(ctx, HALF_SIZE - HALF_ROAD, HALF_SIZE + HALF_ROAD, HALF_SIZE, HALF_SIZE + HALF_ROAD, 'south');
+    this.drawStopLine(ctx, HALF_SIZE - HALF_ROAD, HALF_SIZE - HALF_ROAD, HALF_SIZE - HALF_ROAD, HALF_SIZE, 'west');
+    this.drawStopLine(ctx, HALF_SIZE + HALF_ROAD, HALF_SIZE, HALF_SIZE + HALF_ROAD, HALF_SIZE + HALF_ROAD, 'east');
+
+    // 11. Zebra Crosswalks
+    this.drawIndianCrosswalks(ctx, isDark);
+
+    // 12. Free Left Turn Channelizer Islands & Guides
+    this.drawFreeLeftTurnIslands(ctx, isDark);
+
+    // 13. Direction Badges & Queue Counters
+    this.drawIndianDirectionBadges(ctx, isDark);
+
+    // 14. Render Vehicles with Multi-pass Shadows & Physics Silhouettes
+    for (const v of this.vehicles) {
+      drawVehicle(ctx, v, timestamp, isDark);
+    }
+
+    // 15. Render 3D Cantilever Signal Gantries with Sun Visors & Lens Glow
+    this.drawIndianSignalHeads(ctx, isDark);
+
+    ctx.restore();
+  }
+
+  /**
+   * Ambient Occlusion shadows along curb edges to give real physical asphalt depth
+   */
+  private drawAsphaltEdgeShadows(ctx: CanvasRenderingContext2D, isDark: boolean): void {
+    ctx.save();
+    const shadowColor = isDark ? 'rgba(0, 0, 0, 0.45)' : 'rgba(0, 0, 0, 0.20)';
+
+    // Vertical road curb shadows
+    // Left edge (x = 280)
+    let grad = ctx.createLinearGradient(HALF_SIZE - HALF_ROAD, 0, HALF_SIZE - HALF_ROAD + 6, 0);
+    grad.addColorStop(0, shadowColor);
+    grad.addColorStop(1, 'transparent');
+    ctx.fillStyle = grad;
+    ctx.fillRect(HALF_SIZE - HALF_ROAD, 0, 6, HALF_SIZE - HALF_ROAD);
+    ctx.fillRect(HALF_SIZE - HALF_ROAD, HALF_SIZE + HALF_ROAD, 6, HALF_SIZE - HALF_ROAD);
+
+    // Right edge (x = 420)
+    grad = ctx.createLinearGradient(HALF_SIZE + HALF_ROAD, 0, HALF_SIZE + HALF_ROAD - 6, 0);
+    grad.addColorStop(0, shadowColor);
+    grad.addColorStop(1, 'transparent');
+    ctx.fillStyle = grad;
+    ctx.fillRect(HALF_SIZE + HALF_ROAD - 6, 0, 6, HALF_SIZE - HALF_ROAD);
+    ctx.fillRect(HALF_SIZE + HALF_ROAD - 6, HALF_SIZE + HALF_ROAD, 6, HALF_SIZE - HALF_ROAD);
+
+    // Horizontal road curb shadows
+    // Top edge (y = 280)
+    grad = ctx.createLinearGradient(0, HALF_SIZE - HALF_ROAD, 0, HALF_SIZE - HALF_ROAD + 6);
+    grad.addColorStop(0, shadowColor);
+    grad.addColorStop(1, 'transparent');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, HALF_SIZE - HALF_ROAD, HALF_SIZE - HALF_ROAD, 6);
+    ctx.fillRect(HALF_SIZE + HALF_ROAD, HALF_SIZE - HALF_ROAD, HALF_SIZE - HALF_ROAD, 6);
+
+    // Bottom edge (y = 420)
+    grad = ctx.createLinearGradient(0, HALF_SIZE + HALF_ROAD, 0, HALF_SIZE + HALF_ROAD - 6);
+    grad.addColorStop(0, shadowColor);
+    grad.addColorStop(1, 'transparent');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, HALF_SIZE + HALF_ROAD - 6, HALF_SIZE - HALF_ROAD, 6);
+    ctx.fillRect(HALF_SIZE + HALF_ROAD, HALF_SIZE + HALF_ROAD - 6, HALF_SIZE - HALF_ROAD, 6);
+
+    ctx.restore();
+  }
+
+  /**
+   * Dynamic downward colored illumination from signals onto stop line asphalt
+   */
+  private drawRoadSignalReflections(ctx: CanvasRenderingContext2D): void {
+    const stops: Record<Direction, { x: number; y: number; rx: number; ry: number }> = {
+      north: { x: HALF_SIZE + 35, y: HALF_SIZE - HALF_ROAD + 14, rx: 32, ry: 18 },
+      south: { x: HALF_SIZE - 35, y: HALF_SIZE + HALF_ROAD - 14, rx: 32, ry: 18 },
+      west: { x: HALF_SIZE - HALF_ROAD + 14, y: HALF_SIZE - 35, rx: 18, ry: 32 },
+      east: { x: HALF_SIZE + HALF_ROAD - 14, y: HALF_SIZE + 35, rx: 18, ry: 32 },
+    };
+
+    const dirs: Direction[] = ['north', 'south', 'east', 'west'];
+    for (const d of dirs) {
+      const state = this.signalController.getSignalState(d);
+      const pos = stops[d];
+      const rgb = state.color === 'green' ? '54, 217, 138' : (state.color === 'amber' ? '255, 189, 89' : '255, 98, 104');
+      const grad = ctx.createRadialGradient(pos.x, pos.y, 2, pos.x, pos.y, Math.max(pos.rx, pos.ry));
+      grad.addColorStop(0, `rgba(${rgb}, 0.22)`);
+      grad.addColorStop(0.6, `rgba(${rgb}, 0.08)`);
+      grad.addColorStop(1, `rgba(${rgb}, 0)`);
+
+      ctx.save();
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.ellipse(pos.x, pos.y, pos.rx, pos.ry, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+  }
+
+  /**
+   * Yellow Box Junction Marking (Anti-Gridlock diagonal grid)
+   */
+  private drawYellowBoxJunction(ctx: CanvasRenderingContext2D, isDark: boolean): void {
     ctx.save();
     ctx.beginPath();
     ctx.rect(HALF_SIZE - HALF_ROAD, HALF_SIZE - HALF_ROAD, ROAD_WIDTH, ROAD_WIDTH);
     ctx.clip();
-    ctx.strokeStyle = 'rgba(255, 189, 89, 0.20)'; // Subtle Indian yellow box
+
+    ctx.strokeStyle = isDark ? 'rgba(255, 189, 89, 0.22)' : 'rgba(217, 119, 6, 0.28)';
     ctx.lineWidth = 2;
     for (let pos = -ROAD_WIDTH; pos <= ROAD_WIDTH * 2; pos += 16) {
       ctx.beginPath();
@@ -612,104 +770,90 @@ export class SimulationEngine {
       ctx.lineTo(HALF_SIZE - HALF_ROAD + pos + ROAD_WIDTH, HALF_SIZE + HALF_ROAD);
       ctx.stroke();
     }
+
+    // Outer perimeter boundary of yellow box
+    ctx.strokeStyle = isDark ? 'rgba(255, 189, 89, 0.40)' : 'rgba(217, 119, 6, 0.45)';
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(HALF_SIZE - HALF_ROAD + 1, HALF_SIZE - HALF_ROAD + 1, ROAD_WIDTH - 2, ROAD_WIDTH - 2);
+
     ctx.restore();
-
-    // 4. Outer Curbs / Footpaths
-    ctx.strokeStyle = '#2A323B';
-    ctx.lineWidth = 2.5;
-    ctx.strokeRect(0, 0, HALF_SIZE - HALF_ROAD, HALF_SIZE - HALF_ROAD);
-    ctx.strokeRect(HALF_SIZE + HALF_ROAD, 0, HALF_SIZE - HALF_ROAD, HALF_SIZE - HALF_ROAD);
-    ctx.strokeRect(0, HALF_SIZE + HALF_ROAD, HALF_SIZE - HALF_ROAD, HALF_SIZE - HALF_ROAD);
-    ctx.strokeRect(HALF_SIZE + HALF_ROAD, HALF_SIZE + HALF_ROAD, HALF_SIZE - HALF_ROAD, HALF_SIZE - HALF_ROAD);
-
-    // 5. Authentic Indian Raised Concrete Medians with Yellow & Black Kerb Striping (IRC Standard)
-    this.drawIndianMedians(ctx);
-
-    // 6. Dashed Lane Divider Markings
-    this.drawLaneDividers(ctx);
-
-    // 7. Stop Lines for Incoming Traffic (LHT Alignment)
-    ctx.lineWidth = 4;
-    // North stop line: on EAST half (x in [350, 420], y = 280)
-    this.drawStopLine(ctx, HALF_SIZE, HALF_SIZE - HALF_ROAD, HALF_SIZE + HALF_ROAD, HALF_SIZE - HALF_ROAD, 'north');
-    // South stop line: on WEST half (x in [280, 350], y = 420)
-    this.drawStopLine(ctx, HALF_SIZE - HALF_ROAD, HALF_SIZE + HALF_ROAD, HALF_SIZE, HALF_SIZE + HALF_ROAD, 'south');
-    // West stop line: on NORTH half (y in [280, 350], x = 280)
-    this.drawStopLine(ctx, HALF_SIZE - HALF_ROAD, HALF_SIZE - HALF_ROAD, HALF_SIZE - HALF_ROAD, HALF_SIZE, 'west');
-    // East stop line: on SOUTH half (y in [350, 420], x = 420)
-    this.drawStopLine(ctx, HALF_SIZE + HALF_ROAD, HALF_SIZE, HALF_SIZE + HALF_ROAD, HALF_SIZE + HALF_ROAD, 'east');
-
-    // 8. Zebra Crosswalks
-    this.drawIndianCrosswalks(ctx);
-
-    // 9. Free Left Turn Channelizer Islands & Guides
-    this.drawFreeLeftTurnIslands(ctx);
-
-    // 10. Direction Badges & Queue Counters
-    this.drawIndianDirectionBadges(ctx);
-
-    // 11. Render Vehicles
-    for (const v of this.vehicles) {
-      drawVehicle(ctx, v, timestamp);
-    }
-
-    // 12. Render Traffic Signals on Pedestals
-    this.drawIndianSignalHeads(ctx);
   }
 
   /**
-   * Draw Indian IRC-Standard Raised Concrete Medians with Yellow & Black Kerb Markings
+   * Draw Indian IRC-Standard Raised Concrete Medians with 3D Bevels & Yellow-Black Kerb Markings
    */
-  private drawIndianMedians(ctx: CanvasRenderingContext2D): void {
+  private drawIndianMedians(ctx: CanvasRenderingContext2D, isDark: boolean): void {
     const stripeLen = 14;
-    const medianWidth = 6;
+    const medianWidth = 7;
+    const halfMed = medianWidth / 2;
+    const darkKerb = isDark ? '#1C1919' : '#242020';
+    const yellowKerb = isDark ? '#B59447' : '#D97706';
 
-    // A) North Median (from y=0 to y=260 along x=350)
-    for (let y = 0; y < HALF_SIZE - HALF_ROAD - 20; y += stripeLen) {
-      const isYellow = Math.floor(y / stripeLen) % 2 === 0;
-      ctx.fillStyle = isYellow ? '#F59E0B' : '#111827';
-      ctx.fillRect(HALF_SIZE - medianWidth / 2, y, medianWidth, Math.min(stripeLen, HALF_SIZE - HALF_ROAD - 20 - y));
-    }
+    const drawSection = (x1: number, y1: number, x2: number, y2: number, isVertical: boolean) => {
+      ctx.save();
+      // Drop Shadow for 3D elevation
+      ctx.fillStyle = isDark ? 'rgba(0, 0, 0, 0.45)' : 'rgba(0, 0, 0, 0.22)';
+      if (isVertical) {
+        ctx.fillRect(x1 - halfMed + 1.5, y1 + 1.5, medianWidth, y2 - y1);
+      } else {
+        ctx.fillRect(x1 + 1.5, y1 - halfMed + 1.5, x2 - x1, medianWidth);
+      }
 
-    // B) South Median (from y=440 to y=700 along x=350)
-    for (let y = HALF_SIZE + HALF_ROAD + 20; y < CANVAS_SIZE; y += stripeLen) {
-      const isYellow = Math.floor((y - (HALF_SIZE + HALF_ROAD + 20)) / stripeLen) % 2 === 0;
-      ctx.fillStyle = isYellow ? '#F59E0B' : '#111827';
-      ctx.fillRect(HALF_SIZE - medianWidth / 2, y, medianWidth, Math.min(stripeLen, CANVAS_SIZE - y));
-    }
+      // Alternating Striped Segments
+      const totalLen = isVertical ? y2 - y1 : x2 - x1;
+      for (let p = 0; p < totalLen; p += stripeLen) {
+        const isYellow = Math.floor(p / stripeLen) % 2 === 0;
+        ctx.fillStyle = isYellow ? yellowKerb : darkKerb;
+        const curLen = Math.min(stripeLen, totalLen - p);
+        if (isVertical) {
+          ctx.fillRect(x1 - halfMed, y1 + p, medianWidth, curLen);
+        } else {
+          ctx.fillRect(x1 + p, y1 - halfMed, curLen, medianWidth);
+        }
+      }
 
-    // C) West Median (from x=0 to x=260 along y=350)
-    for (let x = 0; x < HALF_SIZE - HALF_ROAD - 20; x += stripeLen) {
-      const isYellow = Math.floor(x / stripeLen) % 2 === 0;
-      ctx.fillStyle = isYellow ? '#F59E0B' : '#111827';
-      ctx.fillRect(x, HALF_SIZE - medianWidth / 2, Math.min(stripeLen, HALF_SIZE - HALF_ROAD - 20 - x), medianWidth);
-    }
+      // Top bevel highlight line (simulating sunlight from top-left)
+      ctx.strokeStyle = isDark ? 'rgba(255, 255, 255, 0.35)' : 'rgba(255, 255, 255, 0.65)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      if (isVertical) {
+        ctx.moveTo(x1 - halfMed, y1);
+        ctx.lineTo(x1 - halfMed, y2);
+      } else {
+        ctx.moveTo(x1, y1 - halfMed);
+        ctx.lineTo(x2, y1 - halfMed);
+      }
+      ctx.stroke();
 
-    // D) East Median (from x=440 to x=700 along y=350)
-    for (let x = HALF_SIZE + HALF_ROAD + 20; x < CANVAS_SIZE; x += stripeLen) {
-      const isYellow = Math.floor((x - (HALF_SIZE + HALF_ROAD + 20)) / stripeLen) % 2 === 0;
-      ctx.fillStyle = isYellow ? '#F59E0B' : '#111827';
-      ctx.fillRect(x, HALF_SIZE - medianWidth / 2, Math.min(stripeLen, CANVAS_SIZE - x), medianWidth);
-    }
+      ctx.restore();
+    };
+
+    // A) North Median (from y=0 to y=258 along x=350)
+    drawSection(HALF_SIZE, 0, HALF_SIZE, HALF_SIZE - HALF_ROAD - 22, true);
+
+    // B) South Median (from y=442 to y=700 along x=350)
+    drawSection(HALF_SIZE, HALF_SIZE + HALF_ROAD + 22, HALF_SIZE, CANVAS_SIZE, true);
+
+    // C) West Median (from x=0 to x=258 along y=350)
+    drawSection(0, HALF_SIZE, HALF_SIZE - HALF_ROAD - 22, HALF_SIZE, false);
+
+    // D) East Median (from x=442 to x=700 along y=350)
+    drawSection(HALF_SIZE + HALF_ROAD + 22, HALF_SIZE, CANVAS_SIZE, HALF_SIZE, false);
   }
 
-  private drawLaneDividers(ctx: CanvasRenderingContext2D): void {
+  private drawLaneDividers(ctx: CanvasRenderingContext2D, isDark: boolean): void {
     ctx.save();
-    ctx.strokeStyle = 'rgba(224, 216, 208, 0.45)';
+    ctx.strokeStyle = isDark ? 'rgba(242, 238, 238, 0.40)' : 'rgba(255, 255, 255, 0.60)';
     ctx.lineWidth = 1.5;
     ctx.setLineDash([8, 10]);
 
     // Vertical Road Lane Dividers
-    // North Approach & Exit
     ctx.beginPath();
     ctx.moveTo(HALF_SIZE - LANE_WIDTH, 0);
     ctx.lineTo(HALF_SIZE - LANE_WIDTH, HALF_SIZE - HALF_ROAD);
     ctx.moveTo(HALF_SIZE + LANE_WIDTH, 0);
     ctx.lineTo(HALF_SIZE + LANE_WIDTH, HALF_SIZE - HALF_ROAD);
-    ctx.stroke();
 
-    // South Approach & Exit
-    ctx.beginPath();
     ctx.moveTo(HALF_SIZE - LANE_WIDTH, HALF_SIZE + HALF_ROAD);
     ctx.lineTo(HALF_SIZE - LANE_WIDTH, CANVAS_SIZE);
     ctx.moveTo(HALF_SIZE + LANE_WIDTH, HALF_SIZE + HALF_ROAD);
@@ -717,16 +861,12 @@ export class SimulationEngine {
     ctx.stroke();
 
     // Horizontal Road Lane Dividers
-    // West Approach & Exit
     ctx.beginPath();
     ctx.moveTo(0, HALF_SIZE - LANE_WIDTH);
     ctx.lineTo(HALF_SIZE - HALF_ROAD, HALF_SIZE - LANE_WIDTH);
     ctx.moveTo(0, HALF_SIZE + LANE_WIDTH);
     ctx.lineTo(HALF_SIZE - HALF_ROAD, HALF_SIZE + LANE_WIDTH);
-    ctx.stroke();
 
-    // East Approach & Exit
-    ctx.beginPath();
     ctx.moveTo(HALF_SIZE + HALF_ROAD, HALF_SIZE - LANE_WIDTH);
     ctx.lineTo(CANVAS_SIZE, HALF_SIZE - LANE_WIDTH);
     ctx.moveTo(HALF_SIZE + HALF_ROAD, HALF_SIZE + LANE_WIDTH);
@@ -734,6 +874,81 @@ export class SimulationEngine {
     ctx.stroke();
 
     ctx.restore();
+  }
+
+  /**
+   * Painted IRC Lane Directional Stencil Arrows on Asphalt
+   */
+  private drawLaneArrows(ctx: CanvasRenderingContext2D, isDark: boolean): void {
+    const arrowColor = isDark ? 'rgba(242, 238, 238, 0.38)' : 'rgba(255, 255, 255, 0.62)';
+
+    // Stencil arrow renderer
+    const drawArrow = (x: number, y: number, angle: number, isCurbside: boolean) => {
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate(angle);
+      ctx.fillStyle = arrowColor;
+      ctx.strokeStyle = arrowColor;
+      ctx.lineWidth = 2;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+
+      // Straight shaft
+      ctx.fillRect(-1.5, -8, 3, 16);
+      // Straight arrowhead
+      ctx.beginPath();
+      ctx.moveTo(0, -14);
+      ctx.lineTo(-4.5, -7);
+      ctx.lineTo(4.5, -7);
+      ctx.closePath();
+      ctx.fill();
+
+      // Branch arrow (Left turn for curbside, Right turn for centerline)
+      if (isCurbside) {
+        // Left turn curved branch
+        ctx.beginPath();
+        ctx.moveTo(0, 2);
+        ctx.quadraticCurveTo(-6, 2, -9, -4);
+        ctx.stroke();
+        // Left arrowhead
+        ctx.beginPath();
+        ctx.moveTo(-13, -5);
+        ctx.lineTo(-7, -2);
+        ctx.lineTo(-7, -8);
+        ctx.closePath();
+        ctx.fill();
+      } else {
+        // Right turn curved branch
+        ctx.beginPath();
+        ctx.moveTo(0, 2);
+        ctx.quadraticCurveTo(6, 2, 9, -4);
+        ctx.stroke();
+        // Right arrowhead
+        ctx.beginPath();
+        ctx.moveTo(13, -5);
+        ctx.lineTo(7, -2);
+        ctx.lineTo(7, -8);
+        ctx.closePath();
+        ctx.fill();
+      }
+      ctx.restore();
+    };
+
+    // North Approach (East half, heading south: angle = Math.PI)
+    drawArrow(HALF_SIZE + HALF_ROAD - LANE_0_OFFSET, 160, Math.PI, true);  // Lane 0: Straight + Left
+    drawArrow(HALF_SIZE + LANE_1_OFFSET, 160, Math.PI, false);             // Lane 1: Straight + Right
+
+    // South Approach (West half, heading north: angle = 0)
+    drawArrow(HALF_SIZE - HALF_ROAD + LANE_0_OFFSET, 540, 0, true);        // Lane 0: Straight + Left
+    drawArrow(HALF_SIZE - LANE_1_OFFSET, 540, 0, false);                   // Lane 1: Straight + Right
+
+    // West Approach (North half, heading east: angle = Math.PI / 2)
+    drawArrow(160, HALF_SIZE - HALF_ROAD + LANE_0_OFFSET, Math.PI / 2, true); // Lane 0
+    drawArrow(160, HALF_SIZE - LANE_1_OFFSET, Math.PI / 2, false);            // Lane 1
+
+    // East Approach (South half, heading west: angle = -Math.PI / 2)
+    drawArrow(540, HALF_SIZE + HALF_ROAD - LANE_0_OFFSET, -Math.PI / 2, true); // Lane 0
+    drawArrow(540, HALF_SIZE + LANE_1_OFFSET, -Math.PI / 2, false);            // Lane 1
   }
 
   private drawStopLine(
@@ -746,7 +961,7 @@ export class SimulationEngine {
   ): void {
     const signal = this.signalController.getSignalState(direction);
     ctx.save();
-    ctx.strokeStyle = signal.color === 'green' ? '#36D98A' : (signal.color === 'amber' ? '#FFBD59' : '#D8DFE7');
+    ctx.strokeStyle = signal.color === 'green' ? '#36D98A' : (signal.color === 'amber' ? '#FFBD59' : '#F2EEEE');
     ctx.lineWidth = 4;
     ctx.beginPath();
     ctx.moveTo(x1, y1);
@@ -755,13 +970,13 @@ export class SimulationEngine {
     ctx.restore();
   }
 
-  private drawIndianCrosswalks(ctx: CanvasRenderingContext2D): void {
+  private drawIndianCrosswalks(ctx: CanvasRenderingContext2D, isDark: boolean): void {
     ctx.save();
-    ctx.fillStyle = 'rgba(216, 223, 231, 0.25)';
+    ctx.fillStyle = isDark ? 'rgba(242, 238, 238, 0.32)' : 'rgba(255, 255, 255, 0.60)';
     const stripeWidth = 6;
     const stripeGap = 6;
 
-    // North crosswalk (in front of North stop line, spanning whole vertical road)
+    // North crosswalk
     for (let x = HALF_SIZE - HALF_ROAD + 4; x < HALF_SIZE + HALF_ROAD - 4; x += stripeWidth + stripeGap) {
       ctx.fillRect(x, HALF_SIZE - HALF_ROAD - 14, stripeWidth, 10);
     }
@@ -783,12 +998,12 @@ export class SimulationEngine {
   /**
    * Corner Triangular Channelizer Islands for Free Left Turn
    */
-  private drawFreeLeftTurnIslands(ctx: CanvasRenderingContext2D): void {
+  private drawFreeLeftTurnIslands(ctx: CanvasRenderingContext2D, isDark: boolean): void {
     ctx.save();
 
     // Subtle slip path dashed lines if Free Left Turn is enabled
     if (this.config.freeLeftTurn) {
-      ctx.strokeStyle = 'rgba(198, 243, 107, 0.55)'; // Accent Lime
+      ctx.strokeStyle = isDark ? 'rgba(198, 243, 107, 0.65)' : 'rgba(101, 163, 13, 0.75)';
       ctx.lineWidth = 2;
       ctx.setLineDash([4, 4]);
 
@@ -817,8 +1032,14 @@ export class SimulationEngine {
 
     // Triangular Corner Islands with Yellow/Black Kerb edges
     const drawIsland = (px: number, py: number, r: number) => {
-      ctx.fillStyle = '#12161B';
-      ctx.strokeStyle = '#FFBD59'; // IRC Yellow curb border
+      // Drop Shadow
+      ctx.fillStyle = isDark ? 'rgba(0, 0, 0, 0.4)' : 'rgba(0, 0, 0, 0.18)';
+      ctx.beginPath();
+      ctx.arc(px + 1.5, py + 1.5, r, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = isDark ? '#1C1919' : '#FFFFFF';
+      ctx.strokeStyle = isDark ? '#B59447' : '#9B792F';
       ctx.lineWidth = 2;
       ctx.beginPath();
       ctx.arc(px, py, r, 0, Math.PI * 2);
@@ -834,7 +1055,7 @@ export class SimulationEngine {
     ctx.restore();
   }
 
-  private drawIndianDirectionBadges(ctx: CanvasRenderingContext2D): void {
+  private drawIndianDirectionBadges(ctx: CanvasRenderingContext2D, isDark: boolean): void {
     const queues = QueueManager.calculateQueueLengths(this.vehicles);
 
     // Positions matching Indian LHT incoming sides
@@ -846,7 +1067,7 @@ export class SimulationEngine {
     };
 
     ctx.save();
-    ctx.font = 'bold 11px Inter, sans-serif';
+    ctx.font = 'bold 11px Inter, system-ui, sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
 
@@ -856,129 +1077,192 @@ export class SimulationEngine {
       const q = queues[d];
 
       // Badge Card
-      ctx.fillStyle = '#12161B';
-      ctx.strokeStyle = q > 6 ? '#FF6268' : (q > 3 ? '#FFBD59' : '#2A323B');
+      ctx.fillStyle = isDark ? '#242020' : '#FFFFFF';
+      ctx.strokeStyle = q > 6 ? '#A41717' : (q > 3 ? '#FFBD59' : (isDark ? '#413939' : '#D8D2CA'));
       ctx.lineWidth = 1.5;
       ctx.beginPath();
-      ctx.roundRect(pos.x - 38, pos.y - 12, 76, 24, 4);
+      ctx.roundRect(pos.x - 38, pos.y - 12, 76, 24, 6);
       ctx.fill();
       ctx.stroke();
 
       // Text with queue
-      ctx.fillStyle = '#F3F5F7';
+      ctx.fillStyle = isDark ? '#F2EEEE' : '#242020';
       ctx.fillText(`${pos.label}: ${q}`, pos.x, pos.y);
     }
     ctx.restore();
   }
 
-  private drawIndianSignalHeads(ctx: CanvasRenderingContext2D): void {
+  private drawIndianSignalHeads(ctx: CanvasRenderingContext2D, isDark: boolean): void {
     const dirs: Direction[] = ['north', 'south', 'east', 'west'];
 
     // Signal head positions placed on driver's side curb in Indian Left-Hand Traffic:
-    // North incoming is on East half -> Signal is on East curb (x=442, y=262)
-    // South incoming is on West half -> Signal is on West curb (x=258, y=438)
-    // West incoming is on North half -> Signal is on North curb (x=262, y=258)
-    // East incoming is on South half -> Signal is on South curb (x=438, y=442)
-    const coords: Record<Direction, { x: number; y: number }> = {
-      north: { x: HALF_SIZE + HALF_ROAD + 22, y: HALF_SIZE - HALF_ROAD - 18 },
-      south: { x: HALF_SIZE - HALF_ROAD - 22, y: HALF_SIZE + HALF_ROAD + 18 },
-      west: { x: HALF_SIZE - HALF_ROAD - 18, y: HALF_SIZE - HALF_ROAD - 22 },
-      east: { x: HALF_SIZE + HALF_ROAD + 18, y: HALF_SIZE + HALF_ROAD + 22 },
+    // North incoming is on East half -> Signal is on East curb (x=444, y=262)
+    // South incoming is on West half -> Signal is on West curb (x=256, y=438)
+    // West incoming is on North half -> Signal is on North curb (x=262, y=256)
+    // East incoming is on South half -> Signal is on South curb (x=438, y=444)
+    const coords: Record<Direction, { x: number; y: number; gantryAngle: number }> = {
+      north: { x: HALF_SIZE + HALF_ROAD + 24, y: HALF_SIZE - HALF_ROAD - 18, gantryAngle: Math.PI },
+      south: { x: HALF_SIZE - HALF_ROAD - 24, y: HALF_SIZE + HALF_ROAD + 18, gantryAngle: 0 },
+      west: { x: HALF_SIZE - HALF_ROAD - 18, y: HALF_SIZE - HALF_ROAD - 24, gantryAngle: Math.PI / 2 },
+      east: { x: HALF_SIZE + HALF_ROAD + 18, y: HALF_SIZE + HALF_ROAD + 24, gantryAngle: -Math.PI / 2 },
     };
 
     for (const d of dirs) {
       const state = this.signalController.getSignalState(d);
       const pos = coords[d];
-      this.drawSingleSignalHead(ctx, pos.x, pos.y, state);
+      this.drawSingleSignalHead(ctx, pos.x, pos.y, state, pos.gantryAngle, isDark);
     }
   }
 
+  /**
+   * 3D Cantilever Signal Gantry with Sun Visors, Active Lens Glow & Tabular Countdown
+   */
   private drawSingleSignalHead(
     ctx: CanvasRenderingContext2D,
     x: number,
     y: number,
-    state: SignalState
+    state: SignalState,
+    gantryAngle: number,
+    isDark: boolean
   ): void {
     ctx.save();
     ctx.translate(x, y);
 
-    const w = 24;
-    const h = 58;
+    // 1. Cantilever Gantry Arm & Mounting Pole
+    ctx.save();
+    ctx.rotate(gantryAngle);
+    // Base mounting flange on curb
+    ctx.fillStyle = isDark ? '#413939' : '#8C827A';
+    ctx.fillRect(-3, -3, 6, 6);
+    // Cantilever horizontal truss arm extending toward the roadway
+    ctx.strokeStyle = isDark ? '#332B2B' : '#736B63';
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.lineTo(12, 0);
+    ctx.stroke();
+    ctx.restore();
 
-    // Signal Housing (Black Powder Coated)
-    ctx.fillStyle = '#111827';
-    ctx.strokeStyle = '#374151';
+    const w = 26;
+    const h = 62;
+
+    // 2. Drop Shadow of the Signal Housing
+    ctx.fillStyle = isDark ? 'rgba(0, 0, 0, 0.55)' : 'rgba(0, 0, 0, 0.25)';
+    ctx.beginPath();
+    ctx.roundRect(-w / 2 + 2, -h / 2 + 3, w, h, 6);
+    ctx.fill();
+
+    // 3. Main Signal Housing (Powder-Coated Weatherproof Aluminum)
+    ctx.fillStyle = isDark ? '#1C1919' : '#2A2525';
+    ctx.strokeStyle = isDark ? '#413939' : '#5A524D';
     ctx.lineWidth = 1.5;
     ctx.beginPath();
     ctx.roundRect(-w / 2, -h / 2, w, h, 6);
     ctx.fill();
     ctx.stroke();
 
-    // Red Light (Top)
+    // Helper: Draw 3D Sun Visor Cowl over lamp lens
+    const drawSunVisor = (cy: number) => {
+      ctx.save();
+      ctx.fillStyle = isDark ? '#141010' : '#1A1818';
+      ctx.strokeStyle = isDark ? '#413939' : '#3E3834';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      // Arched cowl protruding over the top half of the lens
+      ctx.arc(0, cy, 8, Math.PI, 0, false);
+      ctx.lineTo(8, cy - 2);
+      ctx.arc(0, cy - 2, 8, 0, Math.PI, true);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+      ctx.restore();
+    };
+
+    // A) RED LIGHT (Top, cy = -19)
     const isRed = state.color === 'red';
-    ctx.fillStyle = isRed ? '#E54848' : '#2D1515';
+    drawSunVisor(-19);
+    ctx.fillStyle = isRed ? '#FF6268' : '#331515';
     ctx.beginPath();
-    ctx.arc(0, -18, 6.5, 0, Math.PI * 2);
+    ctx.arc(0, -19, 6.5, 0, Math.PI * 2);
     ctx.fill();
     if (isRed) {
-      ctx.shadowColor = '#E54848';
-      ctx.shadowBlur = 8;
+      // Optical Lens Glow Bloom
+      const glowGrad = ctx.createRadialGradient(0, -19, 2, 0, -19, 14);
+      glowGrad.addColorStop(0, 'rgba(255, 98, 104, 0.65)');
+      glowGrad.addColorStop(1, 'rgba(255, 98, 104, 0)');
+      ctx.fillStyle = glowGrad;
+      ctx.beginPath();
+      ctx.arc(0, -19, 14, 0, Math.PI * 2);
+      ctx.fill();
+
+      // High-contrast shape symbol
       ctx.fillStyle = '#FFFFFF';
       ctx.font = 'bold 8px monospace';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      ctx.fillText('■', 0, -18);
-      ctx.shadowBlur = 0;
+      ctx.fillText('■', 0, -19);
     }
 
-    // Amber Light (Middle)
+    // B) AMBER LIGHT (Middle, cy = 0)
     const isAmber = state.color === 'amber';
-    ctx.fillStyle = isAmber ? '#F2B544' : '#2D2311';
+    drawSunVisor(0);
+    ctx.fillStyle = isAmber ? '#FFBD59' : '#332711';
     ctx.beginPath();
     ctx.arc(0, 0, 6.5, 0, Math.PI * 2);
     ctx.fill();
     if (isAmber) {
-      ctx.shadowColor = '#F2B544';
-      ctx.shadowBlur = 8;
+      const glowGrad = ctx.createRadialGradient(0, 0, 2, 0, 0, 14);
+      glowGrad.addColorStop(0, 'rgba(255, 189, 89, 0.65)');
+      glowGrad.addColorStop(1, 'rgba(255, 189, 89, 0)');
+      ctx.fillStyle = glowGrad;
+      ctx.beginPath();
+      ctx.arc(0, 0, 14, 0, Math.PI * 2);
+      ctx.fill();
+
       ctx.fillStyle = '#FFFFFF';
       ctx.font = 'bold 8px monospace';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.fillText('◆', 0, 0);
-      ctx.shadowBlur = 0;
     }
 
-    // Green Light (Bottom)
+    // C) GREEN LIGHT (Bottom, cy = 19)
     const isGreen = state.color === 'green';
-    ctx.fillStyle = isGreen ? '#39B86B' : '#112D1C';
+    drawSunVisor(19);
+    ctx.fillStyle = isGreen ? '#36D98A' : '#113320';
     ctx.beginPath();
-    ctx.arc(0, 18, 6.5, 0, Math.PI * 2);
+    ctx.arc(0, 19, 6.5, 0, Math.PI * 2);
     ctx.fill();
     if (isGreen) {
-      ctx.shadowColor = '#39B86B';
-      ctx.shadowBlur = 8;
+      const glowGrad = ctx.createRadialGradient(0, 19, 2, 0, 19, 14);
+      glowGrad.addColorStop(0, 'rgba(54, 217, 138, 0.65)');
+      glowGrad.addColorStop(1, 'rgba(54, 217, 138, 0)');
+      ctx.fillStyle = glowGrad;
+      ctx.beginPath();
+      ctx.arc(0, 19, 14, 0, Math.PI * 2);
+      ctx.fill();
+
       ctx.fillStyle = '#FFFFFF';
       ctx.font = 'bold 8px monospace';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      ctx.fillText('▲', 0, 18);
-      ctx.shadowBlur = 0;
+      ctx.fillText('▲', 0, 19);
     }
 
-    // Digital Countdown Pill (Indian Electronic Traffic Timer)
-    ctx.fillStyle = '#1F2937';
-    ctx.strokeStyle = state.color === 'green' ? '#39B86B' : (state.color === 'amber' ? '#F2B544' : '#E54848');
-    ctx.lineWidth = 1;
+    // 4. Digital Countdown Pill (Indian Electronic Traffic Timer)
+    ctx.fillStyle = isDark ? '#141010' : '#FFFFFF';
+    ctx.strokeStyle = state.color === 'green' ? '#36D98A' : (state.color === 'amber' ? '#FFBD59' : '#FF6268');
+    ctx.lineWidth = 1.5;
     ctx.beginPath();
-    ctx.roundRect(-16, h / 2 + 3, 32, 16, 4);
+    ctx.roundRect(-17, h / 2 + 4, 34, 18, 5);
     ctx.fill();
     ctx.stroke();
 
-    ctx.fillStyle = '#F2EEEE';
+    ctx.fillStyle = isDark ? '#F2EEEE' : '#242020';
     ctx.font = 'bold 10px monospace';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText(`${state.remainingTime}s`, 0, h / 2 + 11);
+    ctx.fillText(`${state.remainingTime}s`, 0, h / 2 + 13);
 
     ctx.restore();
   }

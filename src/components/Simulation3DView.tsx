@@ -55,7 +55,7 @@ export const Simulation3DView: React.FC<Simulation3DViewProps> = ({
   onSwitchTo2D,
 }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
-  const { currentTheme } = useTheme();
+  const { currentTheme, mode, isDark, tokens } = useTheme();
 
   const [cameraPreset, setCameraPreset] = useState<CameraPreset>('isometric');
   const [lightingMode, setLightingMode] = useState<LightingMode>('dusk');
@@ -69,6 +69,8 @@ export const Simulation3DView: React.FC<Simulation3DViewProps> = ({
   const controlsRef = useRef<OrbitControls | null>(null);
   const vehicleMeshesRef = useRef<Map<string, VehicleMeshGroup>>(new Map());
   const signalLampsRef = useRef<Record<Direction, { red: THREE.Mesh; amber: THREE.Mesh; green: THREE.Mesh; glow: THREE.PointLight }>>({} as any);
+  const terrainMatRef = useRef<THREE.MeshStandardMaterial | null>(null);
+  const roadMatRef = useRef<THREE.MeshStandardMaterial | null>(null);
   const lightsRef = useRef<{
     ambient: THREE.AmbientLight;
     dirLight: THREE.DirectionalLight;
@@ -181,21 +183,23 @@ export const Simulation3DView: React.FC<Simulation3DViewProps> = ({
     decorGroupRef.current = decorGroup;
 
     // Roads, medians, and markings in scene; buildings & trees in decorGroup
-    build3DJunctionEnvironment(scene, decorGroup);
+    build3DJunctionEnvironment(scene, decorGroup, terrainMatRef, roadMatRef);
 
     // 9. Build Overhead Signal Gantries with Active Road Spot Illumination
     buildSignalGantries(scene, signalLampsRef);
 
-    // Handle Window Resize
-    const handleResize = () => {
-      if (!container || !camera || !renderer) return;
-      const w = container.clientWidth;
-      const h = container.clientHeight;
-      camera.aspect = w / h;
-      camera.updateProjectionMatrix();
-      renderer.setSize(w, h);
-    };
-    window.addEventListener('resize', handleResize);
+    // Responsive Container ResizeObserver
+    const resizeObserver = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        const { width: w, height: h } = entry.contentRect;
+        if (w > 0 && h > 0 && camera && renderer) {
+          camera.aspect = w / h;
+          camera.updateProjectionMatrix();
+          renderer.setSize(w, h);
+        }
+      }
+    });
+    resizeObserver.observe(container);
 
     // Animation Loop
     let animId: number;
@@ -229,45 +233,65 @@ export const Simulation3DView: React.FC<Simulation3DViewProps> = ({
 
     return () => {
       cancelAnimationFrame(animId);
-      window.removeEventListener('resize', handleResize);
+      resizeObserver.disconnect();
       renderer.dispose();
       controls.dispose();
     };
   }, []);
 
-  // Update lighting mode (Day / Dusk / Night)
+  // Update lighting and theme mode (Day / Dusk / Night + Light / Dark Theme)
   useEffect(() => {
     if (!lightsRef.current || !sceneRef.current) return;
     const { ambient, dirLight, streetLights } = lightsRef.current;
     const scene = sceneRef.current;
 
-    if (lightingMode === 'day') {
-      scene.background = new THREE.Color(0x1a212d);
-      scene.fog = new THREE.FogExp2(0x1a212d, 0.007);
-      ambient.intensity = 1.05;
-      ambient.color.setHex(0xffffff);
-      dirLight.intensity = 2.4;
-      dirLight.color.setHex(0xfff8ee);
-      streetLights.forEach((l) => (l.intensity = 0.1));
-    } else if (lightingMode === 'dusk') {
-      scene.background = new THREE.Color(0x0c0f14);
-      scene.fog = new THREE.FogExp2(0x0c0f14, 0.010);
-      ambient.intensity = 0.60;
-      ambient.color.setHex(0x94a3b8);
-      dirLight.intensity = 1.4;
-      dirLight.color.setHex(0xffaa5e);
-      streetLights.forEach((l) => (l.intensity = 1.5));
-    } else {
-      // Night Mode
-      scene.background = new THREE.Color(0x050608);
-      scene.fog = new THREE.FogExp2(0x050608, 0.015);
-      ambient.intensity = 0.22;
-      ambient.color.setHex(0x384252);
-      dirLight.intensity = 0.35;
-      dirLight.color.setHex(0x64748b);
-      streetLights.forEach((l) => (l.intensity = 2.8));
+    // Update road and terrain surface materials
+    if (terrainMatRef.current) {
+      terrainMatRef.current.color.setHex(isDark ? 0x141010 : 0xEAE7E2);
     }
-  }, [lightingMode]);
+    if (roadMatRef.current) {
+      roadMatRef.current.color.setHex(isDark ? 0x1C1919 : 0x363230);
+    }
+
+    if (!isDark) {
+      // Architectural Light Theme Mode
+      scene.background = new THREE.Color(0xF4F2EF);
+      scene.fog = new THREE.FogExp2(0xF4F2EF, 0.007);
+      ambient.intensity = 1.15;
+      ambient.color.setHex(0xffffff);
+      dirLight.intensity = 2.2;
+      dirLight.color.setHex(0xfff8ee);
+      streetLights.forEach((l) => (l.intensity = 0.2));
+    } else {
+      // Dark Theme (Asphalt Noir) Mode
+      if (lightingMode === 'day') {
+        scene.background = new THREE.Color(0x1a212d);
+        scene.fog = new THREE.FogExp2(0x1a212d, 0.007);
+        ambient.intensity = 1.05;
+        ambient.color.setHex(0xffffff);
+        dirLight.intensity = 2.4;
+        dirLight.color.setHex(0xfff8ee);
+        streetLights.forEach((l) => (l.intensity = 0.1));
+      } else if (lightingMode === 'dusk') {
+        scene.background = new THREE.Color(0x141010);
+        scene.fog = new THREE.FogExp2(0x141010, 0.010);
+        ambient.intensity = 0.65;
+        ambient.color.setHex(0x94a3b8);
+        dirLight.intensity = 1.5;
+        dirLight.color.setHex(0xffaa5e);
+        streetLights.forEach((l) => (l.intensity = 1.5));
+      } else {
+        // Night Mode
+        scene.background = new THREE.Color(0x050608);
+        scene.fog = new THREE.FogExp2(0x050608, 0.015);
+        ambient.intensity = 0.22;
+        ambient.color.setHex(0x384252);
+        dirLight.intensity = 0.35;
+        dirLight.color.setHex(0x64748b);
+        streetLights.forEach((l) => (l.intensity = 2.8));
+      }
+    }
+  }, [mode, isDark, lightingMode]);
 
   // Sync decoration visibility with showDecorations state
   useEffect(() => {
@@ -306,23 +330,23 @@ export const Simulation3DView: React.FC<Simulation3DViewProps> = ({
   };
 
   return (
-    <div className="bg-[#12161B] border border-[#2A323B] rounded-xl p-3 sm:p-4 shadow-sm flex flex-col items-center relative overflow-hidden">
+    <div className="bg-[var(--bg-card)] border border-[var(--border-color)] rounded-xl p-3 sm:p-4 shadow-sm flex flex-col items-center relative overflow-hidden transition-colors duration-250 w-full">
       {/* Top Header Bar with 2D/3D Mode Switcher and Presets */}
       <div className="w-full flex flex-wrap items-center justify-between gap-2 mb-3 text-xs">
         <div className="flex items-center space-x-2">
           {/* Switch back to 2D Plan View */}
           {onSwitchTo2D && (
-            <div className="flex items-center space-x-1 bg-[#0B0D10] p-0.5 rounded-lg border border-[#2A323B]">
+            <div className="flex items-center space-x-1 bg-[var(--bg-secondary)] p-0.5 rounded-lg border border-[var(--border-color)]">
               <button
                 onClick={onSwitchTo2D}
-                className="px-2.5 py-1 rounded-md text-[11px] font-semibold text-[#929DA9] hover:text-[#F3F5F7] transition-colors flex items-center space-x-1"
+                className="px-2.5 py-1 rounded-md text-[11px] font-semibold text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors flex items-center space-x-1 touch-target-min"
                 title="Switch to Top-Down 2D Canvas"
               >
                 <Layers className="w-3 h-3" />
                 <span>2D Plan</span>
               </button>
               <button
-                className="px-2.5 py-1 rounded-md text-[11px] font-bold shadow-sm transition-colors flex items-center space-x-1"
+                className="px-2.5 py-1 rounded-md text-[11px] font-bold shadow-sm transition-colors flex items-center space-x-1 touch-target-min"
                 style={{
                   backgroundColor: currentTheme.color,
                   color: currentTheme.textColor,
@@ -334,7 +358,7 @@ export const Simulation3DView: React.FC<Simulation3DViewProps> = ({
             </div>
           )}
 
-          <div className="hidden sm:flex items-center space-x-1.5 font-mono text-[10px] text-[#929DA9]">
+          <div className="hidden sm:flex items-center space-x-1.5 font-mono text-[10px] text-[var(--text-secondary)]">
             <span className="w-1.5 h-1.5 rounded-full bg-[#36D98A] shadow-[0_0_6px_#36D98A]" />
             <span>{showDecorations ? 'WebGL 3D • City Scene' : 'WebGL 3D • Clean De-Artilized CAD'}</span>
           </div>
@@ -343,13 +367,13 @@ export const Simulation3DView: React.FC<Simulation3DViewProps> = ({
         {/* Mode Toggle, Camera Views & Lighting Controls */}
         <div className="flex items-center space-x-1.5 text-xs">
           {/* De-artilize Mode Switcher */}
-          <div className="flex items-center space-x-0.5 bg-[#0B0D10] p-0.5 rounded-lg border border-[#2A323B] font-mono text-[10px]">
+          <div className="flex items-center space-x-0.5 bg-[var(--bg-secondary)] p-0.5 rounded-lg border border-[var(--border-color)] font-mono text-[10px]">
             <button
               onClick={() => setShowDecorations(false)}
-              className={`px-2 py-0.5 rounded transition-colors ${
+              className={`px-2 py-0.5 rounded transition-colors touch-target-min ${
                 !showDecorations
-                  ? 'bg-[#191F26] text-[#F3F5F7] font-bold border border-[#2A323B]'
-                  : 'text-[#929DA9] hover:text-[#F3F5F7]'
+                  ? 'bg-[var(--bg-card-elevated)] text-[var(--text-primary)] font-bold border border-[var(--border-color)]'
+                  : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
               }`}
               title="Clean CAD Mode: Focus strictly on road junction, signals, and vehicles"
             >
@@ -357,10 +381,10 @@ export const Simulation3DView: React.FC<Simulation3DViewProps> = ({
             </button>
             <button
               onClick={() => setShowDecorations(true)}
-              className={`px-2 py-0.5 rounded transition-colors ${
+              className={`px-2 py-0.5 rounded transition-colors touch-target-min ${
                 showDecorations
-                  ? 'bg-[#191F26] text-[#F3F5F7] font-bold border border-[#2A323B]'
-                  : 'text-[#929DA9] hover:text-[#F3F5F7]'
+                  ? 'bg-[var(--bg-card-elevated)] text-[var(--text-primary)] font-bold border border-[var(--border-color)]'
+                  : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
               }`}
               title="Show surrounding city buildings, signs & trees"
             >
@@ -369,53 +393,53 @@ export const Simulation3DView: React.FC<Simulation3DViewProps> = ({
           </div>
 
           {/* Camera Preset Selector */}
-          <div className="flex items-center space-x-0.5 sm:space-x-1 bg-[#0B0D10] p-0.5 rounded-lg border border-[#2A323B] font-mono text-[10px]">
+          <div className="flex items-center space-x-0.5 sm:space-x-1 bg-[var(--bg-secondary)] p-0.5 rounded-lg border border-[var(--border-color)] font-mono text-[10px]">
             <button
               onClick={() => applyCameraPreset('isometric')}
-              className={`px-2 py-0.5 rounded transition-colors ${
+              className={`px-2 py-0.5 rounded transition-colors touch-target-min ${
                 cameraPreset === 'isometric'
-                  ? 'bg-[#191F26] text-[#F3F5F7] font-bold border border-[#2A323B]'
-                  : 'text-[#929DA9] hover:text-[#F3F5F7]'
+                  ? 'bg-[var(--bg-card-elevated)] text-[var(--text-primary)] font-bold border border-[var(--border-color)]'
+                  : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
               }`}
             >
               Orbit 45°
             </button>
             <button
               onClick={() => applyCameraPreset('driver')}
-              className={`px-2 py-0.5 rounded transition-colors ${
+              className={`px-2 py-0.5 rounded transition-colors touch-target-min ${
                 cameraPreset === 'driver'
-                  ? 'bg-[#191F26] text-[#F3F5F7] font-bold border border-[#2A323B]'
-                  : 'text-[#929DA9] hover:text-[#F3F5F7]'
+                  ? 'bg-[var(--bg-card-elevated)] text-[var(--text-primary)] font-bold border border-[var(--border-color)]'
+                  : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
               }`}
             >
               Street Eye
             </button>
             <button
               onClick={() => applyCameraPreset('topDown')}
-              className={`px-2 py-0.5 rounded transition-colors ${
+              className={`px-2 py-0.5 rounded transition-colors touch-target-min ${
                 cameraPreset === 'topDown'
-                  ? 'bg-[#191F26] text-[#F3F5F7] font-bold border border-[#2A323B]'
-                  : 'text-[#929DA9] hover:text-[#F3F5F7]'
+                  ? 'bg-[var(--bg-card-elevated)] text-[var(--text-primary)] font-bold border border-[var(--border-color)]'
+                  : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
               }`}
             >
               Top 90°
             </button>
             <button
               onClick={() => applyCameraPreset('gantry')}
-              className={`px-2 py-0.5 rounded transition-colors ${
+              className={`px-2 py-0.5 rounded transition-colors touch-target-min ${
                 cameraPreset === 'gantry'
-                  ? 'bg-[#191F26] text-[#F3F5F7] font-bold border border-[#2A323B]'
-                  : 'text-[#929DA9] hover:text-[#F3F5F7]'
+                  ? 'bg-[var(--bg-card-elevated)] text-[var(--text-primary)] font-bold border border-[var(--border-color)]'
+                  : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
               }`}
             >
               Gantry
             </button>
             <button
               onClick={() => applyCameraPreset('cinematic')}
-              className={`px-2 py-0.5 rounded transition-colors ${
+              className={`px-2 py-0.5 rounded transition-colors touch-target-min ${
                 cameraPreset === 'cinematic'
-                  ? 'bg-[#191F26] text-[#F3F5F7] font-bold border border-[#2A323B]'
-                  : 'text-[#929DA9] hover:text-[#F3F5F7]'
+                  ? 'bg-[var(--bg-card-elevated)] text-[var(--text-primary)] font-bold border border-[var(--border-color)]'
+                  : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
               }`}
             >
               Focus
@@ -423,24 +447,24 @@ export const Simulation3DView: React.FC<Simulation3DViewProps> = ({
           </div>
 
           {/* Time of Day Lighting Toggle */}
-          <div className="flex items-center space-x-0.5 bg-[#0B0D10] p-0.5 rounded-lg border border-[#2A323B]">
+          <div className="flex items-center space-x-0.5 bg-[var(--bg-secondary)] p-0.5 rounded-lg border border-[var(--border-color)]">
             <button
               onClick={() => setLightingMode('day')}
-              className={`p-1 rounded ${lightingMode === 'day' ? 'bg-[#191F26] text-[#FFBD59]' : 'text-[#929DA9]'}`}
+              className={`p-1 rounded touch-target-min ${lightingMode === 'day' ? 'bg-[var(--bg-card-elevated)] text-[#FFBD59]' : 'text-[var(--text-secondary)]'}`}
               title="Daylight mode"
             >
               <Sun className="w-3.5 h-3.5" />
             </button>
             <button
               onClick={() => setLightingMode('dusk')}
-              className={`p-1 rounded ${lightingMode === 'dusk' ? 'bg-[#191F26] text-[#C6F36B]' : 'text-[#929DA9]'}`}
+              className={`p-1 rounded touch-target-min ${lightingMode === 'dusk' ? 'bg-[var(--bg-card-elevated)] text-[#C6F36B]' : 'text-[var(--text-secondary)]'}`}
               title="Dusk / Sunset mode"
             >
               <Eye className="w-3.5 h-3.5" />
             </button>
             <button
               onClick={() => setLightingMode('night')}
-              className={`p-1 rounded ${lightingMode === 'night' ? 'bg-[#191F26] text-[#75B8FF]' : 'text-[#929DA9]'}`}
+              className={`p-1 rounded touch-target-min ${lightingMode === 'night' ? 'bg-[var(--bg-card-elevated)] text-[#75B8FF]' : 'text-[var(--text-secondary)]'}`}
               title="Night mode (illuminated windows, headlights & streetlights)"
             >
               <Moon className="w-3.5 h-3.5" />
@@ -458,7 +482,12 @@ export const Simulation3DView: React.FC<Simulation3DViewProps> = ({
       )}
 
       {/* 3D WebGL Canvas Container */}
-      <div className="relative rounded-lg overflow-hidden border border-[#2A323B] bg-[#0B0D10] shadow-inner flex items-center justify-center w-full">
+      <div 
+        className="relative rounded-lg overflow-hidden border border-[var(--border-color)] shadow-inner flex items-center justify-center w-full"
+        style={{
+          backgroundColor: isDark ? tokens.bgPrimary : tokens.bgSecondary,
+        }}
+      >
         <div
           ref={containerRef}
           className="w-full max-w-[620px] aspect-square object-contain block select-none cursor-grab active:cursor-grabbing"
@@ -466,19 +495,19 @@ export const Simulation3DView: React.FC<Simulation3DViewProps> = ({
         />
 
         {/* Orbit Helper Watermark */}
-        <div className="absolute top-3 left-3 flex items-center space-x-1.5 font-mono text-[9px] text-[#929DA9] bg-[#12161B]/90 backdrop-blur-sm px-2.5 py-1 rounded-md border border-[#2A323B] pointer-events-none">
+        <div className="absolute top-3 left-3 flex items-center space-x-1.5 font-mono text-[9px] text-[var(--text-secondary)] bg-[var(--bg-card)]/90 backdrop-blur-sm px-2.5 py-1 rounded-md border border-[var(--border-color)] pointer-events-none shadow-sm">
           <Camera className="w-3 h-3 text-[#75B8FF]" />
           <span>DRAG TO ORBIT • SCROLL TO ZOOM</span>
         </div>
 
         {/* Vehicles Active Badge */}
-        <div className="absolute bottom-3 right-3 font-mono text-[10px] bg-[#12161B]/90 backdrop-blur-sm px-2.5 py-1 rounded-md border border-[#2A323B] text-[#929DA9] pointer-events-none">
+        <div className="absolute bottom-3 right-3 font-mono text-[10px] bg-[var(--bg-card)]/90 backdrop-blur-sm px-2.5 py-1 rounded-md border border-[var(--border-color)] text-[var(--text-secondary)] pointer-events-none shadow-sm">
           ACTIVE 3D VEHICLES: <strong style={{ color: currentTheme.color }}>{activeVehiclesCount}</strong>
         </div>
       </div>
 
       {/* Bottom 3D Status Legend */}
-      <div className="w-full flex flex-wrap items-center justify-between gap-2 mt-3 pt-2 border-t border-[#1E252D] text-xs text-[#929DA9]">
+      <div className="w-full flex flex-wrap items-center justify-between gap-2 mt-3 pt-2 border-t border-[var(--border-subtle)] text-xs text-[var(--text-secondary)]">
         <div className="flex items-center space-x-3 text-[10px] font-mono">
           <span className="flex items-center space-x-1">
             <span className="w-2 h-2 rounded-full bg-[#36D98A]" />
@@ -520,14 +549,20 @@ export const Simulation3DView: React.FC<Simulation3DViewProps> = ({
 // 3D ENVIRONMENT BUILDERS & MESH PROCEDURES
 // ==========================================
 
-function build3DJunctionEnvironment(scene: THREE.Scene, decorGroup: THREE.Group) {
+function build3DJunctionEnvironment(
+  scene: THREE.Scene, 
+  decorGroup: THREE.Group,
+  terrainMatRef?: React.MutableRefObject<THREE.MeshStandardMaterial | null>,
+  roadMatRef?: React.MutableRefObject<THREE.MeshStandardMaterial | null>
+) {
   // 1. City Terrain Base
   const terrainGeo = new THREE.PlaneGeometry(180, 180);
   const terrainMat = new THREE.MeshStandardMaterial({
-    color: 0x0a0c10,
+    color: 0x141010,
     roughness: 0.95,
     metalness: 0.05,
   });
+  if (terrainMatRef) terrainMatRef.current = terrainMat;
   const terrain = new THREE.Mesh(terrainGeo, terrainMat);
   terrain.rotation.x = -Math.PI / 2;
   terrain.position.y = -0.05;
@@ -539,10 +574,11 @@ function build3DJunctionEnvironment(scene: THREE.Scene, decorGroup: THREE.Group)
   const ROAD_L = 76;
 
   const roadMat = new THREE.MeshStandardMaterial({
-    color: 0x161a22,
+    color: 0x1c1919,
     roughness: 0.75,
     metalness: 0.15,
   });
+  if (roadMatRef) roadMatRef.current = roadMat;
 
   // North-South Road
   const nsRoad = new THREE.Mesh(new THREE.PlaneGeometry(ROAD_W, ROAD_L), roadMat);

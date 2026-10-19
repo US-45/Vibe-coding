@@ -2,27 +2,85 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --bg-primary: #0B0D10;
-  --bg-secondary: #12161B;
-  --surface-primary: #12161B;
-  --surface-elevated: #191F26;
-  --border-subtle: #2A323B;
-  --text-primary: #F3F5F7;
-  --text-secondary: #929DA9;
+/* =========================================================
+   CENTRALIZED THEME ENGINE & EXACT COLOR TOKENS
+   Dark: Asphalt Noir (#141010) | Light: Architectural Cream (#F4F2EF)
+   ========================================================= */
+
+:root, [data-theme="dark"] {
+  --bg-primary: #141010;
+  --bg-secondary: #1C1919;
+  --bg-card: #242020;
+  --bg-card-elevated: #2C2626;
+  --border-color: #413939;
+  --border-subtle: #332B2B;
+  --text-primary: #F2EEEE;
+  --text-secondary: #A4A4A4;
+  --accent-red: #A41717;
+  --metallic-gold: #B59447;
+
+  --theme-accent: #B59447;
+  --theme-accent-hover: #C7A558;
+  --theme-accent-text: #141010;
+  --theme-accent-muted: rgba(181, 148, 71, 0.15);
+  --theme-accent-border: rgba(181, 148, 71, 0.40);
+  --theme-accent-glow: rgba(181, 148, 71, 0.45);
+
+  --canvas-ground: #141010;
+  --canvas-asphalt: #1C1919;
+  --canvas-curb: #413939;
+  --canvas-markings: #F2EEEE;
+  --canvas-inner-border: #413939;
+
   --signal-green: #36D98A;
   --signal-amber: #FFBD59;
   --signal-red: #FF6268;
   --accent-blue: #75B8FF;
 
-  /* Dynamic Theme Tokens */
-  --theme-accent: #C6F36B;
-  --theme-accent-hover: #D6F78B;
-  --theme-accent-text: #0B0D10;
-  --theme-accent-muted: rgba(198, 243, 107, 0.12);
-  --theme-accent-border: rgba(198, 243, 107, 0.35);
-  --theme-accent-glow: rgba(198, 243, 107, 0.4);
+  --tooltip-bg: #242020;
+  --tooltip-border: #413939;
+  --tooltip-text: #F2EEEE;
 }
+
+[data-theme="light"] {
+  --bg-primary: #F4F2EF;
+  --bg-secondary: #EAE7E2;
+  --bg-card: #FFFFFF;
+  --bg-card-elevated: #F9F8F6;
+  --border-color: #D8D2CA;
+  --border-subtle: #E2DDD6;
+  --text-primary: #242020;
+  --text-secondary: #6F6963;
+  --accent-red: #A41717;
+  --metallic-gold: #9B792F;
+
+  --theme-accent: #9B792F;
+  --theme-accent-hover: #8A6B29;
+  --theme-accent-text: #FFFFFF;
+  --theme-accent-muted: rgba(155, 121, 47, 0.12);
+  --theme-accent-border: rgba(155, 121, 47, 0.35);
+  --theme-accent-glow: rgba(155, 121, 47, 0.30);
+
+  --canvas-ground: #EAE7E2;
+  --canvas-asphalt: #363230;
+  --canvas-curb: #D8D2CA;
+  --canvas-markings: #FFFFFF;
+  --canvas-inner-border: #D8D2CA;
+
+  --signal-green: #059669;
+  --signal-amber: #D97706;
+  --signal-red: #DC2626;
+  --accent-blue: #2563EB;
+
+  --tooltip-bg: #FFFFFF;
+  --tooltip-border: #D8D2CA;
+  --tooltip-text: #242020;
+}
+
+/* =========================================================
+   SMOOTH 250ms THEME TRANSITIONS
+   (Simulation canvas is strictly excluded to prevent lag)
+   ========================================================= */
 
 body {
   background-color: var(--bg-primary);
@@ -30,26 +88,36 @@ body {
   font-family: 'Inter', 'Geist', 'Manrope', system-ui, -apple-system, sans-serif;
   overflow-x: hidden;
   letter-spacing: -0.01em;
+  transition: background-color 250ms ease, color 250ms ease;
 }
 
-/* Custom scrollbars matching minimal engineered aesthetic */
+header, nav, footer, section, article, div.panel-card, div.panel-elevated, div.bg-card, button, select, input {
+  transition: background-color 250ms ease, border-color 250ms ease, color 250ms ease, box-shadow 250ms ease;
+}
+
+/* Strictly prevent canvas transitions from interrupting simulation loop */
+canvas {
+  transition: none !important;
+}
+
+/* Custom scrollbars */
 ::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #0B0D10;
+  background: var(--bg-primary);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #191F26;
+  background: var(--bg-secondary);
   border-radius: 3px;
-  border: 1px solid #2A323B;
+  border: 1px solid var(--border-color);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #2A323B;
+  background: var(--border-color);
 }
 
 /* Tabular numerals for timers and metrics */
@@ -57,21 +125,21 @@ body {
   font-variant-numeric: tabular-nums;
 }
 
-/* Engineered Card Styles */
+/* Engineered Card & Elevated Styles */
 .panel-card {
-  background-color: #12161B;
-  border: 1px solid #2A323B;
-  border-radius: 10px;
-  transition: border-color 0.2s ease, background-color 0.2s ease;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  transition: border-color 250ms ease, background-color 250ms ease;
 }
 
 .panel-card:hover {
-  border-color: #37424E;
+  border-color: var(--theme-accent-border);
 }
 
 .panel-elevated {
-  background-color: #191F26;
-  border: 1px solid #2A323B;
+  background-color: var(--bg-card-elevated);
+  border: 1px solid var(--border-color);
   border-radius: 10px;
 }
 
@@ -81,7 +149,7 @@ body {
   color: var(--theme-accent-text);
   font-weight: 700;
   border-radius: 8px;
-  transition: all 0.15s ease;
+  transition: all 200ms ease;
   box-shadow: 0 0 12px var(--theme-accent-glow);
 }
 
@@ -95,15 +163,15 @@ body {
 }
 
 .btn-theme-secondary {
-  background-color: #12161B;
+  background-color: var(--bg-card);
   color: var(--text-primary);
-  border: 1px solid #2A323B;
+  border: 1px solid var(--border-color);
   border-radius: 8px;
-  transition: all 0.15s ease;
+  transition: all 200ms ease;
 }
 
 .btn-theme-secondary:hover {
-  background-color: #191F26;
+  background-color: var(--bg-card-elevated);
   border-color: var(--theme-accent-border);
   color: var(--theme-accent);
 }
@@ -117,4 +185,66 @@ input[type="range"] {
 ::selection {
   background-color: var(--theme-accent);
   color: var(--theme-accent-text);
+}
+
+/* =========================================================
+   LIGHT THEME CSS UTILITY MAPPINGS (PREVENTS CONTRAST INVERSIONS)
+   Guarantees that all existing hardcoded dark utility classes
+   gracefully map to the light palette without modifying 50+ lines.
+   ========================================================= */
+
+[data-theme="light"] .bg-\[\#0B0D10\] {
+  background-color: var(--bg-primary) !important;
+}
+
+[data-theme="light"] .bg-\[\#12161B\] {
+  background-color: var(--bg-secondary) !important;
+}
+
+[data-theme="light"] .bg-\[\#191F26\] {
+  background-color: var(--bg-card-elevated) !important;
+}
+
+[data-theme="light"] .border-\[\#2A323B\],
+[data-theme="light"] .border-\[\#1E252D\] {
+  border-color: var(--border-color) !important;
+}
+
+[data-theme="light"] .text-\[\#F3F5F7\],
+[data-theme="light"] .text-\[\#F2EEEE\] {
+  color: var(--text-primary) !important;
+}
+
+[data-theme="light"] .text-\[\#929DA9\],
+[data-theme="light"] .text-\[\#A4A4A4\] {
+  color: var(--text-secondary) !important;
+}
+
+[data-theme="light"] .bg-\[\#0B0D10\]\/95,
+[data-theme="light"] .bg-\[\#0B0D10\]\/90,
+[data-theme="light"] .bg-\[\#0B0D10\]\/85 {
+  background-color: rgba(244, 242, 239, 0.95) !important;
+}
+
+[data-theme="light"] .bg-\[\#12161B\]\/85,
+[data-theme="light"] .bg-\[\#12161B\]\/90,
+[data-theme="light"] .bg-\[\#12161B\]\/80 {
+  background-color: rgba(234, 231, 226, 0.90) !important;
+}
+
+/* In light mode, preserve clean text on light cards */
+[data-theme="light"] h1, 
+[data-theme="light"] h2, 
+[data-theme="light"] h3, 
+[data-theme="light"] h4, 
+[data-theme="light"] strong {
+  color: var(--text-primary);
+}
+
+/* Touch target minimum size on small devices */
+@media (max-width: 767px) {
+  .touch-target-min {
+    min-height: 44px;
+    min-width: 44px;
+  }
 }

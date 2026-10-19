@@ -4,10 +4,8 @@ import {
   TrendingUp, 
   TrendingDown, 
   CheckCircle2, 
-  Play, 
   RefreshCw,
   Award,
-  BarChart2,
   Inbox
 } from 'lucide-react';
 import { 
@@ -50,7 +48,7 @@ interface BenchmarkResult {
 }
 
 export const ComparisonPanel: React.FC<ComparisonPanelProps> = ({ currentStats }) => {
-  const { currentTheme } = useTheme();
+  const { currentTheme, tokens } = useTheme();
   const [isBenchmarking, setIsBenchmarking] = useState(false);
   const [benchmarkResult, setBenchmarkResult] = useState<BenchmarkResult | null>(null);
 
@@ -128,19 +126,26 @@ export const ComparisonPanel: React.FC<ComparisonPanelProps> = ({ currentStats }
 
   const chartData = currentStats.history.map((h) => ({
     time: `${h.time}s`,
-    wait: h.avgWaitTime,
-    queue: h.queueLength,
+    wait: Number((h.avgWaitTime || 0).toFixed(1)),
+    queue: h.queueLength || 0,
   }));
 
   return (
-    <section id="analytics-section" className="space-y-4">
-      {/* Editorial Section Heading */}
-      <div className="flex flex-wrap items-end justify-between gap-4 border-b border-[#2A323B] pb-3">
+    <section className="space-y-4">
+      {/* Section Header */}
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-[#F3F5F7] font-sans">
+          <div 
+            className="flex items-center space-x-2 font-mono text-xs uppercase tracking-widest font-semibold"
+            style={{ color: currentTheme.color }}
+          >
+            <GitCompare className="w-3.5 h-3.5" />
+            <span>Empirical Benchmark</span>
+          </div>
+          <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-[var(--text-primary)] font-sans">
             Measure the difference.
           </h2>
-          <p className="text-xs sm:text-sm text-[#929DA9] mt-0.5">
+          <p className="text-xs sm:text-sm text-[var(--text-secondary)] mt-0.5">
             Run equivalent traffic conditions and compare actual simulation results.
           </p>
         </div>
@@ -148,7 +153,7 @@ export const ComparisonPanel: React.FC<ComparisonPanelProps> = ({ currentStats }
         <button
           onClick={runControlledBenchmark}
           disabled={isBenchmarking}
-          className="flex items-center space-x-2 px-3.5 py-2 rounded-lg font-bold text-xs uppercase tracking-wider transition-all disabled:opacity-50 shadow-sm active:scale-[0.98]"
+          className="flex items-center space-x-2 px-3.5 py-2 rounded-lg font-bold text-xs uppercase tracking-wider transition-all disabled:opacity-50 shadow-sm active:scale-[0.98] min-h-[44px]"
           style={{
             backgroundColor: currentTheme.color,
             color: currentTheme.textColor,
@@ -170,25 +175,25 @@ export const ComparisonPanel: React.FC<ComparisonPanelProps> = ({ currentStats }
       </div>
 
       {/* Main Analytics Card */}
-      <div className="bg-[#12161B] border border-[#2A323B] rounded-xl p-4 sm:p-5 shadow-sm space-y-4">
+      <div className="bg-[var(--bg-card)] border border-[var(--border-color)] rounded-xl p-4 sm:p-5 shadow-sm space-y-4 transition-colors duration-250">
         {/* Results or Empty State */}
         {benchmarkResult ? (
           <div className="space-y-4">
             <div className="flex items-center justify-between text-xs">
-              <span className="font-bold text-[#F3F5F7] flex items-center space-x-1.5">
+              <span className="font-bold text-[var(--text-primary)] flex items-center space-x-1.5">
                 <CheckCircle2 className="w-4 h-4 text-[#36D98A]" />
                 <span>Measured Benchmark Results: Identical Seed (#987654321 @ 3.5 veh/s)</span>
               </span>
-              <span className="text-[11px] font-mono text-[#929DA9]">60s Controlled Test</span>
+              <span className="text-[11px] font-mono text-[var(--text-secondary)]">60s Controlled Test</span>
             </div>
 
             {/* Metrics Comparison Table / Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               {/* Metric 1: Average Waiting Time */}
-              <div className="bg-[#191F26] border border-[#2A323B] rounded-lg p-3.5 text-center">
-                <div className="text-[11px] font-mono text-[#929DA9] uppercase">Average Wait Time</div>
+              <div className="bg-[var(--bg-card-elevated)] border border-[var(--border-color)] rounded-lg p-3.5 text-center">
+                <div className="text-[11px] font-mono text-[var(--text-secondary)] uppercase">Average Wait Time</div>
                 <div className="flex items-center justify-center space-x-2.5 my-1.5 font-mono">
-                  <span className="text-sm line-through text-[#929DA9]">{benchmarkResult.fixed.avgWaitTime}s</span>
+                  <span className="text-sm line-through text-[var(--text-secondary)]">{benchmarkResult.fixed.avgWaitTime}s</span>
                   <span className="text-2xl font-bold text-[#36D98A]">
                     {benchmarkResult.adaptive.avgWaitTime}s
                   </span>
@@ -200,11 +205,11 @@ export const ComparisonPanel: React.FC<ComparisonPanelProps> = ({ currentStats }
               </div>
 
               {/* Metric 2: Vehicles Cleared */}
-              <div className="bg-[#191F26] border border-[#2A323B] rounded-lg p-3.5 text-center">
-                <div className="text-[11px] font-mono text-[#929DA9] uppercase">Total Cars Passed</div>
+              <div className="bg-[var(--bg-card-elevated)] border border-[var(--border-color)] rounded-lg p-3.5 text-center">
+                <div className="text-[11px] font-mono text-[var(--text-secondary)] uppercase">Total Cars Passed</div>
                 <div className="flex items-center justify-center space-x-2.5 my-1.5 font-mono">
-                  <span className="text-sm line-through text-[#929DA9]">{benchmarkResult.fixed.carsPassed}</span>
-                  <span className="text-2xl font-bold text-[#C6F36B]">
+                  <span className="text-sm line-through text-[var(--text-secondary)]">{benchmarkResult.fixed.carsPassed}</span>
+                  <span className="text-2xl font-bold" style={{ color: currentTheme.color }}>
                     {benchmarkResult.adaptive.carsPassed}
                   </span>
                 </div>
@@ -215,11 +220,11 @@ export const ComparisonPanel: React.FC<ComparisonPanelProps> = ({ currentStats }
               </div>
 
               {/* Metric 3: Peak Queue */}
-              <div className="bg-[#191F26] border border-[#2A323B] rounded-lg p-3.5 text-center">
-                <div className="text-[11px] font-mono text-[#929DA9] uppercase">Peak Queue Length</div>
+              <div className="bg-[var(--bg-card-elevated)] border border-[var(--border-color)] rounded-lg p-3.5 text-center">
+                <div className="text-[11px] font-mono text-[var(--text-secondary)] uppercase">Peak Queue Length</div>
                 <div className="flex items-center justify-center space-x-2.5 my-1.5 font-mono">
-                  <span className="text-sm line-through text-[#929DA9]">{benchmarkResult.fixed.maxQueue}</span>
-                  <span className="text-2xl font-bold text-[#F3F5F7]">
+                  <span className="text-sm line-through text-[var(--text-secondary)]">{benchmarkResult.fixed.maxQueue}</span>
+                  <span className="text-2xl font-bold text-[var(--text-primary)]">
                     {benchmarkResult.adaptive.maxQueue}
                   </span>
                 </div>
@@ -231,19 +236,19 @@ export const ComparisonPanel: React.FC<ComparisonPanelProps> = ({ currentStats }
             </div>
 
             {/* Explanatory Data-Driven Summary */}
-            <div className="bg-[#0B0D10] border border-[#2A323B] p-3 rounded-lg text-xs text-[#929DA9] leading-relaxed">
-              <strong className="text-[#F3F5F7]">Empirical Evaluation Summary: </strong>
+            <div className="bg-[var(--bg-secondary)] border border-[var(--border-color)] p-3 rounded-lg text-xs text-[var(--text-secondary)] leading-relaxed">
+              <strong className="text-[var(--text-primary)]">Empirical Evaluation Summary: </strong>
               Under identical arrival conditions ({benchmarkResult.spawnRate} veh/s over {benchmarkResult.duration} seconds), 
               the Adaptive Controller produced <strong className="text-[#36D98A]">{benchmarkResult.improvementPct.waitTime}% lower average vehicle delay</strong> and 
-              cleared <strong className="text-[#C6F36B]">{benchmarkResult.improvementPct.throughput}% more vehicles</strong> by dynamically reallocating green seconds away from empty directions to clearing queues.
+              cleared <strong style={{ color: currentTheme.color }}>{benchmarkResult.improvementPct.throughput}% more vehicles</strong> by dynamically reallocating green seconds away from empty directions to clearing queues.
             </div>
           </div>
         ) : (
-          /* Informative Empty State as required by Section 4.G */
-          <div className="bg-[#0B0D10] border border-[#2A323B] rounded-lg p-6 text-center space-y-2">
-            <Inbox className="w-8 h-8 text-[#929DA9] mx-auto opacity-60" />
-            <div className="text-sm font-semibold text-[#F3F5F7]">No Comparison Run Yet</div>
-            <p className="text-xs text-[#929DA9] max-w-md mx-auto">
+          /* Informative Empty State */
+          <div className="bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-lg p-6 text-center space-y-2">
+            <Inbox className="w-8 h-8 text-[var(--text-secondary)] mx-auto opacity-60" />
+            <div className="text-sm font-semibold text-[var(--text-primary)]">No Comparison Run Yet</div>
+            <p className="text-xs text-[var(--text-secondary)] max-w-md mx-auto">
               Click <strong>"Run 60s Scientific Benchmark"</strong> to execute two independent simulations with identical seeded traffic arrivals and measure the performance difference.
             </p>
           </div>
@@ -252,13 +257,13 @@ export const ComparisonPanel: React.FC<ComparisonPanelProps> = ({ currentStats }
         {/* Live Timeline Telemetry (Recharts) */}
         <div className="pt-2">
           <div className="flex items-center justify-between text-xs mb-2">
-            <span className="font-mono font-semibold text-[#F3F5F7] uppercase tracking-wider text-[11px]">
+            <span className="font-mono font-semibold text-[var(--text-primary)] uppercase tracking-wider text-[11px]">
               Live Simulation Telemetry: Delay (s) vs Total Queue Length
             </span>
-            <span className="text-[10px] font-mono text-[#929DA9]">Rolling 120s Buffer</span>
+            <span className="text-[10px] font-mono text-[var(--text-secondary)]">Rolling 120s Buffer</span>
           </div>
 
-          <div className="h-44 w-full bg-[#0B0D10] rounded-lg border border-[#2A323B] p-2">
+          <div className="h-44 w-full bg-[var(--bg-secondary)] rounded-lg border border-[var(--border-color)] p-2">
             {chartData.length > 1 ? (
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={chartData} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
@@ -272,15 +277,22 @@ export const ComparisonPanel: React.FC<ComparisonPanelProps> = ({ currentStats }
                       <stop offset="95%" stopColor="#75B8FF" stopOpacity={0} />
                     </linearGradient>
                   </defs>
-                  <XAxis dataKey="time" stroke="#929DA9" fontSize={9} tickLine={false} />
-                  <YAxis stroke="#929DA9" fontSize={9} tickLine={false} />
+                  <XAxis dataKey="time" stroke={tokens.secondaryText} fontSize={9} tickLine={false} />
+                  <YAxis stroke={tokens.secondaryText} fontSize={9} tickLine={false} />
                   <Tooltip
                     contentStyle={{
-                      backgroundColor: '#191F26',
-                      borderColor: '#2A323B',
+                      backgroundColor: tokens.cards,
+                      borderColor: tokens.borders,
                       fontSize: '11px',
-                      borderRadius: '6px',
-                      color: '#F3F5F7',
+                      borderRadius: '8px',
+                      color: tokens.primaryText,
+                      boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                    }}
+                    itemStyle={{
+                      color: tokens.primaryText,
+                    }}
+                    labelStyle={{
+                      color: tokens.secondaryText,
                     }}
                   />
                   <Area
@@ -304,7 +316,7 @@ export const ComparisonPanel: React.FC<ComparisonPanelProps> = ({ currentStats }
                 </AreaChart>
               </ResponsiveContainer>
             ) : (
-              <div className="h-full flex items-center justify-center text-xs text-[#929DA9] font-mono">
+              <div className="h-full flex items-center justify-center text-xs text-[var(--text-secondary)] font-mono">
                 Start the simulation to plot live telemetry stream
               </div>
             )}

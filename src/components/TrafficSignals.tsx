@@ -15,15 +15,15 @@ export const TrafficSignals: React.FC<TrafficSignalsProps> = ({ signals }) => {
   ];
 
   return (
-    <div className="bg-[#12161B] border border-[#2A323B] rounded-xl p-4 shadow-sm space-y-3">
-      <div className="flex items-center justify-between border-b border-[#1E252D] pb-2">
+    <div className="bg-[var(--bg-card)] border border-[var(--border-color)] rounded-xl p-4 shadow-sm space-y-3 transition-colors duration-250">
+      <div className="flex items-center justify-between border-b border-[var(--border-subtle)] pb-2">
         <div className="flex items-center space-x-2">
           <Compass className="w-4 h-4 text-[#75B8FF]" />
-          <h2 className="text-xs font-bold uppercase tracking-wider text-[#F3F5F7]">
+          <h2 className="text-xs font-bold uppercase tracking-wider text-[var(--text-primary)]">
             Signal Phase Array
           </h2>
         </div>
-        <span className="text-[10px] font-mono text-[#929DA9]">High Accessibility B&W</span>
+        <span className="text-[10px] font-mono text-[var(--text-secondary)]">High Accessibility B&W</span>
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
@@ -33,7 +33,9 @@ export const TrafficSignals: React.FC<TrafficSignalsProps> = ({ signals }) => {
           const isAmber = sig.color === 'amber';
           const isRed = sig.color === 'red';
 
-          const borderColor = isGreen ? 'border-[#36D98A]/60' : (isAmber ? 'border-[#FFBD59]/60' : 'border-[#2A323B]');
+          const borderColor = isGreen 
+            ? 'border-[#36D98A]/60' 
+            : (isAmber ? 'border-[#FFBD59]/60' : 'border-[var(--border-color)]');
           const bgPill = isGreen 
             ? 'bg-[#36D98A]/15 text-[#36D98A]' 
             : isAmber 
@@ -43,22 +45,22 @@ export const TrafficSignals: React.FC<TrafficSignalsProps> = ({ signals }) => {
           return (
             <div
               key={dir}
-              className={`bg-[#191F26] border ${borderColor} rounded-lg p-3 flex flex-col justify-between transition-colors shadow-sm relative overflow-hidden`}
+              className={`bg-[var(--bg-card-elevated)] border ${borderColor} rounded-lg p-3 flex flex-col justify-between transition-colors shadow-sm relative overflow-hidden`}
             >
               {/* Top: Direction and Countdown */}
               <div className="flex justify-between items-start">
                 <div>
-                  <div className="font-bold text-xs text-[#F3F5F7]">{label}</div>
-                  <div className="text-[10px] text-[#929DA9] truncate">{sub}</div>
+                  <div className="font-bold text-xs text-[var(--text-primary)]">{label}</div>
+                  <div className="text-[10px] text-[var(--text-secondary)] truncate">{sub}</div>
                 </div>
-                <div className="flex items-center space-x-1 text-xs font-mono font-bold text-[#F3F5F7] bg-[#0B0D10] px-1.5 py-0.5 rounded border border-[#2A323B]">
-                  <Clock className="w-2.5 h-2.5 text-[#929DA9]" />
+                <div className="flex items-center space-x-1 text-xs font-mono font-bold text-[var(--text-primary)] bg-[var(--bg-secondary)] px-1.5 py-0.5 rounded border border-[var(--border-color)]">
+                  <Clock className="w-2.5 h-2.5 text-[var(--text-secondary)]" />
                   <span>{sig.remainingTime}s</span>
                 </div>
               </div>
 
               {/* Middle: 3-Lamp Miniature Signal */}
-              <div className="my-2 py-1.5 px-2 bg-[#0B0D10] rounded-md border border-[#2A323B] flex items-center justify-around">
+              <div className="my-2 py-1.5 px-2 bg-[var(--bg-secondary)] rounded-md border border-[var(--border-color)] flex items-center justify-around">
                 {/* Red */}
                 <div
                   className={`w-4 h-4 rounded-full flex items-center justify-center text-[8px] font-black transition-all ${

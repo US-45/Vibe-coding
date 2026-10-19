@@ -18,12 +18,12 @@ export const StatisticsPanel: React.FC<StatisticsPanelProps> = ({ stats }) => {
   ];
 
   return (
-    <div className="bg-[#12161B] border border-[#2A323B] rounded-xl p-4 shadow-sm space-y-4">
+    <div className="bg-[var(--bg-card)] border border-[var(--border-color)] rounded-xl p-4 shadow-sm space-y-4 transition-colors duration-250">
       {/* Header */}
-      <div className="flex items-center justify-between border-b border-[#1E252D] pb-2.5">
+      <div className="flex items-center justify-between border-b border-[var(--border-subtle)] pb-2.5">
         <div className="flex items-center space-x-2">
           <BarChart3 className="w-4 h-4" style={{ color: currentTheme.color }} />
-          <h2 className="text-xs font-bold uppercase tracking-wider text-[#F3F5F7]">
+          <h2 className="text-xs font-bold uppercase tracking-wider text-[var(--text-primary)]">
             Live Traffic Metrics
           </h2>
         </div>
@@ -36,57 +36,57 @@ export const StatisticsPanel: React.FC<StatisticsPanelProps> = ({ stats }) => {
       {/* 4 Primary Metric Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5">
         {/* 1. Cars Passed */}
-        <div className="bg-[#191F26] border border-[#2A323B] rounded-lg p-3">
-          <div className="flex items-center justify-between text-[#929DA9] mb-1">
+        <div className="bg-[var(--bg-card-elevated)] border border-[var(--border-color)] rounded-lg p-3">
+          <div className="flex items-center justify-between text-[var(--text-secondary)] mb-1">
             <span className="text-[10px] font-mono uppercase tracking-wider">Cars Passed</span>
             <Car className="w-3.5 h-3.5 text-[#36D98A]" />
           </div>
-          <div className="text-2xl font-bold text-[#F3F5F7] font-mono tabular-nums">
+          <div className="text-2xl font-bold text-[var(--text-primary)] font-mono tabular-nums">
             {stats.carsPassed}
           </div>
-          <div className="text-[10px] text-[#929DA9] mt-0.5">Completed journeys</div>
+          <div className="text-[10px] text-[var(--text-secondary)] mt-0.5">Completed journeys</div>
         </div>
 
         {/* 2. Average Wait */}
-        <div className="bg-[#191F26] border border-[#2A323B] rounded-lg p-3">
-          <div className="flex items-center justify-between text-[#929DA9] mb-1">
+        <div className="bg-[var(--bg-card-elevated)] border border-[var(--border-color)] rounded-lg p-3">
+          <div className="flex items-center justify-between text-[var(--text-secondary)] mb-1">
             <span className="text-[10px] font-mono uppercase tracking-wider">Average Wait</span>
             <Clock className="w-3.5 h-3.5" style={{ color: currentTheme.color }} />
           </div>
           <div className="text-2xl font-bold font-mono tabular-nums" style={{ color: currentTheme.color }}>
-            {stats.averageWaitTime.toFixed(1)}<span className="text-xs text-[#929DA9] ml-1">s</span>
+            {stats.averageWaitTime.toFixed(1)}<span className="text-xs text-[var(--text-secondary)] ml-1">s</span>
           </div>
-          <div className="text-[10px] text-[#929DA9] mt-0.5">Per cleared vehicle</div>
+          <div className="text-[10px] text-[var(--text-secondary)] mt-0.5">Per cleared vehicle</div>
         </div>
 
         {/* 3. Active Vehicles */}
-        <div className="bg-[#191F26] border border-[#2A323B] rounded-lg p-3">
-          <div className="flex items-center justify-between text-[#929DA9] mb-1">
+        <div className="bg-[var(--bg-card-elevated)] border border-[var(--border-color)] rounded-lg p-3">
+          <div className="flex items-center justify-between text-[var(--text-secondary)] mb-1">
             <span className="text-[10px] font-mono uppercase tracking-wider">Active Vehicles</span>
             <Activity className="w-3.5 h-3.5 text-[#75B8FF]" />
           </div>
-          <div className="text-2xl font-bold text-[#F3F5F7] font-mono tabular-nums">
+          <div className="text-2xl font-bold text-[var(--text-primary)] font-mono tabular-nums">
             {stats.activeVehicles}
           </div>
-          <div className="text-[10px] text-[#929DA9] mt-0.5">On network</div>
+          <div className="text-[10px] text-[var(--text-secondary)] mt-0.5">On network</div>
         </div>
 
         {/* 4. Maximum Queue */}
-        <div className="bg-[#191F26] border border-[#2A323B] rounded-lg p-3">
-          <div className="flex items-center justify-between text-[#929DA9] mb-1">
+        <div className="bg-[var(--bg-card-elevated)] border border-[var(--border-color)] rounded-lg p-3">
+          <div className="flex items-center justify-between text-[var(--text-secondary)] mb-1">
             <span className="text-[10px] font-mono uppercase tracking-wider">Maximum Queue</span>
             <Users className="w-3.5 h-3.5 text-[#FFBD59]" />
           </div>
-          <div className="text-2xl font-bold text-[#F3F5F7] font-mono tabular-nums">
+          <div className="text-2xl font-bold text-[var(--text-primary)] font-mono tabular-nums">
             {stats.maxRecordedQueue}
           </div>
-          <div className="text-[10px] text-[#929DA9] mt-0.5">Peak queue observed</div>
+          <div className="text-[10px] text-[var(--text-secondary)] mt-0.5">Peak queue observed</div>
         </div>
       </div>
 
       {/* Directional Queue Breakdown */}
       <div className="pt-1">
-        <div className="text-[10px] font-mono font-semibold uppercase tracking-wider text-[#929DA9] mb-2 flex items-center justify-between">
+        <div className="text-[10px] font-mono font-semibold uppercase tracking-wider text-[var(--text-secondary)] mb-2 flex items-center justify-between">
           <span>Directional Queue Decomposition</span>
           <span>Waiting / Max</span>
         </div>
@@ -100,26 +100,26 @@ export const StatisticsPanel: React.FC<StatisticsPanelProps> = ({ stats }) => {
             return (
               <div
                 key={dir}
-                className="bg-[#191F26] border border-[#2A323B] rounded-lg p-2.5 flex flex-col justify-between"
+                className="bg-[var(--bg-card-elevated)] border border-[var(--border-color)] rounded-lg p-2.5 flex flex-col justify-between"
               >
                 <div className="flex justify-between items-center text-xs mb-1">
-                  <span className="font-semibold text-[#F3F5F7]">{label}</span>
-                  <span className="text-[10px] font-mono text-[#929DA9]">
+                  <span className="font-semibold text-[var(--text-primary)]">{label}</span>
+                  <span className="text-[10px] font-mono text-[var(--text-secondary)]">
                     Peak: {dStat.maxQueue}
                   </span>
                 </div>
 
                 <div className="flex items-baseline justify-between">
-                  <div className="text-lg font-mono font-bold text-[#F3F5F7]">
-                    {dStat.currentQueue} <span className="text-[10px] font-normal text-[#929DA9]">veh</span>
+                  <div className="text-lg font-mono font-bold text-[var(--text-primary)]">
+                    {dStat.currentQueue} <span className="text-[10px] font-normal text-[var(--text-secondary)]">veh</span>
                   </div>
-                  <div className="text-[10px] text-[#929DA9] font-mono">
+                  <div className="text-[10px] text-[var(--text-secondary)] font-mono">
                     {dStat.avgWaitTime.toFixed(1)}s wait
                   </div>
                 </div>
 
                 {/* Minimal horizontal queue indicator bar */}
-                <div className="w-full h-1 bg-[#0B0D10] rounded-full overflow-hidden mt-2">
+                <div className="w-full h-1.5 bg-[var(--bg-secondary)] rounded-full overflow-hidden mt-2">
                   <div
                     className={`h-full transition-all duration-300 ${
                       dStat.currentQueue > 6 

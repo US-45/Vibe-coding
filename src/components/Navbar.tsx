@@ -5,7 +5,9 @@ import {
   Sparkles, 
   ShieldCheck, 
   Palette,
-  Check
+  Check,
+  Sun,
+  Moon
 } from 'lucide-react';
 import { SignalMode } from '../types/simulation';
 import { useTheme } from '../context/ThemeContext';
@@ -37,7 +39,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   viewDimension = '2D',
   onToggleDimension,
 }) => {
-  const { theme, setTheme, themeList, currentTheme } = useTheme();
+  const { mode, toggleMode, theme, setTheme, themeList, currentTheme } = useTheme();
   const [isThemePickerOpen, setIsThemePickerOpen] = useState(false);
 
   const formatTime = (seconds: number) => {
@@ -47,12 +49,12 @@ export const Navbar: React.FC<NavbarProps> = ({
   };
 
   return (
-    <header className="bg-[#0B0D10]/95 backdrop-blur-md border-b border-[#2A323B] px-4 sm:px-6 lg:px-8 py-3 sticky top-0 z-40 transition-colors">
-      <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
+    <header className="bg-[var(--bg-primary)]/95 backdrop-blur-md border-b border-[var(--border-color)] px-3 sm:px-6 lg:px-8 py-2.5 sm:py-3 sticky top-0 z-40 transition-colors duration-250">
+      <div className="max-w-7xl mx-auto flex items-center justify-between gap-2 sm:gap-4">
         {/* Brand & Wordmark */}
-        <div className="flex items-center space-x-3.5">
+        <div className="flex items-center space-x-2.5 sm:space-x-3.5 shrink-0">
           {/* Custom Geometric 4-way intersection symbol */}
-          <div className="w-8 h-8 rounded-lg bg-[#191F26] border border-[#2A323B] flex items-center justify-center p-1.5 shadow-sm group">
+          <div className="w-8 h-8 rounded-lg bg-[var(--bg-secondary)] border border-[var(--border-color)] flex items-center justify-center p-1.5 shadow-sm group">
             <svg 
               className="w-full h-full transition-transform group-hover:rotate-90 duration-500" 
               style={{ color: currentTheme.color }}
@@ -63,7 +65,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               strokeLinecap="round" 
               strokeLinejoin="round"
             >
-              <rect x="3" y="3" width="18" height="18" rx="3" stroke="#2A323B" fill="#12161B" />
+              <rect x="3" y="3" width="18" height="18" rx="3" stroke="currentColor" strokeOpacity="0.4" fill="none" />
               <path d="M12 3v18" stroke="currentColor" strokeWidth="2.5" />
               <path d="M3 12h18" stroke="currentColor" strokeWidth="2.5" />
               <circle cx="12" cy="12" r="2.5" fill="currentColor" />
@@ -71,69 +73,68 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
 
           <div>
-            <div className="flex items-center space-x-2">
-              <span className="font-extrabold text-sm tracking-tight text-[#F3F5F7] font-sans">
+            <div className="flex items-center space-x-1.5 sm:space-x-2">
+              <span className="font-extrabold text-sm sm:text-base tracking-tight text-[var(--text-primary)] font-sans">
                 SmartJunction
               </span>
               <span 
-                className="text-[9px] font-mono uppercase tracking-widest px-1.5 py-0.5 rounded bg-[#191F26] border border-[#2A323B] transition-colors"
+                className="text-[9px] font-mono uppercase tracking-widest px-1.5 py-0.5 rounded bg-[var(--bg-secondary)] border border-[var(--border-color)] font-semibold"
                 style={{ color: currentTheme.color }}
               >
                 v2.4
               </span>
             </div>
-            <div className="text-[10px] font-mono tracking-wider text-[#929DA9] uppercase hidden sm:block">
+            <div className="text-[10px] font-mono tracking-wider text-[var(--text-secondary)] uppercase hidden sm:block">
               Traffic Intelligence Simulator
             </div>
           </div>
         </div>
 
-        {/* Center Nav Links */}
-        <nav className="hidden md:flex items-center space-x-1 bg-[#12161B] p-1 rounded-lg border border-[#2A323B] text-xs font-medium">
+        {/* Center Nav Links (Hidden on small screens) */}
+        <nav className="hidden md:flex items-center space-x-1 bg-[var(--bg-secondary)] p-1 rounded-lg border border-[var(--border-color)] text-xs font-medium">
           <button
             onClick={() => onNavigate('simulation')}
-            className="px-3 py-1 rounded text-[#F3F5F7] hover:bg-[#191F26] transition-colors"
-            style={{ '--hover-color': currentTheme.color } as any}
+            className="px-3 py-1 rounded text-[var(--text-primary)] hover:bg-[var(--bg-card)] transition-colors"
           >
             Simulation
           </button>
           <button
             onClick={() => onNavigate('analytics')}
-            className="px-3 py-1 rounded text-[#929DA9] hover:text-[#F3F5F7] hover:bg-[#191F26] transition-colors"
+            className="px-3 py-1 rounded text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card)] transition-colors"
           >
             Analytics
           </button>
           <button
             onClick={() => onNavigate('about')}
-            className="px-3 py-1 rounded text-[#929DA9] hover:text-[#F3F5F7] hover:bg-[#191F26] transition-colors"
+            className="px-3 py-1 rounded text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card)] transition-colors"
           >
             About
           </button>
         </nav>
 
         {/* Right Status & Controls */}
-        <div className="flex items-center space-x-2 sm:space-x-2.5">
-          {/* Status Indicator */}
-          <div className="flex items-center space-x-2 px-2.5 py-1 rounded-md bg-[#12161B] border border-[#2A323B] text-xs">
+        <div className="flex items-center space-x-1.5 sm:space-x-2">
+          {/* Running / Paused Status Indicator */}
+          <div className="hidden xs:flex items-center space-x-1.5 px-2 sm:px-2.5 py-1 rounded-md bg-[var(--bg-secondary)] border border-[var(--border-color)] text-xs">
             <span className={`w-2 h-2 rounded-full ${
               isRunning && !isPaused 
                 ? 'bg-[#36D98A] shadow-[0_0_8px_#36D98A]' 
                 : isPaused 
                   ? 'bg-[#FFBD59]' 
-                  : 'bg-[#929DA9]'
+                  : 'bg-[var(--text-secondary)]'
             }`} />
-            <span className="font-mono text-[11px] font-semibold text-[#F3F5F7] uppercase tracking-wide">
+            <span className="font-mono text-[10px] sm:text-[11px] font-semibold text-[var(--text-primary)] uppercase tracking-wide">
               {isRunning && !isPaused ? 'RUNNING' : isPaused ? 'PAUSED' : 'IDLE'}
             </span>
           </div>
 
-          {/* Mode Pill */}
+          {/* Mode Pill (Hidden on mobile) */}
           <div 
-            className="hidden sm:flex items-center space-x-1 px-2.5 py-1 rounded-md border text-xs font-mono transition-colors"
+            className="hidden lg:flex items-center space-x-1 px-2.5 py-1 rounded-md border text-xs font-mono transition-colors"
             style={{
-              backgroundColor: signalMode === 'adaptive' ? currentTheme.mutedBg : '#12161B',
-              borderColor: signalMode === 'adaptive' ? currentTheme.mutedBorder : '#2A323B',
-              color: signalMode === 'adaptive' ? currentTheme.color : '#929DA9',
+              backgroundColor: signalMode === 'adaptive' ? currentTheme.mutedBg : 'var(--bg-secondary)',
+              borderColor: signalMode === 'adaptive' ? currentTheme.mutedBorder : 'var(--border-color)',
+              color: signalMode === 'adaptive' ? currentTheme.color : 'var(--text-secondary)',
             }}
           >
             <span>MODE:</span>
@@ -141,30 +142,51 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
 
           {/* Elapsed Timer */}
-          <div className="flex items-center space-x-1.5 px-2.5 py-1 rounded-md bg-[#12161B] border border-[#2A323B] text-xs font-mono text-[#F3F5F7]">
-            <Clock className="w-3.5 h-3.5 text-[#929DA9]" />
-            <span className="tabular-nums font-bold">{formatTime(elapsedTime)}</span>
+          <div className="flex items-center space-x-1 px-2 sm:px-2.5 py-1 rounded-md bg-[var(--bg-secondary)] border border-[var(--border-color)] text-xs font-mono text-[var(--text-primary)]">
+            <Clock className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[var(--text-secondary)]" />
+            <span className="tabular-nums font-bold text-[11px] sm:text-xs">{formatTime(elapsedTime)}</span>
           </div>
+
+          {/* 1. LIGHT / DARK THEME TOGGLE BUTTON */}
+          <button
+            onClick={toggleMode}
+            className="p-1.5 sm:px-2.5 sm:py-1 rounded-md bg-[var(--bg-secondary)] hover:bg-[var(--bg-card-elevated)] border border-[var(--border-color)] text-[var(--text-primary)] transition-all flex items-center space-x-1.5 shadow-sm touch-target-min"
+            title={mode === 'dark' ? 'Switch to Light Theme' : 'Switch to Dark Theme (Asphalt Noir)'}
+            aria-label={mode === 'dark' ? 'Switch to Light Theme' : 'Switch to Dark Theme'}
+          >
+            {mode === 'dark' ? (
+              <>
+                <Sun className="w-4 h-4 text-[#FFBD59] sm:w-3.5 sm:h-3.5" />
+                <span className="hidden xl:inline text-[11px] font-semibold text-[var(--text-secondary)]">Light</span>
+              </>
+            ) : (
+              <>
+                <Moon className="w-4 h-4 text-[#A41717] sm:w-3.5 sm:h-3.5" />
+                <span className="hidden xl:inline text-[11px] font-semibold text-[var(--text-secondary)]">Dark</span>
+              </>
+            )}
+          </button>
 
           {/* Theme Palette Switcher Dropdown */}
           <div className="relative">
             <button
               onClick={() => setIsThemePickerOpen(!isThemePickerOpen)}
-              className="flex items-center space-x-1.5 px-2.5 py-1 rounded-md text-xs font-medium bg-[#12161B] hover:bg-[#191F26] border border-[#2A323B] transition-all"
+              className="flex items-center space-x-1 px-2 sm:px-2.5 py-1 rounded-md text-xs font-medium bg-[var(--bg-secondary)] hover:bg-[var(--bg-card-elevated)] border border-[var(--border-color)] transition-all touch-target-min"
               style={{
-                borderColor: isThemePickerOpen ? currentTheme.color : '#2A323B',
+                borderColor: isThemePickerOpen ? currentTheme.color : 'var(--border-color)',
               }}
-              title="Change UI Theme Accent"
+              title="Change UI Accent Color Palette"
+              aria-label="Change UI Accent Color Palette"
             >
               <Palette className="w-3.5 h-3.5" style={{ color: currentTheme.color }} />
               <span className="w-2 h-2 rounded-full" style={{ backgroundColor: currentTheme.color }} />
-              <span className="hidden xl:inline text-[#929DA9] text-[11px]">{currentTheme.name}</span>
+              <span className="hidden 2xl:inline text-[var(--text-secondary)] text-[11px]">{currentTheme.name}</span>
             </button>
 
             {isThemePickerOpen && (
-              <div className="absolute right-0 mt-1.5 w-48 bg-[#12161B] border border-[#2A323B] rounded-xl p-2 shadow-2xl z-50 animate-fadeIn">
-                <div className="text-[10px] font-mono uppercase tracking-wider text-[#929DA9] px-2 py-1 border-b border-[#1E252D] mb-1">
-                  UI Theme Accent
+              <div className="absolute right-0 mt-1.5 w-48 bg-[var(--bg-card)] border border-[var(--border-color)] rounded-xl p-2 shadow-2xl z-50 animate-fadeIn">
+                <div className="text-[10px] font-mono uppercase tracking-wider text-[var(--text-secondary)] px-2 py-1 border-b border-[var(--border-subtle)] mb-1">
+                  UI Accent Palette
                 </div>
                 <div className="space-y-1">
                   {themeList.map((t) => (
@@ -175,12 +197,14 @@ export const Navbar: React.FC<NavbarProps> = ({
                         setIsThemePickerOpen(false);
                       }}
                       className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs transition-colors ${
-                        theme === t.id ? 'bg-[#191F26] font-bold' : 'hover:bg-[#191F26] text-[#929DA9]'
+                        theme === t.id 
+                          ? 'bg-[var(--bg-card-elevated)] font-bold text-[var(--text-primary)]' 
+                          : 'hover:bg-[var(--bg-card-elevated)] text-[var(--text-secondary)]'
                       }`}
                       style={{ color: theme === t.id ? t.color : undefined }}
                     >
                       <div className="flex items-center space-x-2">
-                        <span className="w-3 h-3 rounded-full border border-black/40 shadow-sm" style={{ backgroundColor: t.color }} />
+                        <span className="w-3 h-3 rounded-full border border-black/20 shadow-sm" style={{ backgroundColor: t.color }} />
                         <span>{t.name}</span>
                       </div>
                       {theme === t.id && <Check className="w-3.5 h-3.5" />}
@@ -195,7 +219,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           {onToggleDimension && viewMode === 'single' && (
             <button
               onClick={onToggleDimension}
-              className="flex items-center space-x-1.5 px-2.5 py-1 rounded-md text-xs font-medium border transition-all"
+              className="flex items-center space-x-1.5 px-2 sm:px-2.5 py-1 rounded-md text-xs font-medium border transition-all touch-target-min"
               style={
                 viewDimension === '3D'
                   ? {
@@ -206,9 +230,9 @@ export const Navbar: React.FC<NavbarProps> = ({
                       boxShadow: `0 0 10px ${currentTheme.glow}`,
                     }
                   : {
-                      backgroundColor: '#191F26',
-                      color: '#F3F5F7',
-                      borderColor: '#2A323B',
+                      backgroundColor: 'var(--bg-secondary)',
+                      color: 'var(--text-primary)',
+                      borderColor: 'var(--border-color)',
                     }
               }
               title="Toggle between 2D Top-Down Canvas and 3D Model"
@@ -221,7 +245,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           {/* Dual Arena View Toggle */}
           <button
             onClick={onToggleViewMode}
-            className="flex items-center space-x-1.5 px-2.5 py-1 rounded-md text-xs font-medium border transition-all"
+            className="flex items-center space-x-1.5 px-2 sm:px-2.5 py-1 rounded-md text-xs font-medium border transition-all touch-target-min"
             style={
               viewMode === 'arena'
                 ? {
@@ -231,9 +255,9 @@ export const Navbar: React.FC<NavbarProps> = ({
                     fontWeight: 700,
                   }
                 : {
-                    backgroundColor: '#191F26',
-                    color: '#F3F5F7',
-                    borderColor: '#2A323B',
+                    backgroundColor: 'var(--bg-secondary)',
+                    color: 'var(--text-primary)',
+                    borderColor: 'var(--border-color)',
                   }
             }
             title="Side-by-side comparative arena"
@@ -245,7 +269,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           {/* 3-Min Walkthrough Script */}
           <button
             onClick={onOpenDemoTour}
-            className="flex items-center space-x-1.5 px-2.5 py-1 rounded-md text-xs font-semibold bg-[#191F26] hover:bg-[#202730] transition-all"
+            className="flex items-center space-x-1.5 px-2 sm:px-2.5 py-1 rounded-md text-xs font-semibold bg-[var(--bg-secondary)] hover:bg-[var(--bg-card-elevated)] transition-all touch-target-min"
             style={{
               color: currentTheme.color,
               borderColor: currentTheme.mutedBorder,
@@ -260,8 +284,9 @@ export const Navbar: React.FC<NavbarProps> = ({
           {/* Privacy Notice */}
           <button
             onClick={onOpenPrivacy}
-            className="p-1.5 rounded-md bg-[#12161B] hover:bg-[#191F26] text-[#929DA9] hover:text-[#36D98A] border border-[#2A323B] transition-colors"
+            className="p-1.5 rounded-md bg-[var(--bg-secondary)] hover:bg-[var(--bg-card-elevated)] text-[var(--text-secondary)] hover:text-[#36D98A] border border-[var(--border-color)] transition-colors touch-target-min"
             title="DPDP Act, 2023 Compliance & Zero Telemetry"
+            aria-label="Privacy & DPDP Act Compliance"
           >
             <ShieldCheck className="w-4 h-4 text-[#36D98A]" />
           </button>
